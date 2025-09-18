@@ -1,20 +1,13 @@
-# Core RAG dependencies
-langchain>=0.1.0
-langchain-community>=0.0.10
-chromadb>=0.4.20
-sentence-transformers>=2.2.0
+# Minimal requirements (always installed)
+click>=8.0.0
+rich>=12.0.0
+python-dotenv>=0.19.0
+requests>=2.25.0
 
-# Document processing
-pypdf2>=3.0.0
-python-docx>=1.1.0
-
-# Ollama client
-ollama>=0.1.0
-
-# CLI utilities
-click>=8.1.0
-rich>=13.0.0
-
-# General utilities
-python-dotenv>=1.0.0
-pydantic>=2.0.0
+# Optional full features (install with: pip install -e ".[full]")
+# langchain>=0.1.0
+# langchain-community>=0.0.10
+# chromadb>=0.4.20
+# sentence-transformers>=2.2.0
+# pypdf2>=3.0.0
+# ollama>=0.1.0
