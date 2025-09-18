@@ -1,0 +1,77 @@
+Python Programming Guide
+
+Python is a high-level, interpreted programming language known for its simplicity and readability. It was created by Guido van Rossum and first released in 1991.
+
+Key Features:
+- Easy to learn and use
+- Interpreted language
+- Object-oriented
+- Large standard library
+- Cross-platform compatibility
+- Strong community support
+
+Basic Syntax:
+
+Variables:
+name = "Python"
+version = 3.9
+is_popular = True
+
+Data Types:
+- Numbers (int, float, complex)
+- Strings
+- Lists
+- Tuples
+- Dictionaries
+- Sets
+- Booleans
+
+Control Structures:
+
+If Statements:
+if condition:
+    # code block
+elif another_condition:
+    # code block
+else:
+    # code block
+
+Loops:
+# For loop
+for item in sequence:
+    # code block
+
+# While loop
+while condition:
+    # code block
+
+Functions:
+def function_name(parameters):
+    """Function documentation"""
+    # code block
+    return value
+
+Classes:
+class ClassName:
+    def __init__(self, parameters):
+        self.attribute = parameters
+    
+    def method(self):
+        return self.attribute
+
+Common Libraries:
+- NumPy: Numerical computing
+- Pandas: Data manipulation
+- Matplotlib: Data visualization
+- Scikit-learn: Machine learning
+- Django/Flask: Web development
+- Requests: HTTP library
+- Beautiful Soup: Web scraping
+
+Best Practices:
+- Use meaningful variable names
+- Follow PEP 8 style guide
+- Write docstrings for functions and classes
+- Handle exceptions properly
+- Use virtual environments
+- Write unit tests

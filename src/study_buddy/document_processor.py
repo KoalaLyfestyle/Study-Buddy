@@ -1,0 +1,169 @@
+"""Document ingestion and processing utilities."""
+
+import os
+from pathlib import Path
+from typing import List, Dict, Any
+import logging
+
+# Try to import heavy dependencies, fall back to minimal versions
+try:
+    from langchain.document_loaders import PyPDFLoader, TextLoader
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+    from langchain.schema import Document
+    FULL_FEATURES = True
+except ImportError:
+    # Use minimal implementations
+    FULL_FEATURES = False
+
+from .config import config
+
+logger = logging.getLogger(__name__)
+
+
+class Document:
+    """Simple document class."""
+    def __init__(self, page_content: str, metadata: Dict[str, Any] = None):
+        self.page_content = page_content
+        self.metadata = metadata or {}
+
+
+class SimpleTextSplitter:
+    """Simple text splitter."""
+    def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 200):
+        self.chunk_size = chunk_size
+        self.chunk_overlap = chunk_overlap
+    
+    def split_text(self, text: str) -> List[str]:
+        """Split text into chunks."""
+        chunks = []
+        start = 0
+        while start < len(text):
+            end = start + self.chunk_size
+            chunk = text[start:end]
+            chunks.append(chunk)
+            start = end - self.chunk_overlap
+            if start >= len(text):
+                break
+        return chunks
+    
+    def split_documents(self, documents: List[Document]) -> List[Document]:
+        """Split documents into chunks."""
+        result = []
+        for doc in documents:
+            chunks = self.split_text(doc.page_content)
+            for i, chunk in enumerate(chunks):
+                new_doc = Document(
+                    page_content=chunk,
+                    metadata={**doc.metadata, "chunk_index": i}
+                )
+                result.append(new_doc)
+        return result
+
+
+class DocumentProcessor:
+    """Handles document loading and text processing."""
+    
+    def __init__(self):
+        if FULL_FEATURES:
+            self.text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=config.CHUNK_SIZE,
+                chunk_overlap=config.CHUNK_OVERLAP,
+                length_function=len,
+            )
+        else:
+            logger.warning("Using minimal document processor. Install langchain for full features.")
+            self._use_minimal = True
+    
+    def load_document(self, file_path: Path) -> List[Document]:
+        """Load a single document based on its file extension."""
+        if not FULL_FEATURES:
+            # Use minimal implementation
+            file_extension = file_path.suffix.lower()
+            
+            try:
+                if file_extension == '.txt':
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                        doc = Document(
+                            page_content=content,
+                            metadata={"source": str(file_path)}
+                        )
+                        return [doc]
+                elif file_extension == '.pdf':
+                    logger.warning(f"PDF support requires PyPDF2. Skipping {file_path}")
+                    return []
+                else:
+                    raise ValueError(f"Unsupported file type: {file_extension}")
+                
+            except Exception as e:
+                logger.error(f"Error loading {file_path}: {str(e)}")
+                return []
+            
+        file_extension = file_path.suffix.lower()
+        
+        try:
+            if file_extension == '.pdf':
+                loader = PyPDFLoader(str(file_path))
+            elif file_extension == '.txt':
+                loader = TextLoader(str(file_path), encoding='utf-8')
+            else:
+                raise ValueError(f"Unsupported file type: {file_extension}")
+            
+            documents = loader.load()
+            logger.info(f"Loaded {len(documents)} pages from {file_path.name}")
+            return documents
+            
+        except Exception as e:
+            logger.error(f"Error loading {file_path}: {str(e)}")
+            return []
+    
+    def process_documents(self, documents: List[Document]) -> List[Document]:
+        """Split documents into chunks."""
+        if not FULL_FEATURES:
+            # Use minimal text splitter
+            text_splitter = SimpleTextSplitter(
+                chunk_size=config.CHUNK_SIZE,
+                chunk_overlap=config.CHUNK_OVERLAP,
+            )
+            try:
+                chunks = text_splitter.split_documents(documents)
+                logger.info(f"Split documents into {len(chunks)} chunks")
+                return chunks
+            except Exception as e:
+                logger.error(f"Error processing documents: {str(e)}")
+                return []
+            
+        try:
+            chunks = self.text_splitter.split_documents(documents)
+            logger.info(f"Split documents into {len(chunks)} chunks")
+            return chunks
+        except Exception as e:
+            logger.error(f"Error processing documents: {str(e)}")
+            return []
+    
+    def load_directory(self, directory_path: Path) -> List[Document]:
+        """Load and process all supported documents from a directory."""
+        all_documents = []
+        supported_extensions = {'.txt'} if not FULL_FEATURES else {'.pdf', '.txt'}
+        
+        for file_path in directory_path.iterdir():
+            if file_path.is_file() and file_path.suffix.lower() in supported_extensions:
+                documents = self.load_document(file_path)
+                all_documents.extend(documents)
+        
+        if all_documents:
+            processed_documents = self.process_documents(all_documents)
+            logger.info(f"Processed {len(processed_documents)} total chunks from directory")
+            return processed_documents
+        else:
+            logger.warning(f"No supported documents found in {directory_path}")
+            return []
+    
+    def get_document_metadata(self, file_path: Path) -> Dict[str, Any]:
+        """Extract metadata from a document file."""
+        return {
+            "filename": file_path.name,
+            "file_path": str(file_path),
+            "file_size": file_path.stat().st_size,
+            "file_extension": file_path.suffix.lower(),
+        }

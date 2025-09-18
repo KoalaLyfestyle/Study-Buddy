@@ -1,0 +1,20 @@
+# Core RAG dependencies
+langchain>=0.1.0
+langchain-community>=0.0.10
+chromadb>=0.4.20
+sentence-transformers>=2.2.0
+
+# Document processing
+pypdf2>=3.0.0
+python-docx>=1.1.0
+
+# Ollama client
+ollama>=0.1.0
+
+# CLI utilities
+click>=8.1.0
+rich>=13.0.0
+
+# General utilities
+python-dotenv>=1.0.0
+pydantic>=2.0.0
