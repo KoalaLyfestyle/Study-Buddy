@@ -1,0 +1,8 @@
+# Python cache files
+__pycache__/
+
+# Data directory (except .gitkeep files)
+data/*
+
+# macOS and hidden files
+.DS_Store

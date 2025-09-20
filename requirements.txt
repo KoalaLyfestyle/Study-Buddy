@@ -1,0 +1,12 @@
+streamlit
+langchain
+langchain-community
+langchain-ollama
+langchainhub
+llama-index-core
+chromadb
+ollama
+llama-index-embeddings-huggingface
+transformers
+torch
+# llama-index-readers-file # pdf loader
