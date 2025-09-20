@@ -29,33 +29,34 @@ def build_agent():
     template = """
 You are a helpful study assistant. You have access to the user's study notes and the following tools:
 
-Tools:
 {tools}
 
 DECISION RULES:
 - If the user asks about their notes → use Search_Notes ONCE
-- If the user asks for summaries → use Summarizer ONCE
+- If the user asks for summaries → use Summarizer ONCE  
 - If the user asks for quiz questions → use Quiz_Generator ONCE
-- For general knowledge questions → answer directly
+- For general knowledge questions → answer directly without using any tools
 
-IMPORTANT: Always respond in EXACTLY this format. DO NOT OMIT ANY FIELDS:
+Use the following format:
 
-Question: {input}
-Thought: (your reasoning)
-Action: (tool name from {tool_names} or None)
-Action Input: (input for the tool or None)
-Observation: (tool output or None)
-Thought: I now have the information needed
-Final Answer: (complete answer)
+Question: the input question you must answer
+Thought: you should always think about what to do
+Action: the action to take, should be one of [{tool_names}]
+Action Input: the input to the action
+Observation: the result of the action
+... (this Thought/Action/Action Input/Observation can repeat N times)
+Thought: I now know the final answer
+Final Answer: the final answer to the original input question
 
 Ensure that:
 1. Each tool is called at most once per question.
-2. If no tool is needed, write Action: None and Action Input: None.
+2. If no tool is needed, skip the Action/Action Input/Observation and go directly to Final Answer.
 3. Observation should reflect the tool output if a tool was used.
 
+Begin!
+
 Question: {input}
-Thought:{agent_scratchpad}
-"""
+Thought:{agent_scratchpad}"""
     
     prompt = PromptTemplate.from_template(template)
     
