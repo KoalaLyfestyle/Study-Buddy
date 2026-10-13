@@ -1,0 +1,251 @@
+{
+  "embedder": "hashing-v1-512",
+  "semantic": false,
+  "corpus": {
+    "files": 10,
+    "chunks": 42
+  },
+  "queries": {
+    "tune": {
+      "answerable": 20,
+      "unanswerable": 3
+    },
+    "heldout": {
+      "answerable": 18,
+      "unanswerable": 3
+    }
+  },
+  "build_seconds": {
+    "dense": 0.108,
+    "bm25+tfidf": 0.004
+  },
+  "index_bytes": {
+    "dense": 86016,
+    "bm25": 36864,
+    "tfidf": 7168,
+    "hybrid": 122880
+  },
+  "latency": {
+    "dense": {
+      "cold_ms": 0.35,
+      "warm_median_ms": 0.303
+    },
+    "bm25": {
+      "cold_ms": 0.1,
+      "warm_median_ms": 0.039
+    },
+    "tfidf": {
+      "cold_ms": 0.16,
+      "warm_median_ms": 0.02
+    },
+    "hybrid": {
+      "cold_ms": 0.74,
+      "warm_median_ms": 0.616
+    }
+  },
+  "hybrid": {
+    "chosen": {
+      "c": 30,
+      "depth": 40
+    },
+    "grid": [
+      {
+        "c": 10,
+        "depth": 10,
+        "tune_mrr@10": 0.7854
+      },
+      {
+        "c": 10,
+        "depth": 20,
+        "tune_mrr@10": 0.7854
+      },
+      {
+        "c": 10,
+        "depth": 40,
+        "tune_mrr@10": 0.7892
+      },
+      {
+        "c": 30,
+        "depth": 10,
+        "tune_mrr@10": 0.8187
+      },
+      {
+        "c": 30,
+        "depth": 20,
+        "tune_mrr@10": 0.8187
+      },
+      {
+        "c": 30,
+        "depth": 40,
+        "tune_mrr@10": 0.8225
+      },
+      {
+        "c": 60,
+        "depth": 10,
+        "tune_mrr@10": 0.8187
+      },
+      {
+        "c": 60,
+        "depth": 20,
+        "tune_mrr@10": 0.8187
+      },
+      {
+        "c": 60,
+        "depth": 40,
+        "tune_mrr@10": 0.8225
+      }
+    ]
+  },
+  "results": {
+    "tune": {
+      "dense": {
+        "recall@1": 0.55,
+        "recall@3": 0.6417,
+        "recall@5": 0.7167,
+        "recall@10": 0.8583,
+        "mrr@10": 0.7176,
+        "ndcg@10": 0.7204,
+        "by_type_mrr@10": {
+          "cross-week": 0.7778,
+          "equation": 1.0,
+          "exact": 1.0,
+          "filtered": 0.5625,
+          "notebook": 0.4167,
+          "paraphrase": 0.5286
+        },
+        "unanswerable_no_result_rate": 0.0
+      },
+      "bm25": {
+        "recall@1": 0.65,
+        "recall@3": 0.825,
+        "recall@5": 0.8917,
+        "recall@10": 0.9083,
+        "mrr@10": 0.8142,
+        "ndcg@10": 0.8241,
+        "by_type_mrr@10": {
+          "cross-week": 0.75,
+          "equation": 1.0,
+          "exact": 1.0,
+          "filtered": 1.0,
+          "notebook": 0.6667,
+          "paraphrase": 0.6067
+        },
+        "unanswerable_no_result_rate": 0.0
+      },
+      "tfidf": {
+        "recall@1": 0.6,
+        "recall@3": 0.825,
+        "recall@5": 0.825,
+        "recall@10": 0.8583,
+        "mrr@10": 0.7738,
+        "ndcg@10": 0.7836,
+        "by_type_mrr@10": {
+          "cross-week": 0.7143,
+          "equation": 1.0,
+          "exact": 1.0,
+          "filtered": 1.0,
+          "notebook": 0.6667,
+          "paraphrase": 0.4667
+        },
+        "unanswerable_no_result_rate": 0.3333
+      },
+      "hybrid": {
+        "recall@1": 0.6167,
+        "recall@3": 0.7917,
+        "recall@5": 0.8917,
+        "recall@10": 0.9083,
+        "mrr@10": 0.8225,
+        "ndcg@10": 0.8109,
+        "by_type_mrr@10": {
+          "cross-week": 1.0,
+          "equation": 1.0,
+          "exact": 1.0,
+          "filtered": 1.0,
+          "notebook": 0.5,
+          "paraphrase": 0.59
+        },
+        "unanswerable_no_result_rate": 0.0
+      }
+    },
+    "heldout": {
+      "dense": {
+        "recall@1": 0.4722,
+        "recall@3": 0.6389,
+        "recall@5": 0.75,
+        "recall@10": 0.8611,
+        "mrr@10": 0.651,
+        "ndcg@10": 0.6886,
+        "by_type_mrr@10": {
+          "cross-week": 0.75,
+          "equation": 1.0,
+          "exact": 0.875,
+          "filtered": 1.0,
+          "notebook": 0.0714,
+          "paraphrase": 0.315
+        },
+        "unanswerable_no_result_rate": 0.0
+      },
+      "bm25": {
+        "recall@1": 0.7222,
+        "recall@3": 0.8333,
+        "recall@5": 0.9167,
+        "recall@10": 0.9722,
+        "mrr@10": 0.8713,
+        "ndcg@10": 0.8791,
+        "by_type_mrr@10": {
+          "cross-week": 1.0,
+          "equation": 1.0,
+          "exact": 1.0,
+          "filtered": 1.0,
+          "notebook": 0.175,
+          "paraphrase": 0.8667
+        },
+        "unanswerable_no_result_rate": 0.6667
+      },
+      "tfidf": {
+        "recall@1": 0.7222,
+        "recall@3": 0.8333,
+        "recall@5": 0.8333,
+        "recall@10": 0.9167,
+        "mrr@10": 0.869,
+        "ndcg@10": 0.8587,
+        "by_type_mrr@10": {
+          "cross-week": 1.0,
+          "equation": 1.0,
+          "exact": 1.0,
+          "filtered": 1.0,
+          "notebook": 0.0714,
+          "paraphrase": 0.9
+        },
+        "unanswerable_no_result_rate": 1.0
+      },
+      "hybrid": {
+        "recall@1": 0.6389,
+        "recall@3": 0.8056,
+        "recall@5": 0.8611,
+        "recall@10": 0.9722,
+        "mrr@10": 0.8349,
+        "ndcg@10": 0.8473,
+        "by_type_mrr@10": {
+          "cross-week": 1.0,
+          "equation": 1.0,
+          "exact": 1.0,
+          "filtered": 1.0,
+          "notebook": 0.1389,
+          "paraphrase": 0.75
+        },
+        "unanswerable_no_result_rate": 0.0
+      }
+    }
+  },
+  "decision": {
+    "best_single_method": "bm25",
+    "hybrid_minus_best_mrr@10": -0.0364,
+    "hybrid_wins_losses_vs_best": [
+      2,
+      3
+    ],
+    "adopt_hybrid": false,
+    "rule": "adopt hybrid only with a semantic embedder, held-out MRR@10 gain >= 0.05, and no loss in held-out Recall@5"
+  }
+}

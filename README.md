@@ -102,6 +102,27 @@ python -m studybuddy import sample_course
 python -m studybuddy search "why does convexity matter"
 ```
 
+## Comparing retrieval methods
+
+`python -m studybuddy.evaluate` compares four ways to search the same chunks:
+dense (the embedding model), BM25 (SQLite FTS5), TF-IDF, and hybrid
+(reciprocal rank fusion of dense and BM25). Course, week, and file-type
+filters apply before ranking in all four.
+
+```bash
+python -m studybuddy.evaluate                       # real model
+python -m studybuddy.evaluate --embedder hashing    # offline; dense is then not semantic
+```
+
+- Corpus: `sample_course/` plus the extra weeks in `eval/extra/` (original material).
+- Queries: `eval/queries.jsonl`, 44 queries of seven types, split into `tune` and `heldout`.
+  The relevance labels were written by a model and are provisional until a person checks them.
+- Output: `eval/results/<embedder>/report.md`, `summary.json`, `per_query.json`, and
+  `failures.jsonl` (each miss in the top 5, and each unanswerable query that got results).
+- Hybrid's settings are tuned on `tune` only. It is adopted only if, with a semantic
+  embedder, it beats the best single method on held-out MRR@10 by at least 0.05 without
+  losing Recall@5. "BM25 is enough" is a valid outcome.
+
 ## Settings
 
 | Variable | Default | Meaning |
@@ -122,13 +143,15 @@ python -m pytest
 
 ## Layout
 
-- `studybuddy/` - import, chunking, embeddings, library, and the CLI
+- `studybuddy/` - import, chunking, embeddings, library, retrieval methods, evaluation, and the CLI
 - `rag.py` - opens the library for the agent and the app
 - `agent/` - LangChain ReAct agent and its tools
 - `app.py` - Streamlit UI
 - `config.py` - local Ollama model settings
 - `sample_course/` - original sample material for tests and demos
 - `scripts/make_sample_pdf.py` - regenerates the sample PDF
+- `eval/` - retrieval comparison: queries, extra course weeks, and results
+- `scripts/make_eval_pdf.py` - regenerates the evaluation PDF
 
 ## Acknowledgements
 

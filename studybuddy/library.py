@@ -296,13 +296,18 @@ class Library:
         return [r[0] for r in rows]
 
     def search(
-        self, query: str, k: int = 4, course: str | None = None, week: int | None = None
+        self,
+        query: str,
+        k: int = 4,
+        course: str | None = None,
+        week: int | None = None,
+        kind: str | None = None,
     ) -> list[SearchResult]:
-        """Dense search. Filters apply before ranking."""
+        """Dense search. Filters (course, week, and file kind: pdf, markdown, notebook) apply before ranking."""
         with self._lock:
-            return self._search(query, k, course, week)
+            return self._search(query, k, course, week, kind)
 
-    def _search(self, query, k, course, week) -> list[SearchResult]:
+    def _search(self, query, k, course, week, kind=None) -> list[SearchResult]:
         if self.chunk_count() == 0:
             others = self._other_embedders()
             if others:
@@ -324,6 +329,9 @@ class Library:
         if week is not None:
             sql += " AND f.week = ?"
             params.append(week)
+        if kind is not None:
+            sql += " AND f.kind = ?"
+            params.append(kind)
         rows = self.db.execute(sql, params).fetchall()
         if not rows:
             return []
