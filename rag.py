@@ -1,8 +1,8 @@
 """Retrieval for the agent and the app, backed by the studybuddy package.
 
-Nothing is loaded at import time. The first search imports the course
-folder (incrementally, so only new or changed files are processed) and
-later searches reuse the index.
+Nothing is loaded at import time. Each search first refreshes the index
+from the course folder. That is cheap: unchanged files are only hashed,
+and only new or changed files are parsed and embedded.
 
 Settings:
 - STUDYBUDDY_DATA_DIR: course folder (default ./data)
@@ -12,9 +12,11 @@ Settings:
 """
 
 import os
+import threading
 
 from studybuddy import EmptyLibraryError, Library, default_embedder
 
+_lock = threading.Lock()
 _library = None
 _last_report = None
 
@@ -24,21 +26,23 @@ def data_dir() -> str:
 
 
 def get_library() -> Library:
-    """Open the library and bring it up to date once per process."""
-    global _library, _last_report
-    if _library is None:
-        library = Library(
-            data_dir(),
-            os.environ.get("STUDYBUDDY_INDEX_DIR", ".studybuddy"),
-            default_embedder(),
-        )
-        try:
-            _last_report = library.import_folder()
-        except Exception:
-            library.close()
-            raise
-        _library = library
-    return _library
+    """Open the library once per process."""
+    global _library
+    with _lock:
+        if _library is None:
+            _library = Library(
+                data_dir(),
+                os.environ.get("STUDYBUDDY_INDEX_DIR", ".studybuddy"),
+                default_embedder(),
+            )
+        return _library
+
+
+def refresh():
+    """Import new and changed files. Raises EmptyLibraryError with advice."""
+    global _last_report
+    _last_report = get_library().import_folder()
+    return _last_report
 
 
 def last_import_report():
@@ -46,16 +50,18 @@ def last_import_report():
 
 
 def search(query: str, k: int = 4, course: str | None = None, week: int | None = None):
+    refresh()
     return get_library().search(query, k=k, course=course, week=week)
 
 
 def reset_index() -> None:
-    """Forget the open library so the next search re-checks the folder."""
+    """Close the library so the next call reopens it with current settings."""
     global _library, _last_report
-    if _library is not None:
-        _library.close()
-    _library = None
-    _last_report = None
+    with _lock:
+        if _library is not None:
+            _library.close()
+        _library = None
+        _last_report = None
 
 
-__all__ = ["EmptyLibraryError", "get_library", "last_import_report", "reset_index", "search"]
+__all__ = ["EmptyLibraryError", "get_library", "last_import_report", "refresh", "reset_index", "search"]

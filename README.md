@@ -13,8 +13,9 @@ heading, or the notebook cell.
   file is re-read and re-embedded on its own. A deleted file drops out of
   search.
 - **Search with citations.** Every result carries the file path, course,
-  week, location (page, heading path, or cell ID), and character offsets,
-  plus the hash of the file it came from.
+  week, location (page, heading path, or cell ID), the character offsets
+  of the chunk inside that page, section, or cell, and the hash of the
+  file it came from.
 - **Chat UI** (Streamlit) with a LangChain ReAct agent on a local Ollama
   model. The agent calls the search tool and is told to cite sources.
 
@@ -30,7 +31,8 @@ the model or your notes yet.
    `week-NN` folder name.
 2. `studybuddy/chunking.py` cuts sections into chunks of up to 1,200
    characters at paragraph breaks. Each chunk ID is a hash of the file
-   path, location, position, and text, so it stays the same across runs.
+   path, location (without line numbers), position, and text, so it stays
+   the same across runs and when other sections of the file change.
 3. `studybuddy/embeddings.py` embeds chunks with `BAAI/bge-small-en`
    through sentence-transformers, run locally.
 4. `studybuddy/library.py` stores chunks and vectors in SQLite at
@@ -41,14 +43,18 @@ the model or your notes yet.
    filters.
 
 If a file fails to parse, the import reports it and keeps that file's last
-good records. If the import fails as a whole, for example because the
-embedding model cannot load, nothing is written and the previous index
-stays. The importer never writes to your course folder, so your own
-`notes.md` files are never replaced.
+good records. Search still returns them, labelled "out of date". If the
+import fails as a whole, for example because the embedding model cannot
+load, nothing is written and the previous index stays. If the folder has
+no supported files at all, the import stops with advice and leaves the
+index as it was, since that is usually a wrong path or an unmounted drive.
+A renamed file is treated as a deleted file plus a new one. The importer
+never writes to your course folder, so your own `notes.md` files are never
+replaced.
 
 ## Setup
 
-Requires Python 3.12 and [Ollama](https://ollama.com) for the chat.
+Requires Python 3.12 (the lock file targets it) and [Ollama](https://ollama.com) for the chat.
 
 ```bash
 python3.12 -m venv .venv && source .venv/bin/activate
@@ -75,13 +81,15 @@ python -m studybuddy import data
 python -m studybuddy search "eigenvalues of a symmetric matrix" --week 1
 ```
 
-Or start the chat app, which imports `data/` on the first question:
+Or start the chat app. Before each search it refreshes the index from
+`data/`, so files you add while it runs are picked up:
 
 ```bash
 streamlit run app.py
 ```
 
-The first import downloads the embedding model once. To try everything
+The first import downloads the embedding model once. An index is tied
+to the embedder that built it; if you switch, import again. To try everything
 offline, set `STUDYBUDDY_EMBEDDER=hashing`. That uses a lexical stand-in
 that needs no download; results are worse.
 

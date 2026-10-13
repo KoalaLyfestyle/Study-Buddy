@@ -6,10 +6,12 @@ human-edited files such as `notes.md` are never replaced.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sqlite3
+import threading
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 import numpy as np
@@ -93,8 +95,9 @@ class Citation:
     week: int | None
     location: dict
     char_start: int
-    char_end: int
+    char_end: int  # char_start and char_end index the parsed section text, not the raw file
     source_sha256: str
+    stale: bool = False  # the file changed and the new version failed to import
 
     def label(self) -> str:
         loc = self.location
@@ -106,7 +109,8 @@ class Citation:
             where = " > ".join(loc["headings"])
         else:
             where = f"line {loc.get('line', 1)}"
-        return f"{self.relpath}, {where}"
+        label = f"{self.relpath}, {where}"
+        return label + " (out of date: the file changed and failed to re-import)" if self.stale else label
 
 
 @dataclass(frozen=True)
@@ -123,7 +127,12 @@ class Library:
         self.index_dir = Path(index_dir)
         self.embedder = embedder
         self.index_dir.mkdir(parents=True, exist_ok=True)
-        self.db = sqlite3.connect(str(self.index_dir / "library.sqlite"), isolation_level=None)
+        # One connection shared across threads (Streamlit reruns use new
+        # threads); the lock serialises every use of it.
+        self._lock = threading.RLock()
+        self.db = sqlite3.connect(
+            str(self.index_dir / "library.sqlite"), isolation_level=None, check_same_thread=False
+        )
         self.db.executescript(SCHEMA)
         if source_dir is None:
             row = self.db.execute("SELECT value FROM meta WHERE key='root'").fetchone()
@@ -131,7 +140,8 @@ class Library:
         self.source_dir = Path(source_dir).resolve()
 
     def close(self) -> None:
-        self.db.close()
+        with self._lock:
+            self.db.close()
 
     def _cache_key(self, sha: str) -> str:
         return (
@@ -155,8 +165,16 @@ class Library:
                 f"Course folder {root} does not exist. Create it and add course files. "
                 + empty_folder_message(root)
             )
-        report = ImportReport()
         paths = sources.scan_folder(root)
+        if not paths:
+            # Leave the index alone: an empty folder is more often an
+            # unmounted drive or a wrong path than a deliberate wipe.
+            raise EmptyLibraryError(empty_folder_message(root))
+        with self._lock:
+            return self._import_paths(root, paths)
+
+    def _import_paths(self, root: Path, paths: list[Path]) -> ImportReport:
+        report = ImportReport()
         db = self.db
         db.execute("BEGIN IMMEDIATE")
         try:
@@ -185,8 +203,6 @@ class Library:
         except BaseException:
             db.execute("ROLLBACK")
             raise
-        if not paths:
-            raise EmptyLibraryError(empty_folder_message(root))
         return report
 
     def _import_file(self, path: Path, relpath: str, previous, report: ImportReport) -> None:
@@ -202,7 +218,7 @@ class Library:
         try:
             report.files_parsed += 1
             sections = sources.parse_file(path)
-            chunks = [c for s in sections for c in chunk_section(doc_id, s.text, s.location)]
+            chunks = _unique_ids([c for s in sections for c in chunk_section(doc_id, s.text, s.location)])
         except Exception as exc:  # a bad file must not stop the import
             error = f"{type(exc).__name__}: {exc}"
             report.failed[relpath] = error
@@ -218,6 +234,7 @@ class Library:
                 )
             return
 
+        was_indexed = previous is not None and (previous[1] == "ok" or self._has_chunks(relpath))
         vectors = self.embedder.embed_documents([c.text for c in chunks])
         report.chunks_embedded += len(chunks)
         self.db.execute("DELETE FROM chunks WHERE relpath=?", (relpath,))
@@ -236,17 +253,26 @@ class Library:
                 for c, v in zip(chunks, vectors)
             ],
         )
-        (report.updated if previous else report.added).append(relpath)
+        (report.updated if was_indexed else report.added).append(relpath)
+
+    def _has_chunks(self, relpath: str) -> bool:
+        return self.db.execute("SELECT 1 FROM chunks WHERE relpath=? LIMIT 1", (relpath,)).fetchone() is not None
 
     # ---- read ---------------------------------------------------------
 
     def failures(self) -> dict[str, str]:
+        with self._lock:
+            return self._failures()
+
+    def _failures(self) -> dict[str, str]:
         return dict(self.db.execute("SELECT relpath, error FROM files WHERE status='error'"))
 
     def courses(self) -> list[dict]:
-        rows = self.db.execute(
-            "SELECT course, COUNT(*), GROUP_CONCAT(DISTINCT week) FROM files GROUP BY course ORDER BY course"
-        )
+        with self._lock:
+            rows = self.db.execute(
+                "SELECT course, COUNT(*), GROUP_CONCAT(DISTINCT week) FROM files "
+                "GROUP BY course ORDER BY course"
+            ).fetchall()
         return [
             {
                 "course": course,
@@ -257,19 +283,37 @@ class Library:
         ]
 
     def chunk_count(self) -> int:
-        return self.db.execute(
-            "SELECT COUNT(*) FROM chunks WHERE embedder=?", (self.embedder.id,)
-        ).fetchone()[0]
+        with self._lock:
+            return self.db.execute(
+                "SELECT COUNT(*) FROM chunks WHERE embedder=?", (self.embedder.id,)
+            ).fetchone()[0]
+
+    def _other_embedders(self) -> list[str]:
+        rows = self.db.execute(
+            "SELECT DISTINCT embedder FROM chunks WHERE embedder != ?", (self.embedder.id,)
+        )
+        return [r[0] for r in rows]
 
     def search(
         self, query: str, k: int = 4, course: str | None = None, week: int | None = None
     ) -> list[SearchResult]:
         """Dense search. Filters apply before ranking."""
+        with self._lock:
+            return self._search(query, k, course, week)
+
+    def _search(self, query, k, course, week) -> list[SearchResult]:
         if self.chunk_count() == 0:
+            others = self._other_embedders()
+            if others:
+                raise EmptyLibraryError(
+                    f"This index was built with embedder {', '.join(others)}, not "
+                    f"{self.embedder.id}. Import {self.source_dir} again with the current "
+                    f"embedder, or set STUDYBUDDY_EMBEDDER to match the index."
+                )
             raise EmptyLibraryError(empty_folder_message(self.source_dir))
         sql = (
             "SELECT c.chunk_id, c.text, c.location, c.char_start, c.char_end, c.embedding, "
-            "f.relpath, f.doc_id, f.kind, f.course, f.week, f.sha256 "
+            "f.relpath, f.doc_id, f.kind, f.course, f.week, f.sha256, f.status "
             "FROM chunks c JOIN files f ON f.relpath = c.relpath WHERE c.embedder = ?"
         )
         params: list = [self.embedder.id]
@@ -288,17 +332,18 @@ class Library:
         return [self._result(rows[i], float(scores[i])) for i in order]
 
     def read_chunk(self, chunk_id: str) -> SearchResult | None:
-        row = self.db.execute(
-            "SELECT c.chunk_id, c.text, c.location, c.char_start, c.char_end, c.embedding, "
-            "f.relpath, f.doc_id, f.kind, f.course, f.week, f.sha256 "
-            "FROM chunks c JOIN files f ON f.relpath = c.relpath WHERE c.chunk_id = ?",
-            (chunk_id,),
-        ).fetchone()
+        with self._lock:
+            row = self.db.execute(
+                "SELECT c.chunk_id, c.text, c.location, c.char_start, c.char_end, c.embedding, "
+                "f.relpath, f.doc_id, f.kind, f.course, f.week, f.sha256, f.status "
+                "FROM chunks c JOIN files f ON f.relpath = c.relpath WHERE c.chunk_id = ?",
+                (chunk_id,),
+            ).fetchone()
         return self._result(row, 0.0) if row else None
 
     @staticmethod
     def _result(row, score: float) -> SearchResult:
-        chunk_id, text, location, start, end, _, relpath, doc_id, kind, course, week, sha = row
+        chunk_id, text, location, start, end, _, relpath, doc_id, kind, course, week, sha, status = row
         return SearchResult(
             chunk_id=chunk_id,
             score=score,
@@ -307,6 +352,7 @@ class Library:
                 relpath=relpath, doc_id=doc_id, kind=kind, course=course, week=week,
                 location=json.loads(location), char_start=start, char_end=end,
                 source_sha256=sha,
+                stale=status != "ok",
             ),
         )
 
@@ -320,3 +366,17 @@ class Library:
                 span = section.text[result.citation.char_start : result.citation.char_end]
                 return span.strip() == result.text
         return False
+
+
+def _unique_ids(chunks):
+    """Two identical sections in one file would share an ID; number repeats."""
+    seen: dict[str, int] = {}
+    out = []
+    for chunk in chunks:
+        count = seen.get(chunk.chunk_id, 0)
+        seen[chunk.chunk_id] = count + 1
+        if count:
+            new_id = hashlib.sha256(f"{chunk.chunk_id}#{count}".encode()).hexdigest()[:20]
+            chunk = replace(chunk, chunk_id=new_id)
+        out.append(chunk)
+    return out

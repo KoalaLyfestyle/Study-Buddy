@@ -47,8 +47,13 @@ def split_text(text: str, max_chars: int = MAX_CHARS, overlap: int = OVERLAP) ->
 
 
 def make_chunk_id(doc_id: str, location: dict, ordinal: int, text: str) -> str:
-    """Same file path, location, and text always give the same ID."""
-    key = json.dumps([doc_id, location, ordinal, text], sort_keys=True, ensure_ascii=False)
+    """Same file path, location, and text always give the same ID.
+
+    The Markdown line number is left out, so editing one section does not
+    change the IDs of the sections below it.
+    """
+    stable = {k: v for k, v in location.items() if k != "line"}
+    key = json.dumps([doc_id, stable, ordinal, text], sort_keys=True, ensure_ascii=False)
     return hashlib.sha256(key.encode("utf-8")).hexdigest()[:20]
 
 

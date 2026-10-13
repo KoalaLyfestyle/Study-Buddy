@@ -21,8 +21,8 @@ SUPPORTED_SUFFIXES = {
     ".ipynb": "notebook",
 }
 
-_HEADING = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$")
-_FENCE = re.compile(r"^\s*(```|~~~)")
+_HEADING = re.compile(r"^ {0,3}(#{1,6})\s+(.+?)(?:\s+#+)?\s*$")
+_FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 _WEEK = re.compile(r"^(?:week|wk|w)[-_ ]?(\d{1,2})\b", re.IGNORECASE)
 
 
@@ -109,7 +109,7 @@ def parse_markdown(text: str) -> list[Section]:
     headings: list[tuple[int, str]] = []
     buffer: list[str] = []
     start_line = 1
-    in_fence = False
+    fence = ""  # the opening fence while inside a code block
 
     def flush() -> None:
         body = "\n".join(buffer).strip()
@@ -122,9 +122,17 @@ def parse_markdown(text: str) -> list[Section]:
             )
 
     for number, line in enumerate(text.splitlines(), start=1):
-        if _FENCE.match(line):
-            in_fence = not in_fence
-        match = None if in_fence else _HEADING.match(line)
+        opener = _FENCE.match(line)
+        if opener:
+            marker = opener.group(1)
+            if not fence:
+                fence = marker
+            elif marker[0] == fence[0] and len(marker) >= len(fence) and not line.strip()[len(marker):].strip():
+                fence = ""
+            # Lines inside a fence are body text.
+            match = None
+        else:
+            match = None if fence else _HEADING.match(line)
         if match:
             flush()
             level = len(match.group(1))

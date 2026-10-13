@@ -189,6 +189,17 @@ def test_chunk_ids_are_stable_across_fresh_indexes(course, make_library):
     assert set(chunk_rows(a)) == set(chunk_rows(b))
 
 
+def test_every_indexed_chunk_points_to_a_valid_source_location(course, make_library):
+    lib = make_library(course)
+    lib.import_folder()
+    ids = list(chunk_rows(lib))
+    assert len(ids) >= 9
+    for chunk_id in ids:
+        result = lib.read_chunk(chunk_id)
+        assert not result.citation.stale
+        assert lib.check_citation(result), result.citation
+
+
 def test_bad_file_is_reported_and_keeps_its_last_good_records(course, make_library):
     lib = make_library(course)
     lib.import_folder()
@@ -200,11 +211,59 @@ def test_bad_file_is_reported_and_keeps_its_last_good_records(course, make_libra
     assert LAB in report.failed and "JSONDecodeError" in report.failed[LAB]
     assert lib.failures() == {LAB: report.failed[LAB]}
     assert {k for k, v in chunk_rows(lib).items() if v[0] == LAB} == lab_chunks
+    # Still searchable, but flagged as out of date and not claimed as valid.
+    kept = lib.read_chunk(next(iter(lab_chunks)))
+    assert kept.citation.stale and "out of date" in kept.citation.label()
+    assert not lib.check_citation(kept)
+    # A second failed import keeps the same records and the old file hash.
+    old_sha = kept.citation.source_sha256
+    assert LAB in lib.import_folder().failed
+    assert lib.read_chunk(next(iter(lab_chunks))).citation.source_sha256 == old_sha
 
     # Fixing the file clears the failure.
     shutil.copy(SAMPLE / LAB, course / LAB)
     assert lib.import_folder().updated == [LAB]
     assert lib.failures() == {}
+
+
+def test_emptied_folder_keeps_the_index(course, make_library):
+    lib = make_library(course)
+    lib.import_folder()
+    before = chunk_rows(lib)
+    for path in list(course.rglob("*")):
+        if path.is_file():
+            path.unlink()
+    with pytest.raises(EmptyLibraryError, match="No course material found"):
+        lib.import_folder()
+    assert chunk_rows(lib) == before
+
+
+def test_search_with_a_different_embedder_says_so(course, make_library, tmp_path):
+    make_library(course, index="shared").import_folder()
+    other = make_library(course, embedder=HashingEmbedder(dim=256), index="shared")
+    with pytest.raises(EmptyLibraryError, match="built with embedder hashing-v1-512"):
+        other.search("convex")
+
+
+def test_editing_the_top_of_a_file_keeps_ids_below(course, make_library):
+    lib = make_library(course)
+    lib.import_folder()
+    before = {k for k, v in chunk_rows(lib).items() if v[0] == NOTES}
+    notes = course / NOTES
+    notes.write_text("\n\n" + notes.read_text())
+    lib.import_folder()
+    assert {k for k, v in chunk_rows(lib).items() if v[0] == NOTES} == before
+
+
+def test_repeated_sections_get_distinct_ids(course, make_library):
+    (course / "intro-to-optimisation" / "repeats.md").write_text(
+        "# Example\n\nSame text.\n\n# Example\n\nSame text.\n"
+    )
+    lib = make_library(course)
+    report = lib.import_folder()
+    assert "intro-to-optimisation/repeats.md" in report.added
+    rows = [v for v in chunk_rows(lib).values() if v[0].endswith("repeats.md")]
+    assert len(rows) == 2
 
 
 def test_failed_rebuild_keeps_the_last_good_index(course, make_library):
@@ -265,6 +324,19 @@ def test_sample_pdf_matches_its_generator():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     assert (SAMPLE / PDF).read_bytes() == module.build_pdf(module.PAGES)
+
+
+def test_markdown_headings_and_fences():
+    from studybuddy.sources import parse_markdown
+
+    def headings(text):
+        return [s.location["headings"] for s in parse_markdown(text)]
+
+    assert headings("~~~\n```\n~~~\n# Real heading\nbody") == [[], ["Real heading"]]
+    assert headings("````\n```\n# not heading\n```\n````\nafter") == [[]]
+    assert headings("# C#\nx") == [["C#"]]
+    assert headings("## Title ##\ny") == [["Title"]]
+    assert headings("# A\n## B\n### C\n## D\nz") == [["A"], ["A", "B"], ["A", "B", "C"], ["A", "D"]]
 
 
 def test_sample_notebook_is_valid_json():

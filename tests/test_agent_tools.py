@@ -34,3 +34,31 @@ def test_search_notes_on_empty_folder_explains_what_to_do(env, monkeypatch):
     out = search_notes("anything")
     assert out.startswith("No course material found in")
     assert "python -m studybuddy import" in out
+
+
+def test_search_notes_picks_up_new_files_and_works_across_threads(env, monkeypatch):
+    import threading
+
+    shutil.copytree(SAMPLE, env / "data")
+    monkeypatch.setenv("STUDYBUDDY_DATA_DIR", str(env / "data"))
+    assert "convexity-lecture.pdf" in search_notes("convex epigraph")
+
+    (env / "data" / "intro-to-optimisation" / "week-03").mkdir()
+    (env / "data" / "intro-to-optimisation" / "week-03" / "newton.md").write_text(
+        "# Newton's method\n\nNewton's method uses the Hessian to take curvature-aware steps.\n"
+    )
+    outputs, errors = [], []
+
+    def ask():  # Streamlit runs each rerun in a new thread
+        try:
+            outputs.append(search_notes("Newton's method curvature-aware steps"))
+        except Exception as exc:  # pragma: no cover - the failure we guard against
+            errors.append(exc)
+
+    threads = [threading.Thread(target=ask) for _ in range(4)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert errors == []
+    assert all(o.startswith("[intro-to-optimisation/week-03/newton.md") for o in outputs)
