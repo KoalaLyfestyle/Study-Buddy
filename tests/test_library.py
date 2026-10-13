@@ -226,6 +226,24 @@ def test_bad_file_is_reported_and_keeps_its_last_good_records(course, make_libra
     assert lib.failures() == {}
 
 
+def test_unreadable_file_fails_alone(course, make_library, monkeypatch):
+    lib = make_library(course)
+    lib.import_folder()
+    real = library_module.sources.sha256_file
+
+    def flaky(path):
+        if path.name == "notes.md":
+            raise PermissionError("denied")
+        return real(path)
+
+    monkeypatch.setattr(library_module.sources, "sha256_file", flaky)
+    (course / PDF).write_bytes((course / PDF).read_bytes())  # same bytes: unchanged
+    report = lib.import_folder()
+    assert report.failed == {NOTES: "PermissionError: denied"}
+    assert sorted(report.unchanged) == sorted([LAB, PDF])
+    assert lib.search("learning rate too large loss diverges", k=1)[0].citation.stale
+
+
 def test_emptied_folder_keeps_the_index(course, make_library):
     lib = make_library(course)
     lib.import_folder()

@@ -1,4 +1,4 @@
-from rag import EmptyLibraryError, search
+from rag import EmptyLibraryError, last_refresh_error, search
 
 
 def search_notes(query: str) -> str:
@@ -7,9 +7,15 @@ def search_notes(query: str) -> str:
         results = search(query, k=4)
     except EmptyLibraryError as exc:
         return str(exc)
+    note = ""
+    if last_refresh_error() is not None:
+        note = (
+            f"Note: could not refresh the course library ({last_refresh_error()}). "
+            "These results come from the last successful import.\n\n"
+        )
     if not results:
-        return "No matching passages found in the course library."
-    return "\n\n".join(f"[{r.citation.label()}]\n{r.text}" for r in results)
+        return note + "No matching passages found in the course library."
+    return note + "\n\n".join(f"[{r.citation.label()}]\n{r.text}" for r in results)
 
 
 def quiz_me(topic: str) -> str:

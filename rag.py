@@ -19,6 +19,7 @@ from studybuddy import EmptyLibraryError, Library, default_embedder
 _lock = threading.Lock()
 _library = None
 _last_report = None
+_last_refresh_error = None
 
 
 def data_dir() -> str:
@@ -49,19 +50,43 @@ def last_import_report():
     return _last_report
 
 
+def last_refresh_error():
+    """The error from the latest refresh, if search fell back to the old index."""
+    return _last_refresh_error
+
+
 def search(query: str, k: int = 4, course: str | None = None, week: int | None = None):
-    refresh()
-    return get_library().search(query, k=k, course=course, week=week)
+    """Refresh, then search. If the refresh fails but an index exists, search
+    the last good index and record the error in last_refresh_error()."""
+    global _last_refresh_error
+    library = get_library()
+    try:
+        refresh()
+        _last_refresh_error = None
+    except Exception as exc:
+        if library.chunk_count() == 0:
+            raise
+        _last_refresh_error = exc
+    return library.search(query, k=k, course=course, week=week)
 
 
 def reset_index() -> None:
     """Close the library so the next call reopens it with current settings."""
-    global _library, _last_report
+    global _library, _last_report, _last_refresh_error
     with _lock:
         if _library is not None:
             _library.close()
         _library = None
         _last_report = None
+        _last_refresh_error = None
 
 
-__all__ = ["EmptyLibraryError", "get_library", "last_import_report", "refresh", "reset_index", "search"]
+__all__ = [
+    "EmptyLibraryError",
+    "get_library",
+    "last_import_report",
+    "last_refresh_error",
+    "refresh",
+    "reset_index",
+    "search",
+]

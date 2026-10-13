@@ -82,7 +82,9 @@ python -m studybuddy search "eigenvalues of a symmetric matrix" --week 1
 ```
 
 Or start the chat app. Before each search it refreshes the index from
-`data/`, so files you add while it runs are picked up:
+`data/`, so files you add while it runs are picked up. If the refresh
+fails (for example the folder is missing), it searches the last good index
+and says so:
 
 ```bash
 streamlit run app.py

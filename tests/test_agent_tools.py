@@ -62,3 +62,15 @@ def test_search_notes_picks_up_new_files_and_works_across_threads(env, monkeypat
         t.join()
     assert errors == []
     assert all(o.startswith("[intro-to-optimisation/week-03/newton.md") for o in outputs)
+
+
+def test_search_notes_falls_back_to_the_last_index_when_the_folder_empties(env, monkeypatch):
+    data = env / "data"
+    shutil.copytree(SAMPLE, data)
+    monkeypatch.setenv("STUDYBUDDY_DATA_DIR", str(data))
+    search_notes("convex")
+    shutil.rmtree(data / "intro-to-optimisation")  # e.g. an unmounted drive
+
+    out = search_notes("every local minimum is a global minimum")
+    assert out.startswith("Note: could not refresh the course library (No course material found")
+    assert "[intro-to-optimisation/week-02/convexity-lecture.pdf, page 2]" in out

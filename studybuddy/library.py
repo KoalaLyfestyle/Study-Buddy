@@ -183,7 +183,8 @@ class Library:
                 # A different folder: start from an empty index.
                 db.execute("DELETE FROM chunks")
                 db.execute("DELETE FROM files")
-            db.execute("INSERT OR REPLACE INTO meta VALUES ('root', ?)", (str(root),))
+            if not stored_root or stored_root[0] != str(root):
+                db.execute("INSERT OR REPLACE INTO meta VALUES ('root', ?)", (str(root),))
 
             existing = {
                 row[0]: (row[1], row[2])
@@ -206,16 +207,16 @@ class Library:
         return report
 
     def _import_file(self, path: Path, relpath: str, previous, report: ImportReport) -> None:
-        sha = sources.sha256_file(path)
-        cache_key = self._cache_key(sha)
-        if previous and previous[0] == cache_key and previous[1] == "ok":
-            report.unchanged.append(relpath)
-            return
-
         doc_id = sources.doc_id_for(relpath)
         kind = sources.file_kind(path)
         course, week = sources.course_and_week(relpath, self.source_dir.name)
+        sha = ""
         try:
+            sha = sources.sha256_file(path)  # inside the try: the file may vanish or be unreadable
+            cache_key = self._cache_key(sha)
+            if previous and previous[0] == cache_key and previous[1] == "ok":
+                report.unchanged.append(relpath)
+                return
             report.files_parsed += 1
             sections = sources.parse_file(path)
             chunks = _unique_ids([c for s in sections for c in chunk_section(doc_id, s.text, s.location)])
