@@ -55,21 +55,34 @@ def last_refresh_error():
     return _last_refresh_error
 
 
-def search(
+def search_with_status(
     query: str, k: int = 4, course: str | None = None, week: int | None = None, kind: str | None = None
 ):
-    """Refresh, then search. If the refresh fails but an index exists, search
-    the last good index and record the error in last_refresh_error()."""
+    """Refresh, then search. Returns (results, refresh_error).
+
+    If the refresh fails but an index exists, search the last good index and
+    return the error. The error belongs to this call, so concurrent callers
+    (the MCP server runs tools in threads) never see each other's errors.
+    """
     global _last_refresh_error
     library = get_library()
+    error = None
     try:
         refresh()
-        _last_refresh_error = None
     except Exception as exc:
         if library.chunk_count() == 0:
             raise
-        _last_refresh_error = exc
-    return library.search(query, k=k, course=course, week=week, kind=kind)
+        error = exc
+    _last_refresh_error = error
+    return library.search(query, k=k, course=course, week=week, kind=kind), error
+
+
+def search(
+    query: str, k: int = 4, course: str | None = None, week: int | None = None, kind: str | None = None
+):
+    """Refresh, then search; see search_with_status. The refresh error, if any,
+    is also kept in last_refresh_error() for the app."""
+    return search_with_status(query, k=k, course=course, week=week, kind=kind)[0]
 
 
 def reset_index() -> None:
@@ -91,4 +104,5 @@ __all__ = [
     "refresh",
     "reset_index",
     "search",
+    "search_with_status",
 ]

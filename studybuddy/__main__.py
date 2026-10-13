@@ -68,7 +68,7 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(api.get_week_context(library, args.course, args.week), indent=2))
             return 0
         found = api.search_materials(
-            library.search, args.query, k=args.k, course=args.course, week=args.week, kind=args.kind
+            library.search, args.query, k=max(1, min(args.k, api.MAX_K)), course=args.course, week=args.week, kind=args.kind
         )
         for r in found["results"]:
             print(f"[{r['score']:.3f}] {r['citation']['label']}  ({r['chunk_id']})\n    {r['snippet']}")

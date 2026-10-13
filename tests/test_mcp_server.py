@@ -87,6 +87,13 @@ def test_client_discovers_tools_and_gets_cited_answers(tmp_path):
         loose = _data(await session.call_tool("get_week_context", {"course": "intro-to-optimisation"}))
         assert [p["citation"]["path"] for p in loose["passages"]] == ["intro-to-optimisation/syllabus.md"]
 
+        # Two searches at once: each gets its own answer.
+        both = await asyncio.gather(
+            session.call_tool("search_materials", {"query": "convex set", "k": 1}),
+            session.call_tool("search_materials", {"query": "learning rate", "k": 1}),
+        )
+        assert all("warning" not in _data(r) for r in both)
+
         bad = await session.call_tool("read_source", {"chunk_id": "nope"})
         assert bad.isError and "no passage with id" in bad.content[0].text
         too_many = await session.call_tool("search_materials", {"query": "x", "k": 50})

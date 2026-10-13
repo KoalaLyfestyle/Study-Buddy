@@ -1,17 +1,25 @@
-from rag import EmptyLibraryError, last_refresh_error, search
+from rag import EmptyLibraryError, search_with_status
 from studybuddy import api
 
 
 def search_notes(query: str) -> str:
     """Search the course library. Each result names its source location."""
+    errors = []
+
+    def search(*args, **kwargs):
+        results, error = search_with_status(*args, **kwargs)
+        if error is not None:
+            errors.append(error)
+        return results
+
     try:
         results = api.search_materials(search, query, k=4, full_text=True)["results"]
     except (EmptyLibraryError, ValueError) as exc:
         return str(exc)
     note = ""
-    if last_refresh_error() is not None:
+    if errors:
         note = (
-            f"Note: could not refresh the course library ({last_refresh_error()}). "
+            f"Note: could not refresh the course library ({errors[0]}). "
             "These results come from the last successful import.\n\n"
         )
     if not results:

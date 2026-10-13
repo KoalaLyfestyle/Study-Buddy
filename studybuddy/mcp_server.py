@@ -47,10 +47,18 @@ async def list_courses() -> dict:
 
 
 def _search(query, k, course, week, kind) -> dict:
-    found = api.search_materials(rag.search, query, k=k, course=course, week=week, kind=kind)
-    if rag.last_refresh_error() is not None:
+    errors = []
+
+    def search(*args, **kwargs):
+        results, error = rag.search_with_status(*args, **kwargs)
+        if error is not None:
+            errors.append(error)
+        return results
+
+    found = api.search_materials(search, query, k=k, course=course, week=week, kind=kind)
+    if errors:
         found["warning"] = (
-            f"Could not refresh the course library ({rag.last_refresh_error()}). "
+            f"Could not refresh the course library ({errors[0]}). "
             "These results come from the last successful import."
         )
     return found

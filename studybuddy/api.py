@@ -122,7 +122,8 @@ def get_week_context(library: Library, course: str, week: int | None) -> dict:
             if not known:
                 raise ValueError("the library is empty; import a course folder first: python -m studybuddy import <folder>")
             raise ValueError(f"unknown course {course!r}; known: {', '.join(sorted(known))}")
-        raise ValueError(f"course {course!r} has no material for week {week}; weeks: {known[course]}")
+        where = "outside week folders" if week is None else f"for week {week}"
+        raise ValueError(f"course {course!r} has no material {where}; weeks: {known[course]}")
     return {
         "course": course,
         "week": week,
