@@ -23,8 +23,9 @@ zero. That is why it is called weight decay.
 ## L1 and sparsity
 
 L1 regularisation adds alpha times the sum of absolute weights. Because
-its penalty does not flatten out near zero, it pushes many weights to
-exactly zero, giving a sparse model.
+its penalty does not flatten out near zero, the optimum often has many
+weights at exactly zero, giving a sparse model. Plain SGD rarely lands on
+exact zeros; proximal methods or thresholding get there.
 
 ## Early stopping
 

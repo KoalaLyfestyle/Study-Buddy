@@ -30,20 +30,36 @@ def test_bm25_finds_exact_terms(corpus):
     assert hits == sorted(hits, key=lambda h: -h.score)
 
 
-@pytest.mark.parametrize("method", ["bm25", "tfidf", "dense", "hybrid"])
+FILTERS = [({"week": 5}, "week-05/"), ({"kind": "notebook"}, ".ipynb#"), ({"kind": "pdf", "week": 2}, "week-02/convexity")]
+QUERY = "momentum learning rate Hessian"
+
+
+@pytest.mark.parametrize("method", ["bm25", "tfidf", "dense"])
 def test_filters_apply_before_ranking(corpus, method):
+    """A filtered search equals the full ranking restricted to eligible chunks.
+
+    Filtering after taking the top k would return fewer hits here, because
+    most of the top 10 unfiltered hits are outside each filter.
+    """
     lib, lex, labels = corpus
-    for filters, prefix in [({"week": 5}, "week-05/"), ({"kind": "notebook"}, ".ipynb#"), ({"kind": "pdf", "week": 2}, "week-02/convexity")]:
-        if method == "bm25":
-            hits = lex.bm25("momentum learning rate Hessian", 10, **filters)
-        elif method == "tfidf":
-            hits = lex.tfidf("momentum learning rate Hessian", 10, **filters)
-        elif method == "dense":
-            hits = retrieval.dense(lib, "momentum learning rate Hessian", 10, **filters)
-        else:
-            hits = retrieval.hybrid(lib, lex, "momentum learning rate Hessian", 10, **filters)
-        assert hits, (method, filters)
-        assert all(prefix in labels[h.chunk_id] for h in hits), (method, filters, [labels[h.chunk_id] for h in hits])
+    search = {
+        "bm25": lambda k, **f: lex.bm25(QUERY, k, **f),
+        "tfidf": lambda k, **f: lex.tfidf(QUERY, k, **f),
+        "dense": lambda k, **f: retrieval.dense(lib, QUERY, k, **f),
+    }[method]
+    full = [h.chunk_id for h in search(1000)]
+    for filters, marker in FILTERS:
+        eligible = [c for c in full if marker in labels[c]]
+        got = [h.chunk_id for h in search(3, **filters)]
+        assert got == eligible[:3], (method, filters)
+        assert len(got) == min(3, len(eligible)) > 0
+
+
+def test_hybrid_respects_filters(corpus):
+    lib, lex, labels = corpus
+    for filters, marker in FILTERS:
+        hits = retrieval.hybrid(lib, lex, QUERY, 10, **filters)
+        assert hits and all(marker in labels[h.chunk_id] for h in hits), filters
 
 
 def test_bm25_treats_query_syntax_as_text(corpus):
@@ -70,7 +86,7 @@ def test_metrics():
     m = evaluate.metrics(["a", "x", "b"], {"a", "b"})
     assert m["recall@1"] == 0.5 and m["recall@3"] == 1.0
     assert m["mrr@10"] == 1.0
-    assert 0 < m["ndcg@10"] < 1
+    assert m["ndcg@10"] == pytest.approx((1 + 1 / 2) / (1 + 1 / 1.584962500721156))
 
 
 def test_every_label_matches_one_chunk(corpus):
@@ -90,8 +106,10 @@ def test_evaluate_command_writes_report_and_failures(tmp_path, capsys):
     assert evaluate.main(["--embedder", "hashing", "--out", str(out), "--repeat", "1"]) == 0
     summary = json.loads((out / "summary.json").read_text())
     assert summary["semantic"] is False
-    # The hashing stand-in can never justify adopting hybrid.
+    # The hashing stand-in can never justify adopting hybrid, and the report says it is undecided.
     assert summary["decision"]["adopt_hybrid"] is False
+    assert "Not decided" in (out / "report.md").read_text()
+    assert all(v["cold_ms"] > 0 for v in summary["latency"].values())
     assert set(summary["results"]["heldout"]) == {"dense", "bm25", "tfidf", "hybrid"}
     assert (out / "report.md").read_text().startswith("# Retrieval comparison")
     for line in (out / "failures.jsonl").read_text().splitlines():

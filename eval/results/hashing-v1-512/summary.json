@@ -16,31 +16,31 @@
     }
   },
   "build_seconds": {
-    "dense": 0.108,
-    "bm25+tfidf": 0.004
+    "dense": 0.084,
+    "bm25+tfidf": 0.003
   },
   "index_bytes": {
     "dense": 86016,
     "bm25": 36864,
-    "tfidf": 7168,
+    "tfidf": 7280,
     "hybrid": 122880
   },
   "latency": {
     "dense": {
-      "cold_ms": 0.35,
-      "warm_median_ms": 0.303
+      "cold_ms": 1.29,
+      "warm_median_ms": 0.321
     },
     "bm25": {
-      "cold_ms": 0.1,
-      "warm_median_ms": 0.039
+      "cold_ms": 2.83,
+      "warm_median_ms": 0.044
     },
     "tfidf": {
-      "cold_ms": 0.16,
-      "warm_median_ms": 0.02
+      "cold_ms": 3.09,
+      "warm_median_ms": 0.023
     },
     "hybrid": {
-      "cold_ms": 0.74,
-      "warm_median_ms": 0.616
+      "cold_ms": 4.39,
+      "warm_median_ms": 0.589
     }
   },
   "hybrid": {
@@ -99,29 +99,29 @@
   "results": {
     "tune": {
       "dense": {
-        "recall@1": 0.55,
-        "recall@3": 0.6417,
-        "recall@5": 0.7167,
-        "recall@10": 0.8583,
-        "mrr@10": 0.7176,
-        "ndcg@10": 0.7204,
+        "recall@1": 0.5,
+        "recall@3": 0.61,
+        "recall@5": 0.66,
+        "recall@10": 0.81,
+        "mrr@10": 0.6926,
+        "ndcg@10": 0.6772,
         "by_type_mrr@10": {
           "cross-week": 0.7778,
           "equation": 1.0,
           "exact": 1.0,
           "filtered": 0.5625,
           "notebook": 0.4167,
-          "paraphrase": 0.5286
+          "paraphrase": 0.4286
         },
         "unanswerable_no_result_rate": 0.0
       },
       "bm25": {
         "recall@1": 0.65,
-        "recall@3": 0.825,
-        "recall@5": 0.8917,
-        "recall@10": 0.9083,
+        "recall@3": 0.8,
+        "recall@5": 0.86,
+        "recall@10": 0.895,
         "mrr@10": 0.8142,
-        "ndcg@10": 0.8241,
+        "ndcg@10": 0.8192,
         "by_type_mrr@10": {
           "cross-week": 0.75,
           "equation": 1.0,
@@ -134,11 +134,11 @@
       },
       "tfidf": {
         "recall@1": 0.6,
-        "recall@3": 0.825,
-        "recall@5": 0.825,
-        "recall@10": 0.8583,
+        "recall@3": 0.8,
+        "recall@5": 0.8,
+        "recall@10": 0.82,
         "mrr@10": 0.7738,
-        "ndcg@10": 0.7836,
+        "ndcg@10": 0.7673,
         "by_type_mrr@10": {
           "cross-week": 0.7143,
           "equation": 1.0,
@@ -150,12 +150,12 @@
         "unanswerable_no_result_rate": 0.3333
       },
       "hybrid": {
-        "recall@1": 0.6167,
-        "recall@3": 0.7917,
-        "recall@5": 0.8917,
-        "recall@10": 0.9083,
+        "recall@1": 0.61,
+        "recall@3": 0.76,
+        "recall@5": 0.86,
+        "recall@10": 0.885,
         "mrr@10": 0.8225,
-        "ndcg@10": 0.8109,
+        "ndcg@10": 0.7942,
         "by_type_mrr@10": {
           "cross-week": 1.0,
           "equation": 1.0,
@@ -169,29 +169,29 @@
     },
     "heldout": {
       "dense": {
-        "recall@1": 0.4722,
+        "recall@1": 0.5,
         "recall@3": 0.6389,
         "recall@5": 0.75,
         "recall@10": 0.8611,
-        "mrr@10": 0.651,
-        "ndcg@10": 0.6886,
+        "mrr@10": 0.65,
+        "ndcg@10": 0.692,
         "by_type_mrr@10": {
           "cross-week": 0.75,
           "equation": 1.0,
           "exact": 0.875,
           "filtered": 1.0,
-          "notebook": 0.0714,
+          "notebook": 0.0625,
           "paraphrase": 0.315
         },
         "unanswerable_no_result_rate": 0.0
       },
       "bm25": {
-        "recall@1": 0.7222,
-        "recall@3": 0.8333,
-        "recall@5": 0.9167,
-        "recall@10": 0.9722,
+        "recall@1": 0.75,
+        "recall@3": 0.8611,
+        "recall@5": 0.9444,
+        "recall@10": 1.0,
         "mrr@10": 0.8713,
-        "ndcg@10": 0.8791,
+        "ndcg@10": 0.9006,
         "by_type_mrr@10": {
           "cross-week": 1.0,
           "equation": 1.0,
@@ -203,12 +203,12 @@
         "unanswerable_no_result_rate": 0.6667
       },
       "tfidf": {
-        "recall@1": 0.7222,
-        "recall@3": 0.8333,
-        "recall@5": 0.8333,
-        "recall@10": 0.9167,
+        "recall@1": 0.75,
+        "recall@3": 0.8611,
+        "recall@5": 0.8611,
+        "recall@10": 0.9444,
         "mrr@10": 0.869,
-        "ndcg@10": 0.8587,
+        "ndcg@10": 0.881,
         "by_type_mrr@10": {
           "cross-week": 1.0,
           "equation": 1.0,
@@ -220,12 +220,12 @@
         "unanswerable_no_result_rate": 1.0
       },
       "hybrid": {
-        "recall@1": 0.6389,
+        "recall@1": 0.6667,
         "recall@3": 0.8056,
         "recall@5": 0.8611,
         "recall@10": 0.9722,
         "mrr@10": 0.8349,
-        "ndcg@10": 0.8473,
+        "ndcg@10": 0.8518,
         "by_type_mrr@10": {
           "cross-week": 1.0,
           "equation": 1.0,

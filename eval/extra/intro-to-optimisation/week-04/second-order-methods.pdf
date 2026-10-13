@@ -31,7 +31,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 9 0 R >> >> /Contents 6 0 R >>
 endobj
 6 0 obj
-<< /Length 485 >>
+<< /Length 501 >>
 stream
 BT
 /F1 12 Tf
@@ -44,8 +44,9 @@ BT
 (a model has millions of parameters.) Tj T*
 () Tj T*
 (Quasi-Newton methods such as BFGS build an approximation of the) Tj T*
-(inverse Hessian from successive gradient differences. L-BFGS keeps) Tj T*
-(only the last few difference pairs, so memory grows linearly in n.) Tj T*
+(inverse Hessian from successive steps and gradient differences.) Tj T*
+(L-BFGS keeps only the last few of these pairs, so memory grows) Tj T*
+(linearly in n.) Tj T*
 ET
 endstream
 endobj
@@ -80,11 +81,11 @@ xref
 0000000253 00000 n 
 0000000776 00000 n 
 0000000902 00000 n 
-0000001438 00000 n 
-0000001564 00000 n 
-0000001961 00000 n 
+0000001454 00000 n 
+0000001580 00000 n 
+0000001977 00000 n 
 trailer
 << /Size 10 /Root 1 0 R >>
 startxref
-2031
+2047
 %%EOF

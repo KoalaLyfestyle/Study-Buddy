@@ -35,8 +35,9 @@ PAGES = [
         "a model has millions of parameters.",
         "",
         "Quasi-Newton methods such as BFGS build an approximation of the",
-        "inverse Hessian from successive gradient differences. L-BFGS keeps",
-        "only the last few difference pairs, so memory grows linearly in n.",
+        "inverse Hessian from successive steps and gradient differences.",
+        "L-BFGS keeps only the last few of these pairs, so memory grows",
+        "linearly in n.",
     ],
     [
         "Line search",

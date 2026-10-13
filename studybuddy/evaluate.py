@@ -152,6 +152,26 @@ def run(args) -> dict:
                 )
             return [h.chunk_id for h in hits]
 
+        # Cold: a fresh embedder, library handle, and lexical index, then one query,
+        # before anything else has run. Includes model load and index build.
+        cold = {}
+        for method in METHODS:
+            t0 = time.perf_counter()
+            fresh_embedder = _fresh(embedder)
+            fresh = Library(course, Path(tmp) / "index", fresh_embedder)
+            fresh_lexical = retrieval.LexicalIndex(fresh) if method != "dense" else None
+            q = queries[0]
+            if method == "dense":
+                retrieval.dense(fresh, q.query, 10)
+            elif method == "bm25":
+                fresh_lexical.bm25(q.query, 10)
+            elif method == "tfidf":
+                fresh_lexical.tfidf(q.query, 10)
+            else:
+                retrieval.hybrid(fresh, fresh_lexical, q.query, 10)
+            cold[method] = round((time.perf_counter() - t0) * 1000, 2)
+            fresh.close()
+
         # Tune hybrid on the tune split only.
         tune = [q for q in queries if q.split == "tune" and q.relevant]
         grid = []
@@ -165,17 +185,17 @@ def run(args) -> dict:
         best = max(grid, key=lambda g: (g["tune_mrr@10"], -g["c"], g["depth"]))
         hybrid_c, hybrid_depth = best["c"], best["depth"]
 
-        # Latency: cold is the first query after the indexes are built; warm is the median of repeats.
+        # Warm: median over repeated passes with everything loaded.
         latency = {}
         for method in METHODS:
             times = []
-            for i, q in enumerate(queries * args.repeat):
+            for q in queries * args.repeat:
                 t0 = time.perf_counter()
                 retrieve(method, q, 10, hybrid_c, hybrid_depth)
                 times.append(time.perf_counter() - t0)
             latency[method] = {
-                "cold_ms": round(times[0] * 1000, 2),
-                "warm_median_ms": round(statistics.median(times[1:]) * 1000, 3),
+                "cold_ms": cold[method],
+                "warm_median_ms": round(statistics.median(times) * 1000, 3),
             }
 
         per_query = []
@@ -283,6 +303,13 @@ def run(args) -> dict:
     return summary
 
 
+def _fresh(embedder: Embedder) -> Embedder:
+    """A new instance of the same embedder, so a cold run reloads the model."""
+    if isinstance(embedder, HashingEmbedder):
+        return HashingEmbedder(embedder.dim)
+    return _named(embedder.model_name)
+
+
 def _named(name: str) -> Embedder:
     from .embeddings import SentenceTransformerEmbedder
 
@@ -331,7 +358,17 @@ def render_report(s: dict) -> str:
     d = s["decision"]
     lines += [
         "",
-        "Dense build time includes parsing and importing; BM25 and TF-IDF are built together from the imported chunks.",
+        "Notes on the columns:",
+        "",
+        "- Build: dense includes parsing and importing; BM25 and TF-IDF are built together from the imported chunks.",
+        "- Index size: dense counts the stored float32 vectors; BM25 counts the whole in-memory FTS5 database,",
+        "  which holds its own copy of the chunk text; TF-IDF is an estimate for sparse storage (8 bytes per",
+        "  non-zero entry). Treat them as orders of magnitude.",
+        "- Cold: a fresh embedder, library handle, and lexical index plus one query, measured before any other",
+        "  query runs. With the real model this includes loading it. Warm: median over repeated passes.",
+        "- Unanswerable with no result: dense and hybrid always return their top k, so they score 0 here",
+        "  by design. Lexical methods return nothing only when no query term appears in the corpus.",
+        "  None of the methods has a calibrated score threshold yet.",
         "",
         "## Decision",
         "",
@@ -340,7 +377,11 @@ def render_report(s: dict) -> str:
         f"- Hybrid minus best single, held-out MRR@10: {d['hybrid_minus_best_mrr@10']:+.3f} "
         f"(hybrid better on {d['hybrid_wins_losses_vs_best'][0]} queries, worse on {d['hybrid_wins_losses_vs_best'][1]}).",
         f"- Rule: {d['rule']}.",
-        f"- **Adopt hybrid: {'yes' if d['adopt_hybrid'] else 'no'}.**",
+        (
+            f"- **Adopt hybrid: {'yes' if d['adopt_hybrid'] else 'no'}.**"
+            if s["semantic"]
+            else "- **Not decided: this run has no semantic embedder.** The BM25 and TF-IDF rows do not depend on the embedder."
+        ),
         "",
         "Per-query misses are in `failures.jsonl`; every ranking is in `per_query.json`.",
         "",
