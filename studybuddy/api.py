@@ -18,6 +18,8 @@ SNIPPET_CHARS = 300
 MAX_READ_CHARS = 4000
 MAX_OUTLINE_ITEMS = 50
 MAX_QUERY_CHARS = 500
+MAX_COURSES = 100
+MAX_FAILURES = 20
 KINDS = sorted(set(SUPPORTED_SUFFIXES.values()))
 
 SearchFn = Callable[..., list[SearchResult]]
@@ -43,7 +45,13 @@ def _snippet(text: str, limit: int = SNIPPET_CHARS) -> str:
 
 def list_courses(library: Library) -> dict:
     """Courses with their weeks and file counts, plus files that failed to import."""
-    return {"courses": library.courses(), "failed_files": library.failures()}
+    courses = library.courses()
+    failures = sorted(library.failures().items())
+    return {
+        "courses": courses[:MAX_COURSES],
+        "failed_files": {path: (error or "")[:200] for path, error in failures[:MAX_FAILURES]},
+        "truncated": len(courses) > MAX_COURSES or len(failures) > MAX_FAILURES,
+    }
 
 
 def search_materials(
@@ -53,8 +61,13 @@ def search_materials(
     course: str | None = None,
     week: int | None = None,
     kind: str | None = None,
+    full_text: bool = False,
 ) -> dict:
-    """Ranked passages with snippets and citations. Filters apply before ranking."""
+    """Ranked passages with snippets and citations. Filters apply before ranking.
+
+    full_text adds each passage's whole text (the agent quotes it; the MCP
+    server leaves it out and offers read_source instead).
+    """
     query = (query or "").strip()
     if not query:
         raise ValueError("query must not be empty")
@@ -73,6 +86,7 @@ def search_materials(
                 "score": round(r.score, 4),
                 "snippet": _snippet(r.text),
                 "citation": citation_dict(r),
+                **({"text": r.text[:MAX_READ_CHARS]} if full_text else {}),
             }
             for r in results
         ],
@@ -105,7 +119,9 @@ def get_week_context(library: Library, course: str, week: int | None) -> dict:
     if not items:
         known = {c["course"]: c["weeks"] for c in library.courses()}
         if course not in known:
-            raise ValueError(f"unknown course {course!r}; known: {', '.join(sorted(known)) or 'none'}")
+            if not known:
+                raise ValueError("the library is empty; import a course folder first: python -m studybuddy import <folder>")
+            raise ValueError(f"unknown course {course!r}; known: {', '.join(sorted(known))}")
         raise ValueError(f"course {course!r} has no material for week {week}; weeks: {known[course]}")
     return {
         "course": course,

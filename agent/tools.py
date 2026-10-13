@@ -1,11 +1,12 @@
 from rag import EmptyLibraryError, last_refresh_error, search
+from studybuddy import api
 
 
 def search_notes(query: str) -> str:
     """Search the course library. Each result names its source location."""
     try:
-        results = search(query, k=4)
-    except EmptyLibraryError as exc:
+        results = api.search_materials(search, query, k=4, full_text=True)["results"]
+    except (EmptyLibraryError, ValueError) as exc:
         return str(exc)
     note = ""
     if last_refresh_error() is not None:
@@ -15,7 +16,7 @@ def search_notes(query: str) -> str:
         )
     if not results:
         return note + "No matching passages found in the course library."
-    return note + "\n\n".join(f"[{r.citation.label()}]\n{r.text}" for r in results)
+    return note + "\n\n".join(f"[{r['citation']['label']}]\n{r['text']}" for r in results)
 
 
 def quiz_me(topic: str) -> str:

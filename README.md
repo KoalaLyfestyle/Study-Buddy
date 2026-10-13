@@ -113,8 +113,11 @@ python -m studybuddy search "why does convexity matter"
 | `read_source` | The full text of one passage by chunk ID, 4,000 characters per call |
 | `get_week_context` | Every passage in one course week, in reading order, with citations and short snippets |
 
-The tools only read and search; none calls a generation model. Search uses the local
-embedder and refreshes the index from `STUDYBUDDY_DATA_DIR` first.
+The tools only read and search; none calls a generation model. `search_materials` uses the
+local embedder and refreshes the index from `STUDYBUDDY_DATA_DIR` first; if that refresh fails,
+it answers from the last good index and adds a `warning`. The other tools read the index as it
+is (they import only when it is empty), so run a search or `python -m studybuddy import` after
+adding files.
 
 Example for Claude Desktop (`claude_desktop_config.json`); use absolute paths:
 
@@ -124,8 +127,8 @@ Example for Claude Desktop (`claude_desktop_config.json`); use absolute paths:
     "study-buddy": {
       "command": "/path/to/Study-Buddy/.venv/bin/python",
       "args": ["-m", "studybuddy.mcp_server"],
-      "cwd": "/path/to/Study-Buddy",
       "env": {
+        "PYTHONPATH": "/path/to/Study-Buddy",
         "STUDYBUDDY_DATA_DIR": "/path/to/your/courses",
         "STUDYBUDDY_INDEX_DIR": "/path/to/Study-Buddy/.studybuddy"
       }
@@ -134,8 +137,9 @@ Example for Claude Desktop (`claude_desktop_config.json`); use absolute paths:
 }
 ```
 
-The CLI prints the same JSON: `python -m studybuddy courses`, `python -m studybuddy read <chunk_id>`,
-and `python -m studybuddy week <course> <week>`.
+All three front ends share `studybuddy/api.py`: the MCP tools return its JSON, the CLI prints it
+(`python -m studybuddy courses`, `read <chunk_id>`, `week <course> <week>`, and `search`), and the
+agent's `Search_Notes` tool formats its search results for the chat.
 
 ## Comparing retrieval methods
 
@@ -178,7 +182,7 @@ python -m pytest
 
 ## Layout
 
-- `studybuddy/` - import, chunking, embeddings, library, retrieval methods, evaluation, the CLI, and the MCP server (`api.py` holds the functions both call)
+- `studybuddy/` - import, chunking, embeddings, library, retrieval methods, evaluation, the CLI, and the MCP server (`api.py` holds the functions the CLI, MCP server, and agent call)
 - `rag.py` - opens the library for the agent and the app
 - `agent/` - LangChain ReAct agent and its tools
 - `app.py` - Streamlit UI

@@ -30,17 +30,28 @@ def _data(result):
 async def _session_run(tmp_path, steps):
     course = tmp_path / "course"
     shutil.copytree(ROOT / "sample_course", course)
+    # A file outside any week folder.
+    (course / "intro-to-optimisation" / "syllabus.md").write_text("# Syllabus\n\nFive weeks of optimisation.\n")
     env = {
         **os.environ,
         "STUDYBUDDY_DATA_DIR": str(course),
         "STUDYBUDDY_INDEX_DIR": str(tmp_path / "index"),
         "STUDYBUDDY_EMBEDDER": "hashing",
     }
-    params = StdioServerParameters(command=sys.executable, args=["-m", "studybuddy.mcp_server"], env=env, cwd=str(ROOT))
-    async with stdio_client(params) as (read, write):
-        async with ClientSession(read, write) as session:
-            await session.initialize()
-            return await steps(session)
+    # Run from another folder with PYTHONPATH, as the README's client config does.
+    env["PYTHONPATH"] = str(ROOT)
+    params = StdioServerParameters(
+        command=sys.executable, args=["-m", "studybuddy.mcp_server"], env=env, cwd=str(tmp_path)
+    )
+
+    async def session_run():
+        async with stdio_client(params) as (read, write):
+            async with ClientSession(read, write) as session:
+                await session.initialize()
+                return await steps(session)
+
+    # Fail instead of hanging if the server stops answering.
+    return await asyncio.wait_for(session_run(), timeout=60)
 
 
 def test_client_discovers_tools_and_gets_cited_answers(tmp_path):
@@ -65,13 +76,16 @@ def test_client_discovers_tools_and_gets_cited_answers(tmp_path):
         assert passage["next_offset"] is None
 
         courses = _data(await session.call_tool("list_courses", {}))
-        assert courses["courses"] == [{"course": "intro-to-optimisation", "files": 3, "weeks": [1, 2]}]
+        assert courses["courses"] == [{"course": "intro-to-optimisation", "files": 4, "weeks": [1, 2]}]
 
         week = _data(await session.call_tool("get_week_context", {"course": "intro-to-optimisation", "week": 1}))
         assert week["total_passages"] >= 5 and not week["truncated"]
         assert {p["citation"]["path"].rsplit("/", 1)[1] for p in week["passages"]} == {
             "notes.md", "gradient-descent-lab.ipynb"
         }
+
+        loose = _data(await session.call_tool("get_week_context", {"course": "intro-to-optimisation"}))
+        assert [p["citation"]["path"] for p in loose["passages"]] == ["intro-to-optimisation/syllabus.md"]
 
         bad = await session.call_tool("read_source", {"chunk_id": "nope"})
         assert bad.isError and "no passage with id" in bad.content[0].text

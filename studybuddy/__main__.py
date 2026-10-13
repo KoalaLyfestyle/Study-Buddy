@@ -67,10 +67,11 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "week":
             print(json.dumps(api.get_week_context(library, args.course, args.week), indent=2))
             return 0
-        results = library.search(args.query, k=args.k, course=args.course, week=args.week, kind=args.kind)
-        for r in results:
-            snippet = " ".join(r.text.split())[:200]
-            print(f"[{r.score:.3f}] {r.citation.label()}  ({r.chunk_id})\n    {snippet}")
+        found = api.search_materials(
+            library.search, args.query, k=args.k, course=args.course, week=args.week, kind=args.kind
+        )
+        for r in found["results"]:
+            print(f"[{r['score']:.3f}] {r['citation']['label']}  ({r['chunk_id']})\n    {r['snippet']}")
         return 0
     except EmptyLibraryError as exc:
         print(exc, file=sys.stderr)

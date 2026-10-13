@@ -10,16 +10,14 @@ No tool calls a generation model.
 
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
+from anyio import to_thread
 from mcp.server.fastmcp import FastMCP
 
-# rag.py lives at the repository root, next to this package.
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-import rag  # noqa: E402
+# rag.py lives at the repository root: run from there, or put the
+# repository root on PYTHONPATH (see the README).
+import rag
 
-from . import api  # noqa: E402
+from . import api
 
 mcp = FastMCP(
     "study-buddy",
@@ -38,33 +36,50 @@ def _library():
     return library
 
 
+# Tools run in a worker thread: the first search may load the embedding
+# model, and the server must keep answering pings and cancels meanwhile.
+
+
 @mcp.tool()
-def list_courses() -> dict:
+async def list_courses() -> dict:
     """List imported courses with their weeks and file counts."""
-    return api.list_courses(_library())
+    return await to_thread.run_sync(lambda: api.list_courses(_library()))
+
+
+def _search(query, k, course, week, kind) -> dict:
+    found = api.search_materials(rag.search, query, k=k, course=course, week=week, kind=kind)
+    if rag.last_refresh_error() is not None:
+        found["warning"] = (
+            f"Could not refresh the course library ({rag.last_refresh_error()}). "
+            "These results come from the last successful import."
+        )
+    return found
 
 
 @mcp.tool()
-def search_materials(
+async def search_materials(
     query: str, k: int = 5, course: str | None = None, week: int | None = None, kind: str | None = None
 ) -> dict:
     """Search course material. Returns up to 10 passages with chunk IDs, snippets, and citations.
 
     Optional filters: course name, week number, and kind (pdf, markdown, notebook).
     """
-    return api.search_materials(rag.search, query, k=k, course=course, week=week, kind=kind)
+    return await to_thread.run_sync(lambda: _search(query, k, course, week, kind))
 
 
 @mcp.tool()
-def read_source(chunk_id: str, offset: int = 0) -> dict:
+async def read_source(chunk_id: str, offset: int = 0) -> dict:
     """Read the full text of one passage by chunk ID, 4000 characters at a time."""
-    return api.read_source(_library(), chunk_id, offset=offset)
+    return await to_thread.run_sync(lambda: api.read_source(_library(), chunk_id, offset=offset))
 
 
 @mcp.tool()
-def get_week_context(course: str, week: int) -> dict:
-    """List every passage in one course week, in reading order, with citations and short snippets."""
-    return api.get_week_context(_library(), course, week)
+async def get_week_context(course: str, week: int | None = None) -> dict:
+    """List every passage in one course week, in reading order, with citations and short snippets.
+
+    Leave week out for files that are not in a week folder.
+    """
+    return await to_thread.run_sync(lambda: api.get_week_context(_library(), course, week))
 
 
 def main() -> None:
