@@ -1,0 +1,7 @@
+# Sample course: Intro to optimisation
+
+A tiny, original course used by the tests and the quick start. It is not
+lecture material from any real course.
+
+Layout: one folder per course, one `week-NN` folder per week. Study Buddy
+reads the course and week from these folder names.
