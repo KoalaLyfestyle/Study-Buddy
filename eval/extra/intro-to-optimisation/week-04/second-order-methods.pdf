@@ -1,0 +1,91 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 5 0 R 7 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 9 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 472 >>
+stream
+BT
+/F1 12 Tf
+16 TL
+72 720 Td
+(Week 4 lecture: second-order methods) Tj T*
+() Tj T*
+(Newton's method uses curvature as well as slope. Each step solves) Tj T*
+(H\(x\) d = -grad f\(x\) for the direction d and moves to x + d, where) Tj T*
+(H is the Hessian matrix of second derivatives.) Tj T*
+() Tj T*
+(Near a minimum with a positive definite Hessian, Newton's method) Tj T*
+(converges quadratically: the number of correct digits roughly) Tj T*
+(doubles every step.) Tj T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 9 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 501 >>
+stream
+BT
+/F1 12 Tf
+16 TL
+72 720 Td
+(The cost of curvature) Tj T*
+() Tj T*
+(Forming the Hessian takes n^2 entries and solving the linear) Tj T*
+(system takes about n^3 operations, which is too expensive when) Tj T*
+(a model has millions of parameters.) Tj T*
+() Tj T*
+(Quasi-Newton methods such as BFGS build an approximation of the) Tj T*
+(inverse Hessian from successive steps and gradient differences.) Tj T*
+(L-BFGS keeps only the last few of these pairs, so memory grows) Tj T*
+(linearly in n.) Tj T*
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 9 0 R >> >> /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 346 >>
+stream
+BT
+/F1 12 Tf
+16 TL
+72 720 Td
+(Line search) Tj T*
+() Tj T*
+(Instead of a fixed step, a backtracking line search starts with a) Tj T*
+(full step and halves it until the Armijo condition holds:) Tj T*
+(f\(x + t d\) <= f\(x\) + c t grad f\(x\)^T d, with c around 1e-4.) Tj T*
+(This guarantees enough decrease without tuning a learning rate.) Tj T*
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000127 00000 n 
+0000000253 00000 n 
+0000000776 00000 n 
+0000000902 00000 n 
+0000001454 00000 n 
+0000001580 00000 n 
+0000001977 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+2047
+%%EOF
