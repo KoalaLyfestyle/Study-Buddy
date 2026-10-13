@@ -102,6 +102,41 @@ python -m studybuddy import sample_course
 python -m studybuddy search "why does convexity matter"
 ```
 
+## Use it from Claude or another MCP client
+
+`python -m studybuddy.mcp_server` serves the library over MCP (stdio). It has four tools:
+
+| Tool | Returns |
+|---|---|
+| `list_courses` | Courses with their weeks and file counts, and files that failed to import |
+| `search_materials` | Up to 10 passages: chunk ID, score, a 300-character snippet, and a citation (path, page or cell, label). Filters: `course`, `week`, `kind` (`pdf`, `markdown`, `notebook`) |
+| `read_source` | The full text of one passage by chunk ID, 4,000 characters per call |
+| `get_week_context` | Every passage in one course week, in reading order, with citations and short snippets |
+
+The tools only read and search; none calls a generation model. Search uses the local
+embedder and refreshes the index from `STUDYBUDDY_DATA_DIR` first.
+
+Example for Claude Desktop (`claude_desktop_config.json`); use absolute paths:
+
+```json
+{
+  "mcpServers": {
+    "study-buddy": {
+      "command": "/path/to/Study-Buddy/.venv/bin/python",
+      "args": ["-m", "studybuddy.mcp_server"],
+      "cwd": "/path/to/Study-Buddy",
+      "env": {
+        "STUDYBUDDY_DATA_DIR": "/path/to/your/courses",
+        "STUDYBUDDY_INDEX_DIR": "/path/to/Study-Buddy/.studybuddy"
+      }
+    }
+  }
+}
+```
+
+The CLI prints the same JSON: `python -m studybuddy courses`, `python -m studybuddy read <chunk_id>`,
+and `python -m studybuddy week <course> <week>`.
+
 ## Comparing retrieval methods
 
 `python -m studybuddy.evaluate` compares four ways to search the same chunks:
@@ -143,7 +178,7 @@ python -m pytest
 
 ## Layout
 
-- `studybuddy/` - import, chunking, embeddings, library, retrieval methods, evaluation, and the CLI
+- `studybuddy/` - import, chunking, embeddings, library, retrieval methods, evaluation, the CLI, and the MCP server (`api.py` holds the functions both call)
 - `rag.py` - opens the library for the agent and the app
 - `agent/` - LangChain ReAct agent and its tools
 - `app.py` - Streamlit UI

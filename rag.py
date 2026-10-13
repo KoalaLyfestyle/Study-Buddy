@@ -55,7 +55,9 @@ def last_refresh_error():
     return _last_refresh_error
 
 
-def search(query: str, k: int = 4, course: str | None = None, week: int | None = None):
+def search(
+    query: str, k: int = 4, course: str | None = None, week: int | None = None, kind: str | None = None
+):
     """Refresh, then search. If the refresh fails but an index exists, search
     the last good index and record the error in last_refresh_error()."""
     global _last_refresh_error
@@ -67,7 +69,7 @@ def search(query: str, k: int = 4, course: str | None = None, week: int | None =
         if library.chunk_count() == 0:
             raise
         _last_refresh_error = exc
-    return library.search(query, k=k, course=course, week=week)
+    return library.search(query, k=k, course=course, week=week, kind=kind)
 
 
 def reset_index() -> None:

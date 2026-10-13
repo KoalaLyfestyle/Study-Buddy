@@ -1,11 +1,17 @@
-"""Command line: `python -m studybuddy import <folder>` and `python -m studybuddy search <query>`."""
+"""Command line: import, search, courses, read, and week.
+
+`courses`, `read`, and `week` print the same JSON the MCP server returns
+(studybuddy.api), so the two stay in step.
+"""
 
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import sys
 
+from . import api
 from .embeddings import default_embedder
 from .library import EmptyLibraryError, Library
 
@@ -31,25 +37,45 @@ def main(argv: list[str] | None = None) -> int:
     search.add_argument("-k", type=int, default=4)
     search.add_argument("--course")
     search.add_argument("--week", type=int)
+    search.add_argument("--kind", choices=api.KINDS)
+    sub.add_parser("courses", help="list imported courses (JSON)")
+    read = sub.add_parser("read", help="print one passage by chunk ID (JSON)")
+    read.add_argument("chunk_id")
+    read.add_argument("--offset", type=int, default=0)
+    week = sub.add_parser("week", help="list the passages of one course week (JSON)")
+    week.add_argument("course")
+    week.add_argument("week", type=int)
     args = parser.parse_args(argv)
 
     if args.embedder:
         os.environ["STUDYBUDDY_EMBEDDER"] = args.embedder
     embedder = default_embedder()
 
-    folder = args.folder
+    folder = getattr(args, "folder", None)
     library = Library(folder, args.index_dir, embedder)
     try:
         if args.command == "import":
             report = library.import_folder()
             print(report.summary())
             return 1 if report.failed else 0
-        results = library.search(args.query, k=args.k, course=args.course, week=args.week)
+        if args.command == "courses":
+            print(json.dumps(api.list_courses(library), indent=2))
+            return 0
+        if args.command == "read":
+            print(json.dumps(api.read_source(library, args.chunk_id, offset=args.offset), indent=2))
+            return 0
+        if args.command == "week":
+            print(json.dumps(api.get_week_context(library, args.course, args.week), indent=2))
+            return 0
+        results = library.search(args.query, k=args.k, course=args.course, week=args.week, kind=args.kind)
         for r in results:
             snippet = " ".join(r.text.split())[:200]
             print(f"[{r.score:.3f}] {r.citation.label()}  ({r.chunk_id})\n    {snippet}")
         return 0
     except EmptyLibraryError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    except ValueError as exc:
         print(exc, file=sys.stderr)
         return 2
     finally:

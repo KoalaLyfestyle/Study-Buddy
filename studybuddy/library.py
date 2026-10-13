@@ -340,6 +340,24 @@ class Library:
         order = np.argsort(-scores, kind="stable")[:k]
         return [self._result(rows[i], float(scores[i])) for i in order]
 
+    def outline(self, course: str, week: int | None) -> list[SearchResult]:
+        """Every chunk of one course week, in file and reading order. Score is 0."""
+        sql = (
+            "SELECT c.chunk_id, c.text, c.location, c.char_start, c.char_end, c.embedding, "
+            "f.relpath, f.doc_id, f.kind, f.course, f.week, f.sha256, f.status "
+            "FROM chunks c JOIN files f ON f.relpath = c.relpath WHERE f.course = ? AND c.embedder = ?"
+        )
+        params: list = [course, self.embedder.id]
+        if week is None:
+            sql += " AND f.week IS NULL"
+        else:
+            sql += " AND f.week = ?"
+            params.append(week)
+        sql += " ORDER BY f.relpath, c.rowid"
+        with self._lock:
+            rows = self.db.execute(sql, params).fetchall()
+        return [self._result(r, 0.0) for r in rows]
+
     def read_chunk(self, chunk_id: str) -> SearchResult | None:
         with self._lock:
             row = self.db.execute(
