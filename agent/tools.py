@@ -1,19 +1,22 @@
-from rag import get_retriever
+from rag import EmptyLibraryError, search
 
-def get_cached_retriever():
-    """Get the cached retriever instance."""
-    return get_retriever()
 
 def search_notes(query: str) -> str:
-    """Search your study notes with RAG."""
-    retriever = get_cached_retriever()
-    results = retriever.retrieve(query)
-    return "\n".join([r.text for r in results])
+    """Search the course library. Each result names its source location."""
+    try:
+        results = search(query, k=4)
+    except EmptyLibraryError as exc:
+        return str(exc)
+    if not results:
+        return "No matching passages found in the course library."
+    return "\n\n".join(f"[{r.citation.label()}]\n{r.text}" for r in results)
+
 
 def quiz_me(topic: str) -> str:
-    """Generate simple quiz questions."""
+    """Placeholder: returns a fixed template. It does not read your notes yet."""
     return f"Here are 3 practice questions about {topic}:\n1. ...?\n2. ...?\n3. ...?"
 
+
 def summarize(text: str) -> str:
-    """Summarize a chunk of text."""
+    """Placeholder: returns the first 200 characters. It does not summarise yet."""
     return f"Summary: {text[:200]}..."

@@ -1,67 +1,126 @@
 # Study Buddy
 
-A local AI study assistant that helps you interact with your notes using retrieval-augmented generation (RAG). Ask questions about your study materials, generate quiz questions, or get summaries.
+A local study assistant. It imports your course files, searches them, and
+answers with the source of each passage: the PDF page, the Markdown
+heading, or the notebook cell.
 
-## Features
+## What works today
 
-- Search through your study notes with natural language queries
-- Generate practice questions on specific topics
-- Summarize text content
-- Local LLM processing using Ollama (no API keys required)
-- Web interface built with Streamlit
+- **Import** a folder of PDF, Markdown, and Jupyter notebook files.
+  Notebooks are read as JSON. Their cells are never run and their outputs
+  are ignored.
+- **Incremental updates.** Importing again skips unchanged files. A changed
+  file is re-read and re-embedded on its own. A deleted file drops out of
+  search.
+- **Search with citations.** Every result carries the file path, course,
+  week, location (page, heading path, or cell ID), and character offsets,
+  plus the hash of the file it came from.
+- **Chat UI** (Streamlit) with a LangChain ReAct agent on a local Ollama
+  model. The agent calls the search tool and is told to cite sources.
+
+Placeholders: the agent's `Quiz_Generator` and `Summarizer` tools return a
+fixed template and the first 200 characters of the input. They do not use
+the model or your notes yet.
+
+## How retrieval works
+
+1. `studybuddy/sources.py` finds supported files and splits them into
+   sections: one per PDF page, one per Markdown heading, one per notebook
+   cell. The course is the top-level folder; the week comes from a
+   `week-NN` folder name.
+2. `studybuddy/chunking.py` cuts sections into chunks of up to 1,200
+   characters at paragraph breaks. Each chunk ID is a hash of the file
+   path, location, position, and text, so it stays the same across runs.
+3. `studybuddy/embeddings.py` embeds chunks with `BAAI/bge-small-en`
+   through sentence-transformers, run locally.
+4. `studybuddy/library.py` stores chunks and vectors in SQLite at
+   `.studybuddy/library.sqlite`. Each file has a cache key made from its
+   SHA-256 and the parser, chunker, and embedder versions. If any of them
+   changes, that file is rebuilt.
+5. Search ranks chunks by cosine similarity after applying course and week
+   filters.
+
+If a file fails to parse, the import reports it and keeps that file's last
+good records. If the import fails as a whole, for example because the
+embedding model cannot load, nothing is written and the previous index
+stays. The importer never writes to your course folder, so your own
+`notes.md` files are never replaced.
 
 ## Setup
 
-1. Install dependencies:
+Requires Python 3.12 and [Ollama](https://ollama.com) for the chat.
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+python3.12 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.lock     # exact versions; requirements.txt lists the direct ones
+ollama pull mistral
+```
 
-2. Install and start Ollama with the Mistral model:
+## Use
 
-   ```bash
-   # Install Ollama from https://ollama.ai
-   ollama pull mistral
-   ```
+Put your files in `data/`, one folder per course:
 
-3. Add your study materials to the `data/` directory as text files
+```
+data/
+  linear-algebra/
+    week-01/lecture.pdf
+    week-01/notes.md
+    week-02/lab.ipynb
+```
 
-4. Run the application:
-   ```bash
-   streamlit run app.py
-   ```
+Import and search from the command line:
 
-## Usage
+```bash
+python -m studybuddy import data
+python -m studybuddy search "eigenvalues of a symmetric matrix" --week 1
+```
 
-Once running, you can:
+Or start the chat app, which imports `data/` on the first question:
 
-- Ask questions about your notes: "What are the key concepts in machine learning?"
-- Request quiz questions: "Give me practice questions on linear algebra"
-- Get summaries: "Summarize this chapter on neural networks"
+```bash
+streamlit run app.py
+```
 
-The system uses a vector database to find relevant content from your notes and an AI agent to provide helpful responses.
+The first import downloads the embedding model once. To try everything
+offline, set `STUDYBUDDY_EMBEDDER=hashing`. That uses a lexical stand-in
+that needs no download; results are worse.
 
-## Architecture
+A small original sample course lives in `sample_course/`:
 
-- `app.py` - Streamlit web interface
-- `agent/` - LangChain agent and tools for note search, quiz generation, and summarization
-- `rag.py` - Vector store and retrieval system using LlamaIndex
-- `config.py` - LLM configuration for local Ollama models
-- `data/` - Directory for your study materials
+```bash
+python -m studybuddy import sample_course
+python -m studybuddy search "why does convexity matter"
+```
 
-## Requirements
+## Settings
 
-- Python 3.8+
-- Ollama running locally
-- At least 8GB RAM recommended for running local models
+| Variable | Default | Meaning |
+|---|---|---|
+| `STUDYBUDDY_DATA_DIR` | `./data` | Course folder the app imports |
+| `STUDYBUDDY_INDEX_DIR` | `./.studybuddy` | Where the index is stored |
+| `STUDYBUDDY_EMBEDDER` | `BAAI/bge-small-en` | A sentence-transformers model name, or `hashing` |
+
+## Tests
+
+The tests use the sample course and the offline embedder. They need no
+model download and no Ollama.
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
+## Layout
+
+- `studybuddy/` - import, chunking, embeddings, library, and the CLI
+- `rag.py` - opens the library for the agent and the app
+- `agent/` - LangChain ReAct agent and its tools
+- `app.py` - Streamlit UI
+- `config.py` - local Ollama model settings
+- `sample_course/` - original sample material for tests and demos
+- `scripts/make_sample_pdf.py` - regenerates the sample PDF
 
 ## Acknowledgements
 
-This project uses several open-source tools:
-
-- **LangChain** - AI agent framework and LLM orchestration
-- **LlamaIndex** - Vector store and document retrieval system
-- **Streamlit** - Web application framework
-- **Ollama** - Local LLM runtime (runs Mistral model)
-- **Hugging Face** - Text embedding models for semantic search
+LangChain, Streamlit, Ollama, sentence-transformers, pypdf, and the
+BAAI bge embedding models.

@@ -118,13 +118,17 @@ class SearchResult:
 
 
 class Library:
-    def __init__(self, source_dir: str | Path, index_dir: str | Path, embedder: Embedder):
-        self.source_dir = Path(source_dir).resolve()
+    def __init__(self, source_dir: str | Path | None, index_dir: str | Path, embedder: Embedder):
+        """source_dir None means: the folder this index was last imported from."""
         self.index_dir = Path(index_dir)
         self.embedder = embedder
         self.index_dir.mkdir(parents=True, exist_ok=True)
         self.db = sqlite3.connect(str(self.index_dir / "library.sqlite"), isolation_level=None)
         self.db.executescript(SCHEMA)
+        if source_dir is None:
+            row = self.db.execute("SELECT value FROM meta WHERE key='root'").fetchone()
+            source_dir = row[0] if row else "data"
+        self.source_dir = Path(source_dir).resolve()
 
     def close(self) -> None:
         self.db.close()

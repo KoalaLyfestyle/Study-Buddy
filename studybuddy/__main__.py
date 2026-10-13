@@ -27,7 +27,7 @@ def main(argv: list[str] | None = None) -> int:
     imp.add_argument("folder")
     search = sub.add_parser("search", help="search the imported library")
     search.add_argument("query")
-    search.add_argument("--folder", default=os.environ.get("STUDYBUDDY_DATA_DIR", "data"))
+    search.add_argument("--folder", default=None, help="default: the last imported folder")
     search.add_argument("-k", type=int, default=4)
     search.add_argument("--course")
     search.add_argument("--week", type=int)
