@@ -30,10 +30,10 @@ MRR@10 by query type:
 
 | Method | R@1 | R@3 | R@5 | R@10 | MRR@10 | nDCG@10 | Unanswerable with no result |
 |---|---|---|---|---|---|---|---|
-| dense | 0.50 | 0.61 | 0.66 | 0.81 | 0.693 | 0.677 | 0.00 |
-| bm25 | 0.65 | 0.80 | 0.86 | 0.90 | 0.814 | 0.819 | 0.00 |
-| tfidf | 0.60 | 0.80 | 0.80 | 0.82 | 0.774 | 0.767 | 0.33 |
-| hybrid | 0.61 | 0.76 | 0.86 | 0.89 | 0.823 | 0.794 | 0.00 |
+| dense | 0.50 | 0.60 | 0.65 | 0.80 | 0.693 | 0.673 | 0.00 |
+| bm25 | 0.65 | 0.79 | 0.87 | 0.90 | 0.814 | 0.822 | 0.00 |
+| tfidf | 0.60 | 0.79 | 0.79 | 0.81 | 0.774 | 0.763 | 0.33 |
+| hybrid | 0.61 | 0.75 | 0.85 | 0.87 | 0.823 | 0.788 | 0.00 |
 
 MRR@10 by query type:
 
@@ -48,10 +48,10 @@ MRR@10 by query type:
 
 | Method | Build (s) | Index size (bytes) | Cold query (ms) | Warm median (ms) |
 |---|---|---|---|---|
-| dense | 0.084 | 86016 | 1.29 | 0.321 |
-| bm25 | 0.003 | 36864 | 2.83 | 0.044 |
-| tfidf | 0.003 | 7280 | 3.09 | 0.023 |
-| hybrid | 0.087 | 122880 | 4.39 | 0.589 |
+| dense | 0.090 | 86016 | 1.49 | 0.325 |
+| bm25 | 0.004 | 36864 | 3.56 | 0.043 |
+| tfidf | 0.004 | 7280 | 3.92 | 0.023 |
+| hybrid | 0.094 | 122880 | 4.46 | 0.655 |
 
 Notes on the columns:
 
@@ -60,7 +60,8 @@ Notes on the columns:
   which holds its own copy of the chunk text; TF-IDF is an estimate for sparse storage (8 bytes per
   non-zero entry). Treat them as orders of magnitude.
 - Cold: a fresh embedder, library handle, and lexical index plus one query, measured before any other
-  query runs. With the real model this includes loading it. Warm: median over repeated passes.
+  query runs. With the real model this includes loading the weights, but not importing torch,
+  which the run has already done. Warm: median over repeated passes.
 - Unanswerable with no result: dense and hybrid always return their top k, so they score 0 here
   by design. Lexical methods return nothing only when no query term appears in the corpus.
   None of the methods has a calibrated score threshold yet.
