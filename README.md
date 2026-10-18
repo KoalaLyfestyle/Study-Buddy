@@ -16,6 +16,10 @@ heading, or the notebook cell.
   week, location (page, heading path, or cell ID), the character offsets
   of the chunk inside that page, section, or cell, and the hash of the
   file it came from.
+- **Study rooms.** `python -m studybuddy room <course> <week>` turns one
+  imported week into a single HTML page: setup, symbols, the source
+  passages, worked examples, common mistakes, a summary, and a quiz, each
+  linked to the passage it comes from. See [Study rooms](#study-rooms).
 - **Chat UI** (Streamlit) with a LangChain ReAct agent on a local Ollama
   model. The agent calls the search tool and is told to cite sources.
 
@@ -166,6 +170,43 @@ python -m studybuddy.evaluate --embedder hashing    # offline; dense is then not
   embedder, it beats the best single method on held-out MRR@10 by at least 0.05 without
   losing Recall@5. "BM25 is enough" is a valid outcome.
 
+## Study rooms
+
+```bash
+python -m studybuddy import sample_course
+python -m studybuddy room intro-to-optimisation 1
+# Open .studybuddy/rooms/intro-to-optimisation/week-01/index.html
+```
+
+- **Format.** A room is JSON checked against `studybuddy/room/schema.json`:
+  chapters (one per file) made of sections. Each section has a kind
+  (setup, symbols, explanation, worked example, common mistakes, quiz, or
+  summary), the chunk IDs it cites, and a provenance: `source` (quoted
+  from the cited passages) or `generated` (written by a model and only
+  supported by them). `coverage` maps every passage of the week to the
+  sections that use it, so you can see what a room leaves out.
+- **Builder.** The built-in builder (`extractive-v1`) uses no model. It
+  only quotes your files, so every section is `source`. Its quiz asks
+  which part of a file says a quoted sentence.
+- **Your own room JSON**, for example from a local model:
+  `python -m studybuddy room <course> <week> --from-json room.json`. It is
+  checked against the schema and the library (unknown citations,
+  duplicate IDs, quiz answers out of range, passages missing from
+  `coverage`). If it fails, the command lists each problem with its JSON
+  path, exits with code 2, and keeps the last good room.
+- **Stable IDs, progress, and edits.** Section IDs come from where a
+  passage lives (file, page, heading path, or notebook cell), not from its
+  text, so rebuilding after you edit your notes keeps them. Progress lives
+  in `progress.json` and your own text in `edits.json`, next to the room;
+  a rebuild never rewrites them. The page saves ticks and quiz answers in
+  the browser, and "Export progress" downloads them as `progress.json`.
+  `edits.json` maps a section ID to a new `title` or `blocks`.
+- **Safety.** All course text is escaped. Notebook code is shown as text
+  and never run.
+- **Browser check** (needs Playwright with Chromium):
+  `python scripts/check_room_page.py <room>/index.html` checks phone and
+  desktop widths, keyboard access, and that progress survives a reload.
+
 ## Settings
 
 | Variable | Default | Meaning |
@@ -187,6 +228,8 @@ python -m pytest
 ## Layout
 
 - `studybuddy/` - import, chunking, embeddings, library, retrieval methods, evaluation, the CLI, and the MCP server (`api.py` holds the functions the CLI, MCP server, and agent call)
+- `studybuddy/room/` - study rooms: the schema, the extractive builder, checks, progress and edits, and the HTML renderer
+- `scripts/check_room_page.py` - browser check for a built study room
 - `rag.py` - opens the library for the agent and the app
 - `agent/` - LangChain ReAct agent and its tools
 - `app.py` - Streamlit UI

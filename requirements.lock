@@ -107,6 +107,7 @@ jsonpointer==3.2.1
     # via jsonpatch
 jsonschema==4.26.0
     # via
+    #   -r requirements.txt
     #   altair
     #   mcp
 jsonschema-specifications==2025.9.1
