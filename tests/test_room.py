@@ -219,8 +219,145 @@ def test_citations_open_the_right_section_or_cell(library, tmp_path):
         assert "&lt;" not in anchor and "<pre><code>" in article
     lab_cell = next(s for s in sections(build_room(library, COURSE, 1)) if s["kind"] == "worked_example")
     chunk = library.read_chunk(lab_cell["cites"][0])
-    from studybuddy.room.render import anchor_for
+    from studybuddy.room.render import anchor_for, citation_keys
 
+    key = citation_keys(library, COURSE, 1)[(chunk.citation.relpath, json.dumps(chunk.citation.location, sort_keys=True))]
     page = (tmp_path / "room" / f"sources/{chunk.citation.doc_id}.html").read_text()
-    start = page.index(f'id="{anchor_for(chunk.citation.location)}"')
+    start = page.index(f'id="{anchor_for(key)}"')
     assert "def grad(x):" in page[start : page.index("</article>", start)]
+
+
+def _anchored_text(room_dir, href):
+    page, anchor = href.split("#")
+    target = (room_dir / page).read_text()
+    assert target.count(f'id="{anchor}"') == 1
+    start = target.index(f'id="{anchor}"')
+    return target[start : target.index("</article>", start)]
+
+
+def _links(html):
+    import re
+
+    return re.findall(r'<a href="(sources/[^"]+)">([^<]+)</a>', html)
+
+
+def test_repeated_headings_stay_separate_and_link_to_their_own_place(course, tmp_path):
+    week = course / COURSE / "week-03"
+    week.mkdir()
+    (week / "examples.md").write_text(
+        "# Topic\n\n## Example\n\nFirst example text.\n\n## Other\n\nOther text here.\n\n"
+        "## Example\n\nSecond example text.\n",
+        encoding="utf-8",
+    )
+    lib = Library(course, tmp_path / "idx", HashingEmbedder())
+    try:
+        lib.import_folder()
+        room = build_room(lib, COURSE, 3)
+        parts = [s for s in sections(room) if s["kind"] == "explanation"]
+        assert [s["title"] for s in parts] == ["Example", "Other", "Example"]
+        assert len({s["id"] for s in parts}) == 3
+        saved = save_room(lib, room, tmp_path / "room")
+        html = saved.html.read_text()
+        for part in parts:
+            article = html[html.index(f'<article id="{part["id"]}"') :]
+            href = _links(article)[0][0]
+            text = part["blocks"][0]["text"]
+            assert text in _anchored_text(tmp_path / "room", href)
+    finally:
+        lib.close()
+
+
+def _notebook(cells):
+    return json.dumps({"cells": cells, "metadata": {}, "nbformat": 4, "nbformat_minor": 4})
+
+
+def _md(text, cell_id=None):
+    cell = {"cell_type": "markdown", "metadata": {}, "source": [text]}
+    return cell | ({"id": cell_id} if cell_id else {})
+
+
+def _code(text, cell_id=None):
+    cell = {"cell_type": "code", "metadata": {}, "source": [text], "outputs": [], "execution_count": None}
+    return cell | ({"id": cell_id} if cell_id else {})
+
+
+def test_cells_without_ids_keep_their_ids_when_a_cell_is_added_elsewhere(course, tmp_path):
+    week = course / COURSE / "week-04"
+    week.mkdir()
+    lab = week / "old-lab.ipynb"
+    tail = [_md("## Part two\n\nNow the second part."), _code("y = 2")]
+    lab.write_text(_notebook([_md("# Old lab\n\nNo cell ids here."), _code("x = 1"), *tail]))
+    lib = Library(course, tmp_path / "idx", HashingEmbedder())
+    try:
+        lib.import_folder()
+        before = {s["title"]: s["id"] for s in sections(build_room(lib, COURSE, 4)) if s["kind"] == "worked_example"}
+        lab.write_text(
+            _notebook([_md("# Old lab\n\nNo cell ids here."), _code("x = 1"), _code("x2 = 3"), *tail])
+        )
+        lib.import_folder()
+        after = sections(build_room(lib, COURSE, 4))
+        code_ids = [s["id"] for s in after if s["kind"] == "worked_example"]
+        # "y = 2" moved from cell 4 to cell 5 but is under the same heading as before.
+        y_section = next(s for s in after if s["kind"] == "worked_example" and s["blocks"][0]["text"] == "y = 2")
+        assert y_section["id"] == before["Code, cell 4"]
+        assert len(set(code_ids)) == 3
+    finally:
+        lib.close()
+
+
+def test_duplicate_cell_ids_stay_separate(course, tmp_path):
+    week = course / COURSE / "week-05"
+    week.mkdir()
+    (week / "dup.ipynb").write_text(
+        _notebook([_md("# Dup lab\n\nTwo cells share an id.", "intro"), _code("a = 1", "same"), _code("b = 2", "same")])
+    )
+    lib = Library(course, tmp_path / "idx", HashingEmbedder())
+    try:
+        lib.import_folder()
+        room = build_room(lib, COURSE, 5)
+        code = [s for s in sections(room) if s["kind"] == "worked_example"]
+        assert [s["blocks"][0]["text"] for s in code] == ["a = 1", "b = 2"]
+        saved = save_room(lib, room, tmp_path / "room")
+        html = saved.html.read_text()
+        for part in code:
+            article = html[html.index(f'<article id="{part["id"]}"') :]
+            assert part["blocks"][0]["text"] in _anchored_text(tmp_path / "room", _links(article)[0][0])
+    finally:
+        lib.close()
+
+
+def test_cli_reports_a_missing_file_and_a_room_for_another_week(library, tmp_path, capsys):
+    index = str(library.index_dir)
+    library.close()
+    base = ["--embedder", "hashing", "--index-dir", index, "room", COURSE]
+    assert cli([*base, "1", "--from-json", str(tmp_path / "nope.json")]) == 2
+    assert "cannot read it" in capsys.readouterr().err
+    assert cli([*base, "1"]) == 0
+    capsys.readouterr()
+    week_one = room_dir_for(Path(index), COURSE, 1) / "room.json"
+    assert cli([*base, "2", "--from-json", str(week_one)]) == 2
+    assert "the file is for 'intro-to-optimisation' week 1" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("answers", [{"q-x": True}, {"q-x": -1}, {"q-x": "1"}])
+def test_bad_progress_answers_are_refused(library, tmp_path, answers):
+    room_dir = tmp_path / "room"
+    room_dir.mkdir()
+    (room_dir / "progress.json").write_text(json.dumps({"read": [], "answers": answers}))
+    with pytest.raises(RoomValidationError, match="answers"):
+        save_room(library, build_room(library, COURSE, 1), room_dir)
+
+
+def test_answers_past_the_last_choice_are_dropped(library, tmp_path):
+    room = build_room(library, COURSE, 1)
+    question = next(q for s in sections(room) for q in s.get("quiz", []))
+    room_dir = tmp_path / "room"
+    room_dir.mkdir()
+    (room_dir / "progress.json").write_text(json.dumps({"read": [], "answers": {question["id"]: 9}}))
+    html = save_room(library, room, room_dir).html.read_text()
+    assert question["id"] not in html.split('id="progress">')[1].split("</script>")[0]
+
+
+def test_course_names_that_look_alike_get_their_own_folders(tmp_path):
+    assert room_dir_for(tmp_path, "a b", 1) != room_dir_for(tmp_path, "a-b", 1)
+    assert room_dir_for(tmp_path, COURSE, 1) == tmp_path / "rooms" / COURSE / "week-01"

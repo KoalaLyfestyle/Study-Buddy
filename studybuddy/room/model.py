@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import tempfile
 from functools import lru_cache
 from pathlib import Path
@@ -37,13 +38,42 @@ def _validator() -> jsonschema.Draft202012Validator:
     return jsonschema.Draft202012Validator(schema)
 
 
-def location_key(location: dict) -> str:
-    """Where a passage lives, without line numbers: page, cell ID, or heading path."""
-    if "page" in location:
-        return f"page:{location['page']}"
-    if "cell_id" in location:
-        return f"cell:{location['cell_id']}"
-    return "h:" + " > ".join(location.get("headings", []))
+_MD_HEADING = re.compile(r"^ {0,3}#{1,6}\s+(.*?)\s*#*\s*$")
+
+
+def section_keys(parts: list[tuple[dict, str]]) -> list[str]:
+    """Stable keys for one file's sections, given in reading order as (location, text).
+
+    A key says where a section lives without line numbers: the page, the
+    notebook cell ID, or the Markdown heading path. A key that repeats in
+    the file (two "Example" headings under one parent, or two cells with
+    the same ID) gets "#2", "#3" by order. A notebook cell with no ID of
+    its own (older notebooks; sources.py falls back to "cell-<index>") is
+    keyed by the nearest Markdown heading above it instead, so inserting a
+    cell elsewhere does not change it.
+    """
+    keys: list[str] = []
+    counts: dict[str, int] = {}
+    heading = ""
+    for location, text in parts:
+        if "page" in location:
+            base = f"page:{location['page']}"
+        elif "cell_id" in location:
+            if location.get("cell_type") == "markdown":
+                first = text.strip().splitlines()[0] if text.strip() else ""
+                match = _MD_HEADING.match(first)
+                if match:
+                    heading = match.group(1)
+            if location["cell_id"] == f"cell-{location.get('cell_index')}":
+                base = f"cell-under:{heading}"
+            else:
+                base = f"cell:{location['cell_id']}"
+        else:
+            base = "h:" + " > ".join(location.get("headings", []))
+        n = counts.get(base, 0)
+        counts[base] = n + 1
+        keys.append(base if n == 0 else f"{base}#{n + 1}")
+    return keys
 
 
 def _pointer(path: Iterable) -> str:

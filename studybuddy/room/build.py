@@ -18,7 +18,7 @@ from collections import OrderedDict
 from pathlib import PurePosixPath
 
 from ..library import Library, SearchResult
-from .model import location_key, validate_room
+from .model import section_keys, validate_room
 
 BUILDER = "extractive-v1"
 
@@ -43,8 +43,16 @@ def _sentences(text: str) -> list[str]:
     return [s.strip() for s in _SENTENCE.split(flat) if s.strip()]
 
 
-def _stable_key(result: SearchResult) -> str:
-    return location_key(result.citation.location)
+def group_sections(results: list[SearchResult]) -> list[tuple[str, list[SearchResult]]]:
+    """One file's chunks grouped into its sections, each with its stable key."""
+    groups: list[list[SearchResult]] = []
+    for r in results:
+        if groups and groups[-1][0].citation.location == r.citation.location:
+            groups[-1].append(r)
+        else:
+            groups.append([r])
+    keys = section_keys([(g[0].citation.location, g[0].text) for g in groups])
+    return list(zip(keys, groups))
 
 
 def _blocks(texts: list[str], is_code_cell: bool) -> list[dict]:
@@ -172,12 +180,8 @@ def build_chapter(relpath: str, results: list[SearchResult]) -> dict:
     chapter_id = f"ch-{doc_id}"
     title = _chapter_title(relpath, results)
 
-    groups: OrderedDict[str, list[SearchResult]] = OrderedDict()
-    for r in results:
-        groups.setdefault(_stable_key(r), []).append(r)
-
     parts: list[dict] = []
-    for index, (key, members) in enumerate(groups.items()):
+    for index, (key, members) in enumerate(group_sections(results)):
         loc = members[0].citation.location
         is_code = loc.get("cell_type") == "code"
         blocks = _blocks([m.text for m in members], is_code)

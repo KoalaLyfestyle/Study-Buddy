@@ -9,6 +9,7 @@ a malformed one raises RoomValidationError and leaves the last good room.
 
 from __future__ import annotations
 
+import hashlib
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -36,6 +37,8 @@ __all__ = [
 
 def room_dir_for(index_dir: Path, course: str, week: int | None) -> Path:
     safe = re.sub(r"[^A-Za-z0-9._-]+", "-", course).strip(".-") or "course"
+    if safe != course:  # keep "a b" and "a-b" apart
+        safe += "-" + hashlib.sha256(course.encode("utf-8")).hexdigest()[:6]
     return Path(index_dir) / "rooms" / safe / (f"week-{week:02d}" if week is not None else "other")
 
 
@@ -56,8 +59,8 @@ class SavedRoom:
 def save_room(library: Library, room: dict, room_dir: Path) -> SavedRoom:
     """Check the room against the library, apply saved edits, and write it.
 
-    Everything is checked and rendered before anything is written, and each
-    file is replaced atomically, so a failure keeps the previous room.
+    Everything is checked and rendered before anything is written, so a bad
+    room or a bad edits.json keeps the previous room untouched.
     progress.json and edits.json are read, never rewritten.
     """
     validate_room(room, week_chunk_ids(library, room["course"], room["week"]))
@@ -66,10 +69,16 @@ def save_room(library: Library, room: dict, room_dir: Path) -> SavedRoom:
     html = render_room(merged, state, library)
     source_pages = render_source_pages(room, library)
     room_json, page = room_dir / "room.json", room_dir / "index.html"
+    # Each file is replaced atomically. room.json goes last: it is what marks
+    # a build as finished, so if an earlier write fails it still describes
+    # the previous room.
     for relname, text in sorted(source_pages.items()):
         write_atomic(room_dir / relname, text)
-    write_atomic(room_json, dumps(room))
     write_atomic(page, html)
+    write_atomic(room_json, dumps(room))
+    for stale in sorted((room_dir / "sources").glob("*.html")):
+        if f"sources/{stale.name}" not in source_pages:
+            stale.unlink()
     sections = [s for c in room["chapters"] for s in c["sections"]]
     return SavedRoom(
         room_json=room_json,

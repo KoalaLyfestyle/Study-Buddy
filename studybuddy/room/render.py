@@ -17,7 +17,8 @@ from pathlib import Path
 
 from .. import sources
 from ..library import Library
-from .model import location_key
+from .build import group_sections
+from .model import section_keys
 from .state import RoomState
 
 KIND_LABEL = {
@@ -61,7 +62,19 @@ SCRIPT = """
 (function () {
   var key = "studybuddy-room:" + document.body.dataset.room;
   var state = JSON.parse(document.getElementById("progress").textContent);
-  try { var saved = JSON.parse(localStorage.getItem(key) || "null"); if (saved) state = saved; } catch (e) {}
+  // Merge what this browser saved with progress.json: ticks from either, the browser's answers win.
+  try {
+    var saved = JSON.parse(localStorage.getItem(key) || "null");
+    if (saved && Array.isArray(saved.read)) {
+      saved.read.forEach(function (id) { if (typeof id === "string" && state.read.indexOf(id) < 0) state.read.push(id); });
+      state.read.sort();
+    }
+    if (saved && saved.answers && typeof saved.answers === "object") {
+      Object.keys(saved.answers).forEach(function (q) {
+        var v = saved.answers[q]; if (typeof v === "number" && v >= 0) state.answers[q] = v;
+      });
+    }
+  } catch (e) {}
   function save() { try { localStorage.setItem(key, JSON.stringify(state)); } catch (e) {} }
   function mark(id, on) {
     var link = document.querySelector('nav a[href="#' + id + '"]');
@@ -88,17 +101,35 @@ SCRIPT = """
 """
 
 
-def anchor_for(location: dict) -> str:
-    return "loc-" + hashlib.sha256(location_key(location).encode("utf-8")).hexdigest()[:12]
+def anchor_for(key: str) -> str:
+    """The HTML id of a section in its source page, from its stable key (model.section_keys)."""
+    return "loc-" + hashlib.sha256(key.encode("utf-8")).hexdigest()[:12]
 
 
-def _source_href(library: Library | None, relpath: str, doc_id: str, kind: str, location: dict) -> str | None:
+def _loc(location: dict) -> str:
+    return json.dumps(location, sort_keys=True)
+
+
+def citation_keys(library: Library, course: str, week: int | None) -> dict[tuple[str, str], str]:
+    """(relpath, location) of every passage of the week -> its section's stable key."""
+    by_file: dict[str, list] = {}
+    for r in library.outline(course, week):
+        by_file.setdefault(r.citation.relpath, []).append(r)
+    keys = {}
+    for relpath, results in by_file.items():
+        for key, members in group_sections(results):
+            keys[(relpath, _loc(members[0].citation.location))] = key
+    return keys
+
+
+def _source_href(library: Library | None, keys: dict, c) -> str | None:
     """PDFs open at the page. Markdown and notebooks open the source view at the section or cell."""
     if library is None or library.source_dir is None:
         return None
-    if kind == "pdf":
-        return f"{(Path(library.source_dir).resolve() / relpath).as_uri()}#page={location['page']}"
-    return f"sources/{doc_id}.html#{anchor_for(location)}"
+    if c.kind == "pdf":
+        return f"{(Path(library.source_dir).resolve() / c.relpath).as_uri()}#page={c.location['page']}"
+    key = keys.get((c.relpath, _loc(c.location)))
+    return f"sources/{c.doc_id}.html#{anchor_for(key)}" if key else f"sources/{c.doc_id}.html"
 
 
 def render_source_pages(room: dict, library: Library | None) -> dict[str, str]:
@@ -119,18 +150,16 @@ def render_source_pages(room: dict, library: Library | None) -> dict[str, str]:
         except (OSError, ValueError):
             continue
         doc_id = sources.doc_id_for(relpath)
-        parts, seen = [], set()
-        for section in parsed:
-            anchor = anchor_for(section.location)
+        parts = []
+        keys = section_keys([(section.location, section.text) for section in parsed])
+        for section, key in zip(parsed, keys):
             if "cell_id" in section.location:
                 where = f"Cell {section.location['cell_index'] + 1} ({section.location['cell_type']})"
             else:
                 where = " > ".join(section.location.get("headings", [])) or "Start"
                 where += f", line {section.location.get('line', 1)}"
-            ident = "" if anchor in seen else f' id="{anchor}"'
-            seen.add(anchor)
             parts.append(
-                f'<article{ident} tabindex="-1"><p class="meta">{escape(where)}</p>'
+                f'<article id="{anchor_for(key)}" tabindex="-1"><p class="meta">{escape(where)}</p>'
                 f"<pre><code>{escape(section.text)}</code></pre></article>"
             )
         pages[f"sources/{doc_id}.html"] = (
@@ -143,7 +172,7 @@ def render_source_pages(room: dict, library: Library | None) -> dict[str, str]:
     return pages
 
 
-def _cites_html(library: Library | None, chunk_ids: list[str]) -> str:
+def _cites_html(library: Library | None, keys: dict, chunk_ids: list[str]) -> str:
     items = []
     for chunk_id in chunk_ids:
         found = library.read_chunk(chunk_id) if library is not None else None
@@ -151,8 +180,7 @@ def _cites_html(library: Library | None, chunk_ids: list[str]) -> str:
             items.append(f"<li><code>{escape(chunk_id)}</code></li>")
             continue
         label = escape(found.citation.label())
-        c = found.citation
-        href = _source_href(library, c.relpath, c.doc_id, c.kind, c.location)
+        href = _source_href(library, keys, found.citation)
         link = f'<a href="{escape(href)}">{label}</a>' if href else label
         items.append(f'<li>{link} <span class="meta">({escape(chunk_id)})</span></li>')
     return '<div class="cites">Sources:<ul>' + "".join(items) + "</ul></div>"
@@ -192,6 +220,7 @@ def render_room(room: dict, state: RoomState | None = None, library: Library | N
     week = f"Week {room['week']}" if room["week"] is not None else "Other material"
     title = f"{room['course']}: {week}"
     room_key = f"{room['course']}/{room['week']}"
+    keys = citation_keys(library, room["course"], room["week"]) if library is not None else {}
 
     nav, body = [], []
     for chapter in room["chapters"]:
@@ -203,15 +232,18 @@ def render_room(room: dict, state: RoomState | None = None, library: Library | N
         articles = []
         for s in chapter["sections"]:
             sid = escape(s["id"])
-            badges = f'<span class="badge {s["provenance"]}">{"From the source" if s["provenance"] == "source" else "Generated"}</span>'
             if s.get("edited"):
-                badges += '<span class="badge edited">Edited by you</span>'
+                badges = '<span class="badge edited">Edited by you</span>'
+            elif s["provenance"] == "source":
+                badges = '<span class="badge source">From the source</span>'
+            else:
+                badges = '<span class="badge generated">Generated</span>'
             content = "".join(_block_html(b) for b in s["blocks"])
             content += "".join(_quiz_html(q) for q in s.get("quiz", []))
             articles.append(
                 f'<article id="{sid}" aria-labelledby="{sid}-h"><h3 id="{sid}-h">{escape(s["title"])}</h3>'
                 f'<div class="meta">{badges}{escape(KIND_LABEL[s["kind"]])}</div>{content}'
-                f"{_cites_html(library, s['cites'])}"
+                f"{_cites_html(library, keys, s['cites'])}"
                 f'<label class="done"><input type="checkbox" data-read="{sid}"> I have read this</label></article>'
             )
         body.append(

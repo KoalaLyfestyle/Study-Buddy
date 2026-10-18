@@ -50,8 +50,11 @@ def load_state(room_dir: Path) -> RoomState:
     answers = progress.get("answers", {})
     if not (isinstance(read, list) and all(isinstance(x, str) for x in read)):
         problems.append("progress.json/read: must be a list of section IDs")
-    if not (isinstance(answers, dict) and all(isinstance(v, int) for v in answers.values())):
-        problems.append("progress.json/answers: must map question IDs to choice numbers")
+    if not (
+        isinstance(answers, dict)
+        and all(isinstance(v, int) and not isinstance(v, bool) and v >= 0 for v in answers.values())
+    ):
+        problems.append("progress.json/answers: must map question IDs to choice numbers (0 or more)")
     for sid, edit in edits.items():
         if not isinstance(edit, dict) or set(edit) - {"title", "blocks"}:
             problems.append(f"edits.json/{sid}: only 'title' and 'blocks' can be edited")
@@ -68,11 +71,11 @@ def apply_state(room: dict, state: RoomState) -> tuple[dict, RoomState]:
     """
     merged = copy.deepcopy(room)
     section_ids: set[str] = set()
-    question_ids: set[str] = set()
+    choices: dict[str, int] = {}
     for chapter in merged["chapters"]:
         for section in chapter["sections"]:
             section_ids.add(section["id"])
-            question_ids.update(q["id"] for q in section.get("quiz", []))
+            choices.update({q["id"]: len(q["choices"]) for q in section.get("quiz", [])})
             edit = state.edits.get(section["id"])
             if edit:
                 section.update({k: copy.deepcopy(v) for k, v in edit.items()})
@@ -90,6 +93,8 @@ def apply_state(room: dict, state: RoomState) -> tuple[dict, RoomState]:
     orphans = sorted(
         {sid for sid in state.read if sid not in section_ids}
         | {sid for sid in state.edits if sid not in section_ids}
-        | {qid for qid in state.answers if qid not in question_ids}
+        | {qid for qid in state.answers if qid not in choices}
     )
-    return merged, RoomState(read=state.read, answers=state.answers, edits=state.edits, orphans=orphans)
+    # An answer past the last choice (the question changed) is treated like a missing one.
+    answers = {q: a for q, a in state.answers.items() if q not in choices or a < choices[q]}
+    return merged, RoomState(read=state.read, answers=answers, edits=state.edits, orphans=orphans)

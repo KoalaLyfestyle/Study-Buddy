@@ -196,16 +196,24 @@ python -m studybuddy room intro-to-optimisation 1
   path, exits with code 2, and keeps the last good room.
 - **Stable IDs, progress, and edits.** Section IDs come from where a
   passage lives (file, page, heading path, or notebook cell), not from its
-  text, so rebuilding after you edit your notes keeps them. Progress lives
+  text, so rebuilding after you edit your notes keeps them. A repeated
+  heading or cell ID is numbered by order. A notebook cell without an ID
+  (older notebooks) is placed by the nearest heading above it, so adding a
+  cell under another heading does not move it; adding one under the same
+  heading does. Progress lives
   in `progress.json` and your own text in `edits.json`, next to the room;
   a rebuild never rewrites them. The page saves ticks and quiz answers in
   the browser, and "Export progress" downloads them as `progress.json`.
   `edits.json` maps a section ID to a new `title` or `blocks`.
 - **Safety.** All course text is escaped. Notebook code is shown as text
   and never run.
+- **Screenshots** of the sample course's week 1 room:
+  [phone](docs/images/room-phone.png), [desktop](docs/images/room-desktop.png).
 - **Browser check** (needs Playwright with Chromium):
   `python scripts/check_room_page.py <room>/index.html` checks phone and
-  desktop widths, keyboard access, and that progress survives a reload.
+  desktop widths, keyboard access, that progress survives a reload and
+  exports, and that citations open their section. `--shots DIR` saves
+  screenshots; use it on the public sample course only.
 
 ## Settings
 

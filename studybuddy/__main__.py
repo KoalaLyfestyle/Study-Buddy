@@ -20,10 +20,15 @@ from .room import RoomValidationError, build_room, parse_room, room_dir_for, sav
 
 def _room(library: Library, args) -> int:
     if args.from_json:
-        with open(args.from_json, encoding="utf-8") as fh:
-            room = parse_room(fh.read(), week_chunk_ids(library, args.course, args.week))
+        try:
+            with open(args.from_json, encoding="utf-8") as fh:
+                text = fh.read()
+        except (OSError, UnicodeDecodeError) as exc:
+            raise RoomValidationError([f"{args.from_json}: cannot read it: {exc}"]) from None
+        room = parse_room(text)
         if (room["course"], room["week"]) != (args.course, args.week):
             raise RoomValidationError([f"/course, /week: the file is for {room['course']!r} week {room['week']}"])
+        room = parse_room(text, week_chunk_ids(library, args.course, args.week))
     else:
         room = build_room(library, args.course, args.week)
     out = room_dir_for(library.index_dir, args.course, args.week) if not args.out else Path(args.out)
