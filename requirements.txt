@@ -1,12 +1,12 @@
-streamlit
-langchain
-langchain-community
-langchain-ollama
-langchainhub
-llama-index-core
-chromadb
-ollama
-llama-index-embeddings-huggingface
-transformers
-torch
-# llama-index-readers-file # pdf loader
+# Direct dependencies, pinned. requirements.lock pins every transitive
+# package for Python 3.12 (regenerate with the command at its top).
+numpy==2.5.4
+pypdf==6.20.1
+# MCP server (python -m studybuddy.mcp_server)
+mcp==1.30.0
+# Agent and app
+streamlit==1.65.0
+langchain==0.3.30          # 1.x moved AgentExecutor out; stay on 0.3
+langchain-ollama==0.3.10
+# Local embedding model (BAAI/bge-small-en); pulls in torch and transformers
+sentence-transformers==6.1.0

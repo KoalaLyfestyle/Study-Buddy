@@ -1,0 +1,5 @@
+# Core and tests only: no torch, no model download.
+numpy==2.5.4
+pypdf==6.20.1
+pytest==9.1.1
+mcp==1.30.0              # MCP server and the tool-contract test's client

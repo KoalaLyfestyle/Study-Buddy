@@ -1,0 +1,9 @@
+[project]
+name = "study-buddy"
+version = "0.2.0"
+description = "Local study assistant: import course files and search them with citations."
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

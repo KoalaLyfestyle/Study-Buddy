@@ -6,3 +6,9 @@ data/*
 
 # macOS and hidden files
 .DS_Store
+# Study Buddy index
+.studybuddy/
+.pytest_cache/
+
+# Local virtual environment
+.venv/

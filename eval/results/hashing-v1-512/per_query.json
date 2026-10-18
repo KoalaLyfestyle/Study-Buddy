@@ -1,0 +1,2929 @@
+[
+ {
+  "id": "q01",
+  "type": "exact",
+  "split": "tune",
+  "query": "Karush-Kuhn-Tucker complementary slackness",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-02/lagrange-notes.md#Inequality constraints and KKT",
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-02/convexity-lecture.pdf#p1",
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-01/notes.md#Choosing the learning rate"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-02/lagrange-notes.md#Inequality constraints and KKT"
+    ],
+    "n_results": 1,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-02/lagrange-notes.md#Inequality constraints and KKT"
+    ],
+    "n_results": 1,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-02/lagrange-notes.md#Inequality constraints and KKT",
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-02/convexity-lecture.pdf#p1",
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-01/notes.md#Choosing the learning rate"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q02",
+  "type": "exact",
+  "split": "heldout",
+  "query": "Armijo condition backtracking line search",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-04/second-order-methods.pdf#p3",
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-05/adam-lab.ipynb#intro",
+     "week-01/gradient-descent-lab.ipynb#intro"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-04/second-order-methods.pdf#p3",
+     "week-02/lagrange-notes.md#Inequality constraints and KKT",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags"
+    ],
+    "n_results": 3,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-04/second-order-methods.pdf#p3"
+    ],
+    "n_results": 1,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-04/second-order-methods.pdf#p3",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-02/lagrange-notes.md#Inequality constraints and KKT",
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-05/adam-lab.ipynb#intro"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q03",
+  "type": "exact",
+  "split": "tune",
+  "query": "Nesterov look-ahead point",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules",
+     "week-03/momentum-lab.ipynb#cosine-schedule",
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-02/lagrange-notes.md#Equality constraints"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-02/lagrange-notes.md#Equality constraints",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-02/lagrange-notes.md#Geometric picture",
+     "week-04/sgd-notes.md#Noise is not all bad"
+    ],
+    "n_results": 6,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-02/lagrange-notes.md#Equality constraints",
+     "week-04/sgd-notes.md#Noise is not all bad"
+    ],
+    "n_results": 3,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-02/lagrange-notes.md#Equality constraints",
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-02/lagrange-notes.md#Geometric picture",
+     "week-02/convexity-lecture.pdf#p1"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q04",
+  "type": "exact",
+  "split": "heldout",
+  "query": "AdamW weight decay",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-04/sgd-notes.md#Weight decay",
+     "week-05/adaptive-methods.md#AdamW",
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-05/adam-lab.ipynb#lab5-takeaway"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.5,
+    "ndcg@10": 0.6309297535714575
+   },
+   "bm25": {
+    "top": [
+     "week-05/adaptive-methods.md#AdamW",
+     "week-04/sgd-notes.md#Weight decay",
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-05/adaptive-methods.md#RMSProp",
+     "week-04/sgd-notes.md#Early stopping"
+    ],
+    "n_results": 6,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-05/adaptive-methods.md#AdamW",
+     "week-04/sgd-notes.md#Weight decay",
+     "week-05/adaptive-methods.md#RMSProp",
+     "week-03/momentum-notes.md#Learning-rate schedules"
+    ],
+    "n_results": 4,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-05/adaptive-methods.md#AdamW",
+     "week-04/sgd-notes.md#Weight decay",
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-05/adaptive-methods.md#RMSProp"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q05",
+  "type": "exact",
+  "split": "tune",
+  "query": "cosine annealing warmup",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-05/adam-lab.ipynb#intro",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-03/momentum-lab.ipynb#cosine-schedule",
+     "week-04/second-order-methods.pdf#p2"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-03/momentum-lab.ipynb#cosine-schedule"
+    ],
+    "n_results": 2,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-03/momentum-lab.ipynb#cosine-schedule"
+    ],
+    "n_results": 2,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-03/momentum-lab.ipynb#cosine-schedule",
+     "week-05/adam-lab.ipynb#intro",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-04/second-order-methods.pdf#p2"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q06",
+  "type": "exact",
+  "split": "heldout",
+  "query": "L-BFGS memory",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-04/second-order-methods.pdf#p2",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-01/notes.md#Stopping",
+     "week-05/adaptive-methods.md#RMSProp",
+     "week-02/convexity-lecture.pdf#p1"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-04/second-order-methods.pdf#p2",
+     "week-02/lagrange-notes.md#Equality constraints"
+    ],
+    "n_results": 2,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-04/second-order-methods.pdf#p2",
+     "week-02/lagrange-notes.md#Equality constraints"
+    ],
+    "n_results": 2,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-04/second-order-methods.pdf#p2",
+     "week-02/lagrange-notes.md#Equality constraints",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-01/notes.md#Stopping",
+     "week-05/adaptive-methods.md#RMSProp"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q07",
+  "type": "exact",
+  "split": "tune",
+  "query": "epigraph convex set",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p1",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-04/sgd-notes.md#Minibatches"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p1",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-02/lagrange-notes.md#Week 2: Constrained optimisation",
+     "week-04/sgd-notes.md#Minibatches"
+    ],
+    "n_results": 8,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p1",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/sgd-notes.md#Minibatches",
+     "week-03/momentum-notes.md#Nesterov momentum"
+    ],
+    "n_results": 6,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p1",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-04/sgd-notes.md#Minibatches",
+     "week-03/momentum-notes.md#Nesterov momentum"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q08",
+  "type": "exact",
+  "split": "heldout",
+  "query": "RMSProp exponential moving average",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-05/adaptive-methods.md#RMSProp",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-05/adam-lab.ipynb#intro",
+     "week-05/adam-lab.ipynb#lab5-takeaway",
+     "week-05/adaptive-methods.md#AdaGrad"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-05/adaptive-methods.md#RMSProp",
+     "week-05/adam-lab.ipynb#lab5-takeaway",
+     "week-01/notes.md#The update rule",
+     "week-05/adaptive-methods.md#Adam",
+     "week-02/lagrange-notes.md#Geometric picture"
+    ],
+    "n_results": 6,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-05/adaptive-methods.md#RMSProp",
+     "week-02/lagrange-notes.md#Geometric picture",
+     "week-05/adaptive-methods.md#Adam"
+    ],
+    "n_results": 3,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-05/adaptive-methods.md#RMSProp",
+     "week-05/adam-lab.ipynb#lab5-takeaway",
+     "week-02/lagrange-notes.md#Geometric picture",
+     "week-05/adaptive-methods.md#Adam",
+     "week-01/notes.md#The update rule"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q09",
+  "type": "paraphrase",
+  "split": "tune",
+  "query": "why does my training loss blow up and bounce around",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-05/adam-lab.ipynb#intro",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-05/adaptive-methods.md#RMSProp"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.3333333333333333,
+    "recall@5": 0.3333333333333333,
+    "recall@10": 0.3333333333333333,
+    "mrr@10": 0.5,
+    "ndcg@10": 0.2960819109658652
+   },
+   "bm25": {
+    "top": [
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-03/momentum-lab.ipynb#lab3-takeaway"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.3333333333333333,
+    "recall@5": 0.6666666666666666,
+    "recall@10": 1.0,
+    "mrr@10": 0.3333333333333333,
+    "ndcg@10": 0.5642221110316635
+   },
+   "tfidf": {
+    "top": [
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-04/sgd-notes.md#Minibatches"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.3333333333333333,
+    "recall@5": 0.3333333333333333,
+    "recall@10": 0.3333333333333333,
+    "mrr@10": 0.5,
+    "ndcg@10": 0.2960819109658652
+   },
+   "hybrid": {
+    "top": [
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-05/adaptive-methods.md#AdamW"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.3333333333333333,
+    "recall@5": 0.3333333333333333,
+    "recall@10": 0.6666666666666666,
+    "mrr@10": 0.5,
+    "ndcg@10": 0.431733884398313
+   }
+  }
+ },
+ {
+  "id": "q10",
+  "type": "paraphrase",
+  "split": "heldout",
+  "query": "when should I stop running the optimiser",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-04/second-order-methods.pdf#p2",
+     "week-02/lagrange-notes.md#Geometric picture",
+     "week-03/momentum-lab.ipynb#lab3-takeaway",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-01/notes.md#Stopping"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.25,
+    "ndcg@10": 0.5012658353418871
+   },
+   "bm25": {
+    "top": [
+     "week-02/lagrange-notes.md#Week 2: Constrained optimisation",
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-01/notes.md#Stopping",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-02/convexity-lecture.pdf#p2"
+    ],
+    "n_results": 7,
+    "recall@1": 0.0,
+    "recall@3": 0.5,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.3333333333333333,
+    "ndcg@10": 0.5706417189553201
+   },
+   "tfidf": {
+    "top": [
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-01/notes.md#Stopping",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-03/momentum-notes.md#Heavy-ball momentum"
+    ],
+    "n_results": 4,
+    "recall@1": 0.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.5,
+    "ndcg@10": 0.6934264036172708
+   },
+   "hybrid": {
+    "top": [
+     "week-01/notes.md#Stopping",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-02/lagrange-notes.md#Week 2: Constrained optimisation",
+     "week-03/momentum-notes.md#Learning-rate schedules"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q11",
+  "type": "paraphrase",
+  "split": "tune",
+  "query": "how do I handle a condition that must hold exactly while minimising",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-02/lagrange-notes.md#Inequality constraints and KKT",
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-01/notes.md#Stopping",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-02/lagrange-notes.md#Geometric picture"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 0.0,
+    "mrr@10": 0.0,
+    "ndcg@10": 0.0
+   },
+   "bm25": {
+    "top": [
+     "week-02/lagrange-notes.md#Inequality constraints and KKT",
+     "week-04/second-order-methods.pdf#p3",
+     "week-01/gradient-descent-lab.ipynb#intro",
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-02/lagrange-notes.md#Equality constraints"
+    ],
+    "n_results": 7,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.2,
+    "ndcg@10": 0.38685280723454163
+   },
+   "tfidf": {
+    "top": [
+     "week-02/lagrange-notes.md#Inequality constraints and KKT",
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-04/second-order-methods.pdf#p3"
+    ],
+    "n_results": 3,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 0.0,
+    "mrr@10": 0.0,
+    "ndcg@10": 0.0
+   },
+   "hybrid": {
+    "top": [
+     "week-02/lagrange-notes.md#Inequality constraints and KKT",
+     "week-04/second-order-methods.pdf#p3",
+     "week-01/gradient-descent-lab.ipynb#intro",
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-02/lagrange-notes.md#Equality constraints"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.2,
+    "ndcg@10": 0.38685280723454163
+   }
+  }
+ },
+ {
+  "id": "q12",
+  "type": "paraphrase",
+  "split": "heldout",
+  "query": "why do local and global optima coincide for bowl-shaped functions",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p2",
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-02/lagrange-notes.md#Equality constraints",
+     "week-02/convexity-lecture.pdf#p1",
+     "week-04/second-order-methods.pdf#p2"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p2",
+     "week-02/convexity-lecture.pdf#p1",
+     "week-03/momentum-lab.ipynb#intro"
+    ],
+    "n_results": 3,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p2",
+     "week-02/convexity-lecture.pdf#p1"
+    ],
+    "n_results": 2,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p2",
+     "week-02/convexity-lecture.pdf#p1",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-02/lagrange-notes.md#Equality constraints"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q13",
+  "type": "paraphrase",
+  "split": "tune",
+  "query": "which penalty makes many parameters become exactly zero",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-03/momentum-lab.ipynb#intro",
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-03/momentum-lab.ipynb#rosenbrock-grad",
+     "week-02/lagrange-notes.md#Worked example",
+     "week-03/momentum-lab.ipynb#momentum-loop"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.5,
+    "ndcg@10": 0.6309297535714575
+   },
+   "bm25": {
+    "top": [
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-01/notes.md#The update rule",
+     "week-05/adaptive-methods.md#AdamW"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-01/notes.md#The update rule",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-04/second-order-methods.pdf#p2"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-01/notes.md#The update rule",
+     "week-03/momentum-lab.ipynb#momentum-loop"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q14",
+  "type": "paraphrase",
+  "split": "heldout",
+  "query": "estimating the slope from a small random subset of the data",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-01/notes.md#The update rule",
+     "week-02/lagrange-notes.md#Geometric picture",
+     "week-04/second-order-methods.pdf#p2",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-04/sgd-notes.md#Minibatches"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.2,
+    "ndcg@10": 0.38685280723454163
+   },
+   "bm25": {
+    "top": [
+     "week-04/sgd-notes.md#Minibatches",
+     "week-04/second-order-methods.pdf#p1",
+     "week-01/notes.md#The update rule",
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-01/notes.md#Choosing the learning rate"
+    ],
+    "n_results": 6,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-04/sgd-notes.md#Minibatches",
+     "week-04/second-order-methods.pdf#p1",
+     "week-01/notes.md#The update rule",
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-01/notes.md#Choosing the learning rate"
+    ],
+    "n_results": 6,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-01/notes.md#The update rule",
+     "week-04/sgd-notes.md#Minibatches",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-04/second-order-methods.pdf#p1",
+     "week-02/convexity-lecture.pdf#p2"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.5,
+    "ndcg@10": 0.6309297535714575
+   }
+  }
+ },
+ {
+  "id": "q15",
+  "type": "paraphrase",
+  "split": "tune",
+  "query": "why is using the full curvature matrix too costly for big models",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/second-order-methods.pdf#p1",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.14285714285714285,
+    "ndcg@10": 0.3333333333333333
+   },
+   "bm25": {
+    "top": [
+     "week-04/second-order-methods.pdf#p1",
+     "week-04/second-order-methods.pdf#p2",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-04/sgd-notes.md#Minibatches",
+     "week-04/sgd-notes.md#L1 and sparsity"
+    ],
+    "n_results": 9,
+    "recall@1": 0.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.5,
+    "ndcg@10": 0.6309297535714575
+   },
+   "tfidf": {
+    "top": [
+     "week-04/second-order-methods.pdf#p1",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-04/second-order-methods.pdf#p2",
+     "week-04/sgd-notes.md#Minibatches",
+     "week-02/convexity-lecture.pdf#p2"
+    ],
+    "n_results": 8,
+    "recall@1": 0.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.3333333333333333,
+    "ndcg@10": 0.5
+   },
+   "hybrid": {
+    "top": [
+     "week-04/second-order-methods.pdf#p1",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/second-order-methods.pdf#p2",
+     "week-04/sgd-notes.md#Minibatches"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.25,
+    "ndcg@10": 0.43067655807339306
+   }
+  }
+ },
+ {
+  "id": "q16",
+  "type": "paraphrase",
+  "split": "heldout",
+  "query": "method whose step size per parameter keeps shrinking because it adds up all past squared slopes",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-04/second-order-methods.pdf#p1",
+     "week-05/adaptive-methods.md#AdamW",
+     "week-05/adaptive-methods.md#RMSProp",
+     "week-03/momentum-notes.md#Learning-rate schedules"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.125,
+    "ndcg@10": 0.31546487678572877
+   },
+   "bm25": {
+    "top": [
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-04/second-order-methods.pdf#p1"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-05/adaptive-methods.md#AdamW",
+     "week-01/gradient-descent-lab.ipynb#intro",
+     "week-04/second-order-methods.pdf#p1"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-04/second-order-methods.pdf#p1",
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-05/adaptive-methods.md#AdamW"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.25,
+    "ndcg@10": 0.43067655807339306
+   }
+  }
+ },
+ {
+  "id": "q17",
+  "type": "paraphrase",
+  "split": "tune",
+  "query": "why does the path bounce from side to side in a narrow ravine",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-03/momentum-lab.ipynb#lab3-takeaway",
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-01/notes.md#The update rule",
+     "week-04/second-order-methods.pdf#p2"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-03/momentum-lab.ipynb#lab3-takeaway",
+     "week-03/momentum-lab.ipynb#intro"
+    ],
+    "n_results": 3,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-03/momentum-lab.ipynb#intro",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags"
+    ],
+    "n_results": 2,
+    "recall@1": 0.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.5,
+    "ndcg@10": 0.6309297535714575
+   },
+   "hybrid": {
+    "top": [
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-03/momentum-lab.ipynb#lab3-takeaway",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-01/notes.md#The update rule"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q18",
+  "type": "paraphrase",
+  "split": "heldout",
+  "query": "keeping a velocity so consistent directions accumulate",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-01/notes.md#Choosing the learning rate",
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-04/sgd-notes.md#Minibatches",
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-01/notes.md#Stopping"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 0.0,
+    "mrr@10": 0.0,
+    "ndcg@10": 0.0
+   },
+   "bm25": {
+    "top": [
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-02/lagrange-notes.md#Geometric picture",
+     "week-03/momentum-lab.ipynb#lab3-takeaway"
+    ],
+    "n_results": 9,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags"
+    ],
+    "n_results": 2,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-02/lagrange-notes.md#Geometric picture",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-04/second-order-methods.pdf#p2",
+     "week-05/adaptive-methods.md#AdaGrad"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q19",
+  "type": "equation",
+  "split": "tune",
+  "query": "theta = theta - learning_rate * grad(loss)(theta)",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-01/notes.md#The update rule",
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-01/notes.md#The update rule",
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-03/momentum-notes.md#Nesterov momentum"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-01/notes.md#The update rule",
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-04/sgd-notes.md#Weight decay",
+     "week-03/momentum-notes.md#Nesterov momentum"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-01/notes.md#The update rule",
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-04/sgd-notes.md#Weight decay"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q20",
+  "type": "equation",
+  "split": "heldout",
+  "query": "v = beta * v + grad",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-03/momentum-lab.ipynb#momentum-loop",
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-05/adaptive-methods.md#Adam"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-03/momentum-lab.ipynb#momentum-loop",
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-05/adaptive-methods.md#Adam"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-03/momentum-lab.ipynb#momentum-loop",
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-05/adaptive-methods.md#Adam"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-03/momentum-lab.ipynb#momentum-loop",
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-05/adaptive-methods.md#Adam"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q21",
+  "type": "equation",
+  "split": "tune",
+  "query": "m_hat / (sqrt(v_hat) + eps)",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-05/adaptive-methods.md#Adam",
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-01/notes.md#Week 1: Gradient descent",
+     "week-03/momentum-lab.ipynb#momentum-loop"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-05/adaptive-methods.md#Adam",
+     "week-03/momentum-lab.ipynb#momentum-loop",
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-03/momentum-notes.md#Nesterov momentum"
+    ],
+    "n_results": 5,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-05/adaptive-methods.md#Adam",
+     "week-03/momentum-lab.ipynb#momentum-loop",
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-03/momentum-notes.md#Nesterov momentum"
+    ],
+    "n_results": 5,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-05/adaptive-methods.md#Adam",
+     "week-03/momentum-lab.ipynb#momentum-loop",
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-03/momentum-notes.md#Heavy-ball momentum"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q22",
+  "type": "equation",
+  "split": "heldout",
+  "query": "f(t x + (1 - t) y) <= t f(x) + (1 - t) f(y)",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p1",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-05/adaptive-methods.md#Adam",
+     "week-02/lagrange-notes.md#Worked example",
+     "week-03/momentum-lab.ipynb#rosenbrock-grad"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p1",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-04/second-order-methods.pdf#p3",
+     "week-02/lagrange-notes.md#Worked example",
+     "week-03/momentum-lab.ipynb#rosenbrock-grad"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p1",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-02/lagrange-notes.md#Worked example",
+     "week-04/second-order-methods.pdf#p3",
+     "week-03/momentum-lab.ipynb#rosenbrock-grad"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p1",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-02/lagrange-notes.md#Worked example",
+     "week-04/second-order-methods.pdf#p3",
+     "week-03/momentum-lab.ipynb#rosenbrock-grad"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q23",
+  "type": "equation",
+  "split": "tune",
+  "query": "H(x) d = -grad f(x)",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-04/second-order-methods.pdf#p1",
+     "week-01/gradient-descent-lab.ipynb#descent-loop",
+     "week-02/lagrange-notes.md#Equality constraints",
+     "week-01/gradient-descent-lab.ipynb#intro",
+     "week-03/momentum-lab.ipynb#rosenbrock-grad"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-04/second-order-methods.pdf#p1",
+     "week-04/second-order-methods.pdf#p3",
+     "week-02/lagrange-notes.md#Inequality constraints and KKT",
+     "week-01/gradient-descent-lab.ipynb#descent-loop",
+     "week-02/lagrange-notes.md#Equality constraints"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-04/second-order-methods.pdf#p1",
+     "week-01/gradient-descent-lab.ipynb#descent-loop",
+     "week-04/second-order-methods.pdf#p3",
+     "week-01/gradient-descent-lab.ipynb#intro",
+     "week-02/lagrange-notes.md#Equality constraints"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-04/second-order-methods.pdf#p1",
+     "week-01/gradient-descent-lab.ipynb#descent-loop",
+     "week-04/second-order-methods.pdf#p3",
+     "week-02/lagrange-notes.md#Equality constraints",
+     "week-01/gradient-descent-lab.ipynb#intro"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q24",
+  "type": "equation",
+  "split": "heldout",
+  "query": "mu * h(x) = 0",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-02/lagrange-notes.md#Inequality constraints and KKT",
+     "week-01/gradient-descent-lab.ipynb#descent-loop",
+     "week-02/lagrange-notes.md#Equality constraints",
+     "week-04/second-order-methods.pdf#p1",
+     "week-03/momentum-lab.ipynb#rosenbrock-grad"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-02/lagrange-notes.md#Inequality constraints and KKT",
+     "week-04/second-order-methods.pdf#p1",
+     "week-01/gradient-descent-lab.ipynb#descent-loop",
+     "week-02/lagrange-notes.md#Worked example",
+     "week-02/lagrange-notes.md#Equality constraints"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-02/lagrange-notes.md#Inequality constraints and KKT",
+     "week-01/gradient-descent-lab.ipynb#descent-loop",
+     "week-04/second-order-methods.pdf#p1",
+     "week-02/lagrange-notes.md#Worked example",
+     "week-02/lagrange-notes.md#Equality constraints"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-02/lagrange-notes.md#Inequality constraints and KKT",
+     "week-01/gradient-descent-lab.ipynb#descent-loop",
+     "week-04/second-order-methods.pdf#p1",
+     "week-02/lagrange-notes.md#Equality constraints",
+     "week-02/lagrange-notes.md#Worked example"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q25",
+  "type": "notebook",
+  "split": "tune",
+  "query": "code for the gradient of the Rosenbrock function",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-02/lagrange-notes.md#Geometric picture",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-01/notes.md#The update rule",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-03/momentum-lab.ipynb#intro"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 0.0,
+    "mrr@10": 0.0,
+    "ndcg@10": 0.0
+   },
+   "bm25": {
+    "top": [
+     "week-03/momentum-lab.ipynb#intro",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-02/convexity-lecture.pdf#p1",
+     "week-04/sgd-notes.md#Week 4: Stochastic gradient descent and regularisation"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 0.0,
+    "mrr@10": 0.0,
+    "ndcg@10": 0.0
+   },
+   "tfidf": {
+    "top": [
+     "week-03/momentum-lab.ipynb#intro",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-04/sgd-notes.md#Week 4: Stochastic gradient descent and regularisation",
+     "week-02/convexity-lecture.pdf#p1"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 0.0,
+    "mrr@10": 0.0,
+    "ndcg@10": 0.0
+   },
+   "hybrid": {
+    "top": [
+     "week-03/momentum-lab.ipynb#intro",
+     "week-01/notes.md#The update rule",
+     "week-02/lagrange-notes.md#Geometric picture",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-01/notes.md#Choosing the learning rate"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 0.0,
+    "mrr@10": 0.0,
+    "ndcg@10": 0.0
+   }
+  }
+ },
+ {
+  "id": "q26",
+  "type": "notebook",
+  "split": "heldout",
+  "query": "implement a cosine learning rate schedule function",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-05/adaptive-methods.md#Week 5: Adaptive learning-rate methods",
+     "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-01/gradient-descent-lab.ipynb#takeaway"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 0.0,
+    "mrr@10": 0.0,
+    "ndcg@10": 0.0
+   },
+   "bm25": {
+    "top": [
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules",
+     "week-05/adam-lab.ipynb#intro",
+     "week-03/momentum-lab.ipynb#cosine-schedule",
+     "week-05/adaptive-methods.md#Week 5: Adaptive learning-rate methods"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.25,
+    "ndcg@10": 0.43067655807339306
+   },
+   "tfidf": {
+    "top": [
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules",
+     "week-05/adaptive-methods.md#Week 5: Adaptive learning-rate methods",
+     "week-01/notes.md#The update rule",
+     "week-05/adam-lab.ipynb#intro"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 0.0,
+    "mrr@10": 0.0,
+    "ndcg@10": 0.0
+   },
+   "hybrid": {
+    "top": [
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules",
+     "week-05/adaptive-methods.md#Week 5: Adaptive learning-rate methods",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-01/notes.md#The update rule"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.1111111111111111,
+    "ndcg@10": 0.3010299956639812
+   }
+  }
+ },
+ {
+  "id": "q27",
+  "type": "notebook",
+  "split": "tune",
+  "query": "gradient descent loop on a parabola with minimum at 3",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-01/gradient-descent-lab.ipynb#intro",
+     "week-05/adam-lab.ipynb#intro",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-04/sgd-notes.md#Week 4: Stochastic gradient descent and regularisation"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 0.5,
+    "recall@5": 0.5,
+    "recall@10": 0.5,
+    "mrr@10": 1.0,
+    "ndcg@10": 0.6131471927654584
+   },
+   "bm25": {
+    "top": [
+     "week-01/gradient-descent-lab.ipynb#intro",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/sgd-notes.md#Week 4: Stochastic gradient descent and regularisation"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 0.5,
+    "recall@5": 0.5,
+    "recall@10": 0.5,
+    "mrr@10": 1.0,
+    "ndcg@10": 0.6131471927654584
+   },
+   "tfidf": {
+    "top": [
+     "week-01/gradient-descent-lab.ipynb#intro",
+     "week-04/sgd-notes.md#Week 4: Stochastic gradient descent and regularisation",
+     "week-01/notes.md#Week 1: Gradient descent",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 0.5,
+    "recall@5": 0.5,
+    "recall@10": 0.5,
+    "mrr@10": 1.0,
+    "ndcg@10": 0.6131471927654584
+   },
+   "hybrid": {
+    "top": [
+     "week-01/gradient-descent-lab.ipynb#intro",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-04/sgd-notes.md#Week 4: Stochastic gradient descent and regularisation"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 0.5,
+    "recall@5": 0.5,
+    "recall@10": 0.5,
+    "mrr@10": 1.0,
+    "ndcg@10": 0.6131471927654584
+   }
+  }
+ },
+ {
+  "id": "q28",
+  "type": "notebook",
+  "split": "heldout",
+  "query": "adam_step function with bias correction",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-05/adaptive-methods.md#Adam",
+     "week-05/adam-lab.ipynb#intro",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/second-order-methods.pdf#p3",
+     "week-04/sgd-notes.md#L1 and sparsity"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.125,
+    "ndcg@10": 0.31546487678572877
+   },
+   "bm25": {
+    "top": [
+     "week-05/adaptive-methods.md#Adam",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-05/adam-lab.ipynb#intro",
+     "week-02/convexity-lecture.pdf#p1",
+     "week-03/momentum-notes.md#Nesterov momentum"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.1,
+    "ndcg@10": 0.2890648263178879
+   },
+   "tfidf": {
+    "top": [
+     "week-05/adaptive-methods.md#Adam",
+     "week-05/adam-lab.ipynb#intro",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-05/adaptive-methods.md#AdamW",
+     "week-03/momentum-lab.ipynb#intro"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.14285714285714285,
+    "ndcg@10": 0.3333333333333333
+   },
+   "hybrid": {
+    "top": [
+     "week-05/adaptive-methods.md#Adam",
+     "week-05/adam-lab.ipynb#intro",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/second-order-methods.pdf#p1",
+     "week-05/adaptive-methods.md#AdamW"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.16666666666666666,
+    "ndcg@10": 0.3562071871080222
+   }
+  }
+ },
+ {
+  "id": "q29",
+  "type": "notebook",
+  "split": "tune",
+  "query": "badly scaled quadratic with scales 1 and 100",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-05/adam-lab.ipynb#intro",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-01/gradient-descent-lab.ipynb#takeaway"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.25,
+    "ndcg@10": 0.43067655807339306
+   },
+   "bm25": {
+    "top": [
+     "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-05/adam-lab.ipynb#intro",
+     "week-05/adaptive-methods.md#AdamW",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-04/second-order-methods.pdf#p1"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-05/adam-lab.ipynb#intro",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-01/notes.md#Week 1: Gradient descent",
+     "week-05/adaptive-methods.md#AdamW"
+    ],
+    "n_results": 10,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-05/adam-lab.ipynb#intro",
+     "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-05/adaptive-methods.md#AdamW"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.5,
+    "ndcg@10": 0.6309297535714575
+   }
+  }
+ },
+ {
+  "id": "q30",
+  "type": "cross-week",
+  "split": "tune",
+  "query": "every way the course suggests to change the learning rate during training",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-01/notes.md#The update rule",
+     "week-03/momentum-lab.ipynb#lab3-takeaway",
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-01/gradient-descent-lab.ipynb#takeaway",
+     "week-02/lagrange-notes.md#Geometric picture"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.2,
+    "recall@5": 0.2,
+    "recall@10": 0.2,
+    "mrr@10": 0.3333333333333333,
+    "ndcg@10": 0.16958010263680806
+   },
+   "bm25": {
+    "top": [
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-04/sgd-notes.md#Minibatches",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-05/adaptive-methods.md#Week 5: Adaptive learning-rate methods"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.2,
+    "recall@10": 0.4,
+    "mrr@10": 0.25,
+    "ndcg@10": 0.2530614822099702
+   },
+   "tfidf": {
+    "top": [
+     "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules",
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-05/adaptive-methods.md#Week 5: Adaptive learning-rate methods",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-04/sgd-notes.md#Minibatches"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 0.4,
+    "mrr@10": 0.14285714285714285,
+    "ndcg@10": 0.21515079688078367
+   },
+   "hybrid": {
+    "top": [
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-01/notes.md#The update rule",
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-03/momentum-lab.ipynb#lab3-takeaway"
+    ],
+    "n_results": 10,
+    "recall@1": 0.2,
+    "recall@3": 0.2,
+    "recall@5": 0.2,
+    "recall@10": 0.2,
+    "mrr@10": 1.0,
+    "ndcg@10": 0.3391602052736161
+   }
+  }
+ },
+ {
+  "id": "q31",
+  "type": "cross-week",
+  "split": "heldout",
+  "query": "how momentum appears in both heavy-ball and Adam",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules",
+     "week-05/adaptive-methods.md#Adam",
+     "week-05/adam-lab.ipynb#intro",
+     "week-04/second-order-methods.pdf#p2"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 0.9197207891481876
+   },
+   "bm25": {
+    "top": [
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-05/adaptive-methods.md#Adam",
+     "week-05/adam-lab.ipynb#intro",
+     "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules",
+     "week-02/lagrange-notes.md#Equality constraints"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-05/adaptive-methods.md#Adam",
+     "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules",
+     "week-05/adam-lab.ipynb#intro",
+     "week-02/lagrange-notes.md#Equality constraints"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-05/adaptive-methods.md#Adam",
+     "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules",
+     "week-05/adam-lab.ipynb#intro",
+     "week-02/lagrange-notes.md#Equality constraints"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q32",
+  "type": "cross-week",
+  "split": "tune",
+  "query": "weight decay in SGD and in Adam",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-05/adaptive-methods.md#AdamW",
+     "week-05/adam-lab.ipynb#intro",
+     "week-03/momentum-notes.md#Heavy-ball momentum",
+     "week-04/second-order-methods.pdf#p2",
+     "week-05/adaptive-methods.md#Adam"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 0.5,
+    "recall@5": 0.5,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 0.8315546295836225
+   },
+   "bm25": {
+    "top": [
+     "week-05/adaptive-methods.md#AdamW",
+     "week-04/sgd-notes.md#Weight decay",
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-05/adam-lab.ipynb#intro",
+     "week-05/adam-lab.ipynb#lab5-takeaway"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-04/sgd-notes.md#Weight decay",
+     "week-05/adaptive-methods.md#AdamW",
+     "week-05/adam-lab.ipynb#intro",
+     "week-04/sgd-notes.md#L1 and sparsity",
+     "week-05/adaptive-methods.md#RMSProp"
+    ],
+    "n_results": 9,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-05/adaptive-methods.md#AdamW",
+     "week-05/adam-lab.ipynb#intro",
+     "week-04/sgd-notes.md#Weight decay",
+     "week-05/adam-lab.ipynb#lab5-takeaway",
+     "week-05/adaptive-methods.md#Adam"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 0.9197207891481876
+   }
+  }
+ },
+ {
+  "id": "q33",
+  "type": "cross-week",
+  "split": "heldout",
+  "query": "convexity and why gradient descent can get stuck",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-04/sgd-notes.md#Week 4: Stochastic gradient descent and regularisation",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/sgd-notes.md#Minibatches",
+     "week-02/lagrange-notes.md#Equality constraints",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags"
+    ],
+    "n_results": 10,
+    "recall@1": 0.0,
+    "recall@3": 0.5,
+    "recall@5": 0.5,
+    "recall@10": 0.5,
+    "mrr@10": 0.5,
+    "ndcg@10": 0.38685280723454163
+   },
+   "bm25": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p2",
+     "week-05/adaptive-methods.md#AdaGrad",
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-02/convexity-lecture.pdf#p1",
+     "week-02/lagrange-notes.md#Week 2: Constrained optimisation"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 0.9197207891481876
+   },
+   "tfidf": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/sgd-notes.md#Week 4: Stochastic gradient descent and regularisation",
+     "week-01/notes.md#Week 1: Gradient descent",
+     "week-02/lagrange-notes.md#Week 2: Constrained optimisation",
+     "week-05/adaptive-methods.md#AdaGrad"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 0.5,
+    "recall@5": 0.5,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 0.8315546295836225
+   },
+   "hybrid": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/sgd-notes.md#Week 4: Stochastic gradient descent and regularisation",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-04/sgd-notes.md#Minibatches",
+     "week-05/adaptive-methods.md#AdaGrad"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 0.5,
+    "recall@5": 0.5,
+    "recall@10": 0.5,
+    "mrr@10": 1.0,
+    "ndcg@10": 0.6131471927654584
+   }
+  }
+ },
+ {
+  "id": "q34",
+  "type": "cross-week",
+  "split": "tune",
+  "query": "Hessian positive definite or semidefinite",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-04/second-order-methods.pdf#p1",
+     "week-01/notes.md#Stopping",
+     "week-01/notes.md#Week 1: Gradient descent",
+     "week-05/adaptive-methods.md#Adam",
+     "week-04/second-order-methods.pdf#p2"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 0.5,
+    "recall@5": 0.5,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 0.8315546295836225
+   },
+   "bm25": {
+    "top": [
+     "week-04/second-order-methods.pdf#p1",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/second-order-methods.pdf#p2"
+    ],
+    "n_results": 3,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-04/second-order-methods.pdf#p1",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/second-order-methods.pdf#p2"
+    ],
+    "n_results": 3,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-04/second-order-methods.pdf#p1",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-04/second-order-methods.pdf#p2",
+     "week-01/notes.md#Stopping",
+     "week-01/notes.md#Week 1: Gradient descent"
+    ],
+    "n_results": 10,
+    "recall@1": 0.5,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q35",
+  "type": "unanswerable",
+  "split": "tune",
+  "query": "what is the exam date for this course",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-01/notes.md#Choosing the learning rate",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-01/gradient-descent-lab.ipynb#takeaway"
+    ],
+    "n_results": 10
+   },
+   "bm25": {
+    "top": [
+     "week-03/momentum-notes.md#Nesterov momentum"
+    ],
+    "n_results": 1
+   },
+   "tfidf": {
+    "top": [
+     "week-03/momentum-notes.md#Nesterov momentum"
+    ],
+    "n_results": 1
+   },
+   "hybrid": {
+    "top": [
+     "week-03/momentum-notes.md#Nesterov momentum",
+     "week-01/notes.md#Choosing the learning rate",
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-02/convexity-lecture.pdf#p2"
+    ],
+    "n_results": 10
+   }
+  }
+ },
+ {
+  "id": "q36",
+  "type": "unanswerable",
+  "split": "heldout",
+  "query": "how does a transformer attention head work",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-01/notes.md#Choosing the learning rate",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-01/gradient-descent-lab.ipynb#takeaway",
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-05/adaptive-methods.md#RMSProp"
+    ],
+    "n_results": 10
+   },
+   "bm25": {
+    "top": [
+     "week-01/notes.md#Choosing the learning rate",
+     "week-02/lagrange-notes.md#Worked example"
+    ],
+    "n_results": 2
+   },
+   "tfidf": {
+    "top": [],
+    "n_results": 0
+   },
+   "hybrid": {
+    "top": [
+     "week-01/notes.md#Choosing the learning rate",
+     "week-02/lagrange-notes.md#Worked example",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-01/gradient-descent-lab.ipynb#takeaway",
+     "week-03/momentum-notes.md#Learning-rate schedules"
+    ],
+    "n_results": 10
+   }
+  }
+ },
+ {
+  "id": "q37",
+  "type": "unanswerable",
+  "split": "tune",
+  "query": "simulated annealing temperature schedule",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-01/gradient-descent-lab.ipynb#descent-loop",
+     "week-01/gradient-descent-lab.ipynb#takeaway"
+    ],
+    "n_results": 10
+   },
+   "bm25": {
+    "top": [
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules"
+    ],
+    "n_results": 2
+   },
+   "tfidf": {
+    "top": [
+     "week-03/momentum-notes.md#Learning-rate schedules"
+    ],
+    "n_results": 1
+   },
+   "hybrid": {
+    "top": [
+     "week-03/momentum-notes.md#Learning-rate schedules",
+     "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules",
+     "week-04/sgd-notes.md#Noise is not all bad",
+     "week-04/sgd-notes.md#Early stopping",
+     "week-01/gradient-descent-lab.ipynb#descent-loop"
+    ],
+    "n_results": 10
+   }
+  }
+ },
+ {
+  "id": "q38",
+  "type": "unanswerable",
+  "split": "heldout",
+  "query": "proof of the central limit theorem",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-04/second-order-methods.pdf#p2",
+     "week-02/lagrange-notes.md#Geometric picture",
+     "week-01/gradient-descent-lab.ipynb#takeaway",
+     "week-03/momentum-lab.ipynb#lab3-takeaway",
+     "week-05/adaptive-methods.md#AdamW"
+    ],
+    "n_results": 10
+   },
+   "bm25": {
+    "top": [],
+    "n_results": 0
+   },
+   "tfidf": {
+    "top": [],
+    "n_results": 0
+   },
+   "hybrid": {
+    "top": [
+     "week-04/second-order-methods.pdf#p2",
+     "week-02/lagrange-notes.md#Geometric picture",
+     "week-01/gradient-descent-lab.ipynb#takeaway",
+     "week-03/momentum-lab.ipynb#lab3-takeaway",
+     "week-05/adaptive-methods.md#AdamW"
+    ],
+    "n_results": 10
+   }
+  }
+ },
+ {
+  "id": "q39",
+  "type": "unanswerable",
+  "split": "tune",
+  "query": "genetic algorithm crossover operator",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p2",
+     "week-01/gradient-descent-lab.ipynb#intro",
+     "week-01/gradient-descent-lab.ipynb#descent-loop",
+     "week-01/notes.md#Week 1: Gradient descent",
+     "week-03/momentum-lab.ipynb#rosenbrock-grad"
+    ],
+    "n_results": 10
+   },
+   "bm25": {
+    "top": [
+     "week-04/second-order-methods.pdf#p2"
+    ],
+    "n_results": 1
+   },
+   "tfidf": {
+    "top": [],
+    "n_results": 0
+   },
+   "hybrid": {
+    "top": [
+     "week-04/second-order-methods.pdf#p2",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-01/gradient-descent-lab.ipynb#intro",
+     "week-01/gradient-descent-lab.ipynb#descent-loop",
+     "week-01/notes.md#Week 1: Gradient descent"
+    ],
+    "n_results": 10
+   }
+  }
+ },
+ {
+  "id": "q40",
+  "type": "unanswerable",
+  "split": "heldout",
+  "query": "who teaches the tutorial on Fridays",
+  "filters": {},
+  "methods": {
+   "dense": {
+    "top": [
+     "week-03/momentum-lab.ipynb#lab3-takeaway",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-05/adaptive-methods.md#AdamW",
+     "week-02/lagrange-notes.md#Worked example",
+     "week-01/notes.md#The update rule"
+    ],
+    "n_results": 10
+   },
+   "bm25": {
+    "top": [],
+    "n_results": 0
+   },
+   "tfidf": {
+    "top": [],
+    "n_results": 0
+   },
+   "hybrid": {
+    "top": [
+     "week-03/momentum-lab.ipynb#lab3-takeaway",
+     "week-03/momentum-lab.ipynb#intro",
+     "week-05/adaptive-methods.md#AdamW",
+     "week-02/lagrange-notes.md#Worked example",
+     "week-01/notes.md#The update rule"
+    ],
+    "n_results": 10
+   }
+  }
+ },
+ {
+  "id": "q41",
+  "type": "filtered",
+  "split": "tune",
+  "query": "momentum",
+  "filters": {
+   "week": 5
+  },
+  "methods": {
+   "dense": {
+    "top": [
+     "week-05/adam-lab.ipynb#intro",
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-05/adam-lab.ipynb#lab5-takeaway",
+     "week-05/adaptive-methods.md#Week 5: Adaptive learning-rate methods"
+    ],
+    "n_results": 9,
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "recall@10": 1.0,
+    "mrr@10": 0.125,
+    "ndcg@10": 0.31546487678572877
+   },
+   "bm25": {
+    "top": [
+     "week-05/adaptive-methods.md#Adam"
+    ],
+    "n_results": 1,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-05/adaptive-methods.md#Adam"
+    ],
+    "n_results": 1,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-05/adaptive-methods.md#Adam",
+     "week-05/adam-lab.ipynb#intro",
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-05/adam-lab.ipynb#lab5-takeaway"
+    ],
+    "n_results": 9,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q42",
+  "type": "filtered",
+  "split": "heldout",
+  "query": "learning rate",
+  "filters": {
+   "kind": "notebook",
+   "week": 1
+  },
+  "methods": {
+   "dense": {
+    "top": [
+     "week-01/gradient-descent-lab.ipynb#takeaway",
+     "week-01/gradient-descent-lab.ipynb#intro",
+     "week-01/gradient-descent-lab.ipynb#descent-loop"
+    ],
+    "n_results": 3,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-01/gradient-descent-lab.ipynb#takeaway"
+    ],
+    "n_results": 1,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-01/gradient-descent-lab.ipynb#takeaway"
+    ],
+    "n_results": 1,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-01/gradient-descent-lab.ipynb#takeaway",
+     "week-01/gradient-descent-lab.ipynb#intro",
+     "week-01/gradient-descent-lab.ipynb#descent-loop"
+    ],
+    "n_results": 3,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q43",
+  "type": "filtered",
+  "split": "tune",
+  "query": "Hessian",
+  "filters": {
+   "kind": "pdf",
+   "week": 2
+  },
+  "methods": {
+   "dense": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p2",
+     "week-02/convexity-lecture.pdf#p1"
+    ],
+    "n_results": 2,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p2"
+    ],
+    "n_results": 1,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p2"
+    ],
+    "n_results": 1,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-02/convexity-lecture.pdf#p2",
+     "week-02/convexity-lecture.pdf#p1"
+    ],
+    "n_results": 2,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ },
+ {
+  "id": "q44",
+  "type": "filtered",
+  "split": "heldout",
+  "query": "regularisation",
+  "filters": {
+   "week": 5
+  },
+  "methods": {
+   "dense": {
+    "top": [
+     "week-05/adaptive-methods.md#AdamW",
+     "week-05/adam-lab.ipynb#intro",
+     "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-05/adam-lab.ipynb#lab5-takeaway",
+     "week-05/adaptive-methods.md#Week 5: Adaptive learning-rate methods"
+    ],
+    "n_results": 9,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "bm25": {
+    "top": [
+     "week-05/adaptive-methods.md#AdamW"
+    ],
+    "n_results": 1,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "tfidf": {
+    "top": [
+     "week-05/adaptive-methods.md#AdamW"
+    ],
+    "n_results": 1,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   },
+   "hybrid": {
+    "top": [
+     "week-05/adaptive-methods.md#AdamW",
+     "week-05/adam-lab.ipynb#intro",
+     "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-05/adam-lab.ipynb#lab5-takeaway",
+     "week-05/adaptive-methods.md#Week 5: Adaptive learning-rate methods"
+    ],
+    "n_results": 9,
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
+   }
+  }
+ }
+]

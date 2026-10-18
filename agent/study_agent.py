@@ -1,5 +1,4 @@
 from langchain.agents import create_react_agent, AgentExecutor, Tool
-from langchain import hub
 from config import get_llm
 from .tools import search_notes, quiz_me, summarize
 
@@ -8,7 +7,7 @@ def build_agent():
         Tool(
             name="Search_Notes",
             func=search_notes,
-            description="Search study notes for specific information. Input should be a clear search query about the topic you need information on. Use this ONLY when you need to find specific content from the user's study materials."
+            description="Search the user's course files (PDF, Markdown, notebooks). Input should be a clear search query. Each result starts with its source in square brackets; cite those sources in your answer. Use this ONLY when you need specific content from the user's study materials."
         ),
         Tool(
             name="Quiz_Generator",
