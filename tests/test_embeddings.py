@@ -14,6 +14,7 @@ def hub(tmp_path, monkeypatch):
     cache = tmp_path / "hub"
     monkeypatch.setenv("HF_HUB_CACHE", str(cache))
     monkeypatch.setattr(embeddings, "DEFAULT_REVISION", None)
+    monkeypatch.setattr(embeddings, "remote_commit", lambda name, revision="main": None)  # no network in tests
 
     def put(model, ref, sha):
         refs = cache / f"models--{model.replace('/', '--')}" / "refs"
@@ -55,3 +56,24 @@ def test_a_new_revision_changes_every_cache_key(hub, tmp_path):
     finally:
         one.close()
         two.close()
+
+
+def test_without_a_cache_the_hub_commit_is_recorded_and_loaded(hub, monkeypatch):
+    import sys
+    import types
+
+    monkeypatch.setattr(embeddings, "remote_commit", lambda name, revision="main": SHA_B)
+    loaded = {}
+
+    class FakeModel:
+        def __init__(self, name, revision=None):
+            loaded.update(name=name, revision=revision)
+
+        def encode(self, texts, normalize_embeddings=True):
+            return [[1.0, 0.0] for _ in texts]
+
+    monkeypatch.setitem(sys.modules, "sentence_transformers", types.SimpleNamespace(SentenceTransformer=FakeModel))
+    model = SentenceTransformerEmbedder()
+    assert model.id == f"st:BAAI/bge-small-en@{SHA_B}"
+    model.embed_documents(["x"])
+    assert loaded == {"name": "BAAI/bge-small-en", "revision": SHA_B}

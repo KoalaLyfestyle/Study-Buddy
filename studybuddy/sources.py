@@ -115,7 +115,10 @@ def scan(root: Path) -> Scan:
                     target = path.resolve(strict=True)
                 except (OSError, RuntimeError):
                     continue  # a broken or looping link
-                if not target.is_relative_to(real_root):
+                if not target.is_relative_to(real_root) or any(
+                    part.startswith(".") for part in target.relative_to(real_root).parts
+                ):
+                    # Outside the folder, or into a hidden part of it that the scan skips.
                     result.outside.append(path.relative_to(root).as_posix())
                     continue
             if path.is_file():

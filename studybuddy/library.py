@@ -114,7 +114,7 @@ class Citation:
         else:
             where = f"line {loc.get('line', 1)}"
         label = f"{self.relpath}, {where}"
-        return label + " (out of date: the file changed and failed to re-import)" if self.stale else label
+        return label + " (out of date: the last import could not read this file, so this is its last good version)" if self.stale else label
 
 
 @dataclass(frozen=True)

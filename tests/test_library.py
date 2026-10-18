@@ -454,3 +454,20 @@ def test_an_unreadable_course_folder_says_so(course, make_library, monkeypatch):
     with pytest.raises(EmptyLibraryError, match="Cannot read course folder"):
         lib.import_folder()
     assert lib.chunk_count() > 0
+
+
+def test_a_link_into_a_hidden_folder_is_skipped(course, make_library):
+    hidden = course / ".private"
+    hidden.mkdir()
+    (hidden / "k.md").write_text("# Key\n\nhidden text\n", encoding="utf-8")
+    (course / "intro-to-optimisation" / "week-01" / "k.md").symlink_to(hidden / "k.md")
+    report = make_library(course).import_folder()
+    assert report.skipped_links == ["intro-to-optimisation/week-01/k.md"]
+
+
+def test_an_unreadable_folder_does_not_hold_back_a_similar_name():
+    from studybuddy.library import _unreadable_parent
+
+    unreadable = {"c/week-1": "PermissionError"}
+    assert _unreadable_parent("c/week-1/a.md", unreadable) == "c/week-1"
+    assert _unreadable_parent("c/week-10/a.md", unreadable) is None

@@ -259,7 +259,10 @@ The model's commit is part of each file's cache key, so new weights
 re-embed the library rather than mixing old and new vectors. The default
 model is pinned by `DEFAULT_REVISION` in `studybuddy/embeddings.py`. Until
 that is set, the commit already in the local Hugging Face cache is used and
-recorded; `python -m studybuddy.embeddings` prints it so you can pin it.
+recorded (or, before the first download, the one the Hub names);
+`python -m studybuddy.embeddings` prints it so you can pin it. After
+upgrading from a version without this, run `import` once: the new model ID
+re-embeds the library.
 
 ## Tests
 

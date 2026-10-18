@@ -89,14 +89,31 @@ def cached_commit(model_name: str, revision: str = "main") -> str | None:
     return commit if _COMMIT.fullmatch(commit) else None
 
 
+def remote_commit(model_name: str, revision: str = "main") -> str | None:
+    """Ask the Hugging Face Hub which commit `revision` is. None if offline or unavailable.
+
+    Used only when the model is neither pinned nor cached, so that the first
+    import already records the commit it will download.
+    """
+    try:
+        from huggingface_hub import HfApi
+
+        sha = HfApi().model_info(model_name, revision=revision).sha
+    except Exception:  # no package, no network, unknown model: fall back to "unpinned"
+        return None
+    return sha if sha and _COMMIT.fullmatch(sha) else None
+
+
 class SentenceTransformerEmbedder:
     """Local sentence-transformers model, loaded on first use.
 
     The model's commit is part of `id`, and so of every file's cache key: a
     different revision of the weights re-embeds the library instead of mixing
     old and new vectors. Pass a commit SHA as `revision` to pin it. Without
-    one, the revision already in the local cache is pinned for this process,
-    and "unpinned" is recorded only before the first download.
+    one, the commit that `main` points to (in the local cache, or else on the
+    Hub) is used and loaded, so the ID matches the weights. "unpinned" is
+    recorded only when neither can be found, and then the model cannot be
+    downloaded either.
     """
 
     QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
@@ -105,7 +122,8 @@ class SentenceTransformerEmbedder:
         if revision is None and model_name == DEFAULT_MODEL:
             revision = DEFAULT_REVISION
         self.model_name = model_name
-        self.revision = cached_commit(model_name, revision or "main") or revision
+        wanted = revision or "main"
+        self.revision = cached_commit(model_name, wanted) or remote_commit(model_name, wanted) or revision
         self.id = f"st:{model_name}@{self.revision or 'unpinned'}"
         self._model = None
 
