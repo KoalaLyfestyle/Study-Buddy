@@ -86,7 +86,7 @@ class ImportReport:
         for relpath, error in sorted(self.failed.items()):
             text += f"\n  failed: {relpath}: {error}"
         for relpath in self.skipped_links:
-            text += f"\n  skipped: {relpath}: a link to a file outside the course folder"
+            text += f"\n  skipped: {relpath}: a link to a file outside the course folder or in a hidden folder"
         return text
 
 
@@ -114,7 +114,7 @@ class Citation:
         else:
             where = f"line {loc.get('line', 1)}"
         label = f"{self.relpath}, {where}"
-        return label + " (out of date: the last import could not read this file, so this is its last good version)" if self.stale else label
+        return label + " (out of date: the last import of this file failed, so this is its last good version)" if self.stale else label
 
 
 @dataclass(frozen=True)
