@@ -108,6 +108,13 @@ def test_a_fixed_second_reply_is_used(library):
                                             "quiz": []}]}),
         lambda p: json.dumps({"sections": []}),
         lambda p: "[]",
+        lambda p: good_reply(p).replace('"answer_index": 0', '"answer_index": 0.0'),
+        lambda p: json.dumps({"sections": [{"kind": "quiz", "title": "q", "cites": ids_in(p)[:1], "blocks": [],
+                                            "quiz": [{"prompt": "x", "choices": ["a", "b"], "answer_index": 0,
+                                                      "explanation": "e", "cites": [["nested"]]}]}]}),
+        lambda p: json.dumps({"sections": ["just text"]}),
+        lambda p: json.dumps({"sections": [{"kind": "quiz", "title": "q", "cites": ids_in(p)[:1], "blocks": [],
+                                            "quiz": ["not a question"]}]}),
     ],
 )
 def test_replies_that_break_the_rules_fall_back(library, bad):
@@ -132,9 +139,34 @@ def test_another_chapters_passage_cannot_be_cited(library):
 
 def test_a_model_that_is_not_running_falls_back_without_retrying(library):
     model = Recorder(ConnectionError("connection refused"))
-    room, generated, report = run(library, model, week=2)
-    assert generated == room and "model call failed" in next(iter(report.fallbacks.values()))
-    assert len(model.prompts) == 1
+    room, generated, report = run(library, model, week=1)
+    assert generated == room and len(report.fallbacks) == len(room["chapters"])
+    assert all("model call failed" in why for why in report.fallbacks.values())
+    assert len(model.prompts) == 1  # one try in total, not one per chapter
+
+
+def test_a_failing_chapter_does_not_stop_the_next(library):
+    room = build_room(library, COURSE, 1)
+    first_ids = set(c for s in room["chapters"][0]["sections"] for c in s["cites"])
+    model = Recorder(lambda p: "nope" if set(ids_in(p)) <= first_ids else good_reply(p))
+    generated, report = generate_room(room, week_texts(library, COURSE, 1), model, "fake")
+    assert report.fallbacks.keys() == {room["chapters"][0]["title"]}
+    assert report.generated == [room["chapters"][1]["title"]]
+    assert generated["chapters"][0] == room["chapters"][0]
+
+
+def test_retry_problems_point_at_the_reply(library):
+    model = Recorder(lambda p: good_reply(p).replace('"answer_index": 0', '"answer_index": 5'), good_reply)
+    run(library, model, week=2)
+    assert "/sections/1/quiz/0/answer_index" in model.prompts[1]
+
+
+def test_the_model_may_cite_only_passages_it_was_shown(library, monkeypatch):
+    from studybuddy.room import generate
+
+    monkeypatch.setattr(generate, "MAX_PROMPT_PASSAGE_CHARS", 1)
+    room, generated, report = run(library, Recorder(good_reply), week=2)
+    assert generated == room and "no passages to send" in next(iter(report.fallbacks.values()))
 
 
 def test_a_reply_inside_a_code_fence_is_accepted(library):

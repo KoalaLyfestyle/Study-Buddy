@@ -86,14 +86,18 @@ def _passages(chapter: dict, texts: dict[str, str]) -> tuple[str, list[str]]:
         for chunk_id in section["cites"]:
             if chunk_id not in ids and chunk_id in texts:
                 ids.append(chunk_id)
-    lines, used = [], 0
+    lines, sent, used = [], [], 0
     for chunk_id in ids:
-        text = texts[chunk_id][:MAX_PASSAGE_CHARS]
+        text = texts[chunk_id]
+        if len(text) > MAX_PASSAGE_CHARS:
+            text = text[:MAX_PASSAGE_CHARS].rsplit(" ", 1)[0] + " [...]"
         if used + len(text) > MAX_PROMPT_PASSAGE_CHARS:
-            break
+            continue  # too long for what is left; a shorter passage may still fit
         used += len(text)
         lines.append(f"[{chunk_id}] {text}")
-    return "\n\n".join(lines), ids
+        sent.append(chunk_id)
+    # The model may cite only what it was shown.
+    return "\n\n".join(lines), sent
 
 
 def _json_object(reply: str) -> object:
@@ -151,7 +155,7 @@ def _sections_from_reply(reply: str, chapter: dict, allowed: list[str]) -> list[
                         q = {k: q.get(k) for k in ("prompt", "choices", "answer_index", "explanation", "cites")}
                         q["id"] = f"gq-{_hash(sid, qi)}"
                         for j, c in enumerate(q["cites"] if isinstance(q["cites"], list) else []):
-                            if c not in allowed_set:
+                            if not isinstance(c, str) or c not in allowed_set:
                                 problems.append(f"{where}/quiz/{qi}/cites/{j}: {c!r} is not one of this chapter's passages")
                         questions[qi] = q
             section["quiz"] = questions
@@ -179,6 +183,34 @@ def _with_chapter(room: dict, index: int, sections: list[dict]) -> dict:
     return candidate
 
 
+class ModelUnavailable(Exception):
+    """The model call itself failed (not running, timed out)."""
+
+
+def _check_reply(reply: str, chapter: dict, allowed: list[str], result: dict, index: int, known: set[str]) -> dict:
+    try:
+        sections = _sections_from_reply(reply, chapter, allowed)
+        candidate = _with_chapter(result, index, sections)
+    except RoomValidationError:
+        raise
+    except (TypeError, ValueError, AttributeError, KeyError, RecursionError) as exc:
+        raise RoomValidationError([f"/: the reply has an unexpected shape ({type(exc).__name__})"]) from None
+    try:
+        validate_room(candidate, known)
+    except RoomValidationError as exc:
+        # Point at the reply, not at the room it was merged into.
+        offset = len([s for s in chapter["sections"] if s["provenance"] != "generated"])
+        prefix = f"/chapters/{index}/sections/"
+        problems = []
+        for p in exc.problems:
+            if p.startswith(prefix) and p[len(prefix):].split("/", 1)[0].isdigit():
+                n, _, rest = p[len(prefix):].partition("/")
+                p = f"/sections/{int(n) - offset}" + (f"/{rest}" if rest else "")
+            problems.append(p)
+        raise RoomValidationError(problems) from None
+    return candidate
+
+
 def generate_room(room: dict, texts: dict[str, str], model: TextModel, model_name: str) -> tuple[dict, GenerateReport]:
     """Return a copy of `room` with model sections added where the model's reply passes the checks.
 
@@ -187,10 +219,16 @@ def generate_room(room: dict, texts: dict[str, str], model: TextModel, model_nam
     report = GenerateReport(model=model_name)
     known = set(room["coverage"])
     result = copy.deepcopy(room)
+    titles = [c["title"] for c in room["chapters"]]
+    down: str | None = None
     for index, chapter in enumerate(room["chapters"]):
+        name = chapter["title"] if titles.count(chapter["title"]) == 1 else f"{chapter['title']} ({chapter['source']['relpath']})"
+        if down:
+            report.fallbacks[name] = down
+            continue
         passages, allowed = _passages(chapter, texts)
         if not allowed:
-            report.fallbacks[chapter["title"]] = "no passages to send"
+            report.fallbacks[name] = "no passages to send"
             continue
         prompt = PROMPT.format(title=chapter["title"], passages=passages, max_sections=MAX_SECTIONS)
         error: RoomValidationError | None = None
@@ -198,21 +236,21 @@ def generate_room(room: dict, texts: dict[str, str], model: TextModel, model_nam
             ask = prompt if error is None else prompt + RETRY.format(problems="\n".join(f"- {p}" for p in error.problems[:10]))
             try:
                 reply = model(ask)
-                sections = _sections_from_reply(reply, chapter, allowed)
-                candidate = _with_chapter(result, index, sections)
-                validate_room(candidate, known)
+            except Exception as exc:  # not running, timed out: later chapters would fail the same way
+                down = f"the model call failed: {type(exc).__name__}: {exc}"
+                error = RoomValidationError([down])
+                break
+            try:
+                candidate = _check_reply(reply, chapter, allowed, result, index, known)
             except RoomValidationError as exc:
                 error = exc
                 continue
-            except Exception as exc:  # the model call itself failed (not running, timeout)
-                error = RoomValidationError([f"the model call failed: {type(exc).__name__}: {exc}"])
-                break
             result = candidate
-            report.generated.append(chapter["title"])
+            report.generated.append(name)
             error = None
             break
         if error is not None:
-            report.fallbacks[chapter["title"]] = "; ".join(error.problems[:3])
+            report.fallbacks[name] = "; ".join(error.problems[:3])
     if report.generated:
         result["builder"] = f"{room['builder']}+{model_name}"
     return validate_room(result, known), report
@@ -222,5 +260,12 @@ def ollama_model(name: str = "mistral") -> TextModel:
     """The local Ollama model, asked for JSON. Needs `ollama serve` and `ollama pull <name>`."""
     from langchain_ollama import OllamaLLM
 
-    llm = OllamaLLM(model=name, temperature=0, format="json", num_predict=2000, timeout=300)
+    llm = OllamaLLM(
+        model=name,
+        temperature=0,
+        format="json",
+        num_ctx=8192,  # room for the passages (about 3k tokens) and the reply
+        num_predict=2000,
+        client_kwargs={"timeout": 300},  # seconds; OllamaLLM has no timeout field of its own
+    )
     return lambda prompt: llm.invoke(prompt)

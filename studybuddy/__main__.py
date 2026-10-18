@@ -45,7 +45,8 @@ def _room(library: Library, args) -> int:
             try:
                 model = ollama_model(args.model)
             except ImportError as exc:
-                raise RoomValidationError([f"--generate needs langchain-ollama ({exc}); install requirements.lock"]) from None
+                print(f"--generate needs langchain-ollama ({exc}). Install it with: pip install -r requirements.lock", file=sys.stderr)
+                return 2
             room, report = generate_room(room, week_texts(library, args.course, args.week), model, f"ollama:{args.model}")
             print(report.summary())
     out = room_dir_for(library.index_dir, args.course, args.week) if not args.out else Path(args.out)

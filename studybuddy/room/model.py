@@ -125,7 +125,9 @@ def validate_room(room: object, known_chunks: set[str] | None = None) -> dict:
                 qwhere = f"{swhere}/quiz/{qi}"
                 claim(question["id"], qwhere)
                 check_cites(question["cites"], qwhere)
-                if question["answer_index"] >= len(question["choices"]):
+                if not isinstance(question["answer_index"], int) or isinstance(question["answer_index"], bool):
+                    problems.append(f"{qwhere}/answer_index: must be a whole number like 0, not {question['answer_index']!r}")
+                elif question["answer_index"] >= len(question["choices"]):
                     problems.append(
                         f"{qwhere}/answer_index: {question['answer_index']} is past the last of "
                         f"{len(question['choices'])} choices"
