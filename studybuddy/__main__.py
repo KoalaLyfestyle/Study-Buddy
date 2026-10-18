@@ -15,7 +15,17 @@ from pathlib import Path
 from . import api
 from .embeddings import default_embedder
 from .library import EmptyLibraryError, Library
-from .room import RoomValidationError, build_room, parse_room, room_dir_for, save_room, week_chunk_ids
+from .room import (
+    RoomValidationError,
+    build_room,
+    generate_room,
+    ollama_model,
+    parse_room,
+    room_dir_for,
+    save_room,
+    week_chunk_ids,
+    week_texts,
+)
 
 
 def _room(library: Library, args) -> int:
@@ -31,6 +41,13 @@ def _room(library: Library, args) -> int:
         room = parse_room(text, week_chunk_ids(library, args.course, args.week))
     else:
         room = build_room(library, args.course, args.week)
+        if args.generate:
+            try:
+                model = ollama_model(args.model)
+            except ImportError as exc:
+                raise RoomValidationError([f"--generate needs langchain-ollama ({exc}); install requirements.lock"]) from None
+            room, report = generate_room(room, week_texts(library, args.course, args.week), model, f"ollama:{args.model}")
+            print(report.summary())
     out = room_dir_for(library.index_dir, args.course, args.week) if not args.out else Path(args.out)
     saved = save_room(library, room, out)
     print(
@@ -74,7 +91,10 @@ def main(argv: list[str] | None = None) -> int:
     room = sub.add_parser("room", help="build a study room page for one course week")
     room.add_argument("course")
     room.add_argument("week", type=int)
-    room.add_argument("--from-json", metavar="FILE", help="use this room JSON (for example model output) instead of building one")
+    source = room.add_mutually_exclusive_group()
+    source.add_argument("--from-json", metavar="FILE", help="use this room JSON (for example model output) instead of building one")
+    source.add_argument("--generate", action="store_true", help="add sections written by the local Ollama model")
+    room.add_argument("--model", default="mistral", help="Ollama model for --generate (default: mistral)")
     room.add_argument("--out", help="output folder (default: <index-dir>/rooms/<course>/week-NN)")
     args = parser.parse_args(argv)
 

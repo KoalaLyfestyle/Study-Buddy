@@ -16,22 +16,27 @@ from pathlib import Path
 
 from ..library import Library
 from .build import BUILDER, build_room
+from .generate import GenerateReport, generate_room, ollama_model
 from .model import RoomValidationError, dumps, parse_room, validate_room, write_atomic
 from .render import render_room, render_source_pages
 from .state import RoomState, apply_state, load_state
 
 __all__ = [
     "BUILDER",
+    "GenerateReport",
     "RoomState",
     "RoomValidationError",
     "SavedRoom",
     "build_room",
+    "generate_room",
+    "ollama_model",
     "parse_room",
     "render_room",
     "room_dir_for",
     "save_room",
     "validate_room",
     "week_chunk_ids",
+    "week_texts",
 ]
 
 
@@ -44,6 +49,10 @@ def room_dir_for(index_dir: Path, course: str, week: int | None) -> Path:
 
 def week_chunk_ids(library: Library, course: str, week: int | None) -> set[str]:
     return {r.chunk_id for r in library.outline(course, week)}
+
+
+def week_texts(library: Library, course: str, week: int | None) -> dict[str, str]:
+    return {r.chunk_id: r.text for r in library.outline(course, week)}
 
 
 @dataclass

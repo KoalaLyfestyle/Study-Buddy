@@ -195,6 +195,15 @@ python -m studybuddy room intro-to-optimisation 1
 - **Builder.** The built-in builder (`extractive-v1`) uses no model. It
   only quotes your files, so every section is `source`. Its quiz asks
   which part of a file says a quoted sentence.
+- **Model-written sections.** `python -m studybuddy room <course> <week> --generate`
+  (needs `ollama serve` and `ollama pull mistral`; pick another with
+  `--model`) sends each chapter's passages to the local model and adds
+  the setup, worked example, common mistakes, and quiz sections it writes.
+  They are marked "Generated" and may cite only that chapter's passages.
+  A reply that fails the checks is retried once with the problems listed;
+  if it still fails, that chapter keeps only its quoted sections and the
+  command says why. Generated section IDs come from the chapter and the
+  section's kind and order, so progress and edits survive a rebuild.
 - **Your own room JSON**, for example from a local model:
   `python -m studybuddy room <course> <week> --from-json room.json`. It is
   checked against the schema and the library (unknown citations,
