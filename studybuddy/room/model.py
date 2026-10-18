@@ -49,8 +49,10 @@ def section_keys(parts: list[tuple[dict, str]]) -> list[str]:
     the file (two "Example" headings under one parent, or two cells with
     the same ID) gets "#2", "#3" by order. A notebook cell with no ID of
     its own (older notebooks; sources.py falls back to "cell-<index>") is
-    keyed by the nearest Markdown heading above it instead, so inserting a
-    cell elsewhere does not change it.
+    keyed by the nearest Markdown heading above it (a heading on the first
+    line of a Markdown cell) and its order under that heading, so a cell
+    added under another heading does not change it; one added above it
+    under the same heading does.
     """
     keys: list[str] = []
     counts: dict[str, int] = {}

@@ -66,8 +66,8 @@ def save_room(library: Library, room: dict, room_dir: Path) -> SavedRoom:
     validate_room(room, week_chunk_ids(library, room["course"], room["week"]))
     state = load_state(room_dir)
     merged, state = apply_state(room, state)
-    html = render_room(merged, state, library)
     source_pages = render_source_pages(room, library)
+    html = render_room(merged, state, library, set(source_pages))
     room_json, page = room_dir / "room.json", room_dir / "index.html"
     # Each file is replaced atomically. room.json goes last: it is what marks
     # a build as finished, so if an earlier write fails it still describes
@@ -77,7 +77,8 @@ def save_room(library: Library, room: dict, room_dir: Path) -> SavedRoom:
     write_atomic(page, html)
     write_atomic(room_json, dumps(room))
     for stale in sorted((room_dir / "sources").glob("*.html")):
-        if f"sources/{stale.name}" not in source_pages:
+        # Only pages this module writes (<doc id>.html) that the new room no longer links.
+        if re.fullmatch(r"[0-9a-f]{12}\.html", stale.name) and f"sources/{stale.name}" not in source_pages:
             stale.unlink()
     sections = [s for c in room["chapters"] for s in c["sections"]]
     return SavedRoom(

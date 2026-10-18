@@ -361,3 +361,54 @@ def test_answers_past_the_last_choice_are_dropped(library, tmp_path):
 def test_course_names_that_look_alike_get_their_own_folders(tmp_path):
     assert room_dir_for(tmp_path, "a b", 1) != room_dir_for(tmp_path, "a-b", 1)
     assert room_dir_for(tmp_path, COURSE, 1) == tmp_path / "rooms" / COURSE / "week-01"
+
+
+def test_a_changed_file_that_was_not_reimported_gets_no_source_link(library, course, tmp_path):
+    room_dir = tmp_path / "room"
+    room = build_room(library, COURSE, 1)
+    save_room(library, room, room_dir)
+    assert len(list((room_dir / "sources").glob("*.html"))) == 2
+    notes = course / NOTES
+    notes.write_text("## New first section\n\nInserted.\n\n" + notes.read_text(), encoding="utf-8")
+    html = save_room(library, room, room_dir).html.read_text()
+    notes_id = library.read_chunk(next(s for s in sections(room) if s["title"] == "Stopping")["cites"][0]).citation.doc_id
+    assert f"sources/{notes_id}.html" not in html  # no link to a page that would point at the wrong passage
+    assert not (room_dir / "sources" / f"{notes_id}.html").exists()
+    assert "Stopping" in html  # the citation label is still shown
+    keep = room_dir / "sources" / "my-notes.html"
+    keep.write_text("mine")
+    save_room(library, room, room_dir)
+    assert keep.exists()
+
+
+def test_room_json_is_written_after_the_page(library, tmp_path, monkeypatch):
+    from studybuddy import room as room_module
+
+    room_dir = tmp_path / "room"
+    first = save_room(library, build_room(library, COURSE, 1), room_dir)
+    good = first.room_json.read_bytes()
+    real = room_module.write_atomic
+
+    def failing(path, text):
+        if path.name == "index.html":
+            raise OSError("disk full")
+        real(path, text)
+
+    monkeypatch.setattr(room_module, "write_atomic", failing)
+    changed = build_room(library, COURSE, 1)
+    changed["builder"] = "other-builder"
+    with pytest.raises(OSError):
+        save_room(library, changed, room_dir)
+    assert first.room_json.read_bytes() == good
+
+
+def test_edited_sections_are_not_labelled_as_source(library, tmp_path):
+    room = build_room(library, COURSE, 1)
+    target = sections(room)[0]
+    room_dir = tmp_path / "room"
+    room_dir.mkdir()
+    (room_dir / "edits.json").write_text(json.dumps({target["id"]: {"title": "Mine"}}))
+    html = save_room(library, room, room_dir).html.read_text()
+    article = html[html.index(f'<article id="{target["id"]}"') :]
+    article = article[: article.index("</article>")]
+    assert "Edited by you" in article and "From the source" not in article

@@ -62,17 +62,20 @@ SCRIPT = """
 (function () {
   var key = "studybuddy-room:" + document.body.dataset.room;
   var state = JSON.parse(document.getElementById("progress").textContent);
-  // Merge what this browser saved with progress.json: ticks from either, the browser's answers win.
+  // What this browser saved replaces progress.json (so an untick sticks); bad values are ignored.
   try {
     var saved = JSON.parse(localStorage.getItem(key) || "null");
     if (saved && Array.isArray(saved.read)) {
-      saved.read.forEach(function (id) { if (typeof id === "string" && state.read.indexOf(id) < 0) state.read.push(id); });
-      state.read.sort();
+      state.read = saved.read.filter(function (id) { return typeof id === "string"; }).sort();
     }
     if (saved && saved.answers && typeof saved.answers === "object") {
+      var answers = {};
       Object.keys(saved.answers).forEach(function (q) {
-        var v = saved.answers[q]; if (typeof v === "number" && v >= 0) state.answers[q] = v;
+        var v = saved.answers[q];
+        var known = document.querySelector('input[data-question="' + CSS.escape(q) + '"][value="' + v + '"]');
+        if (Number.isInteger(v) && v >= 0 && (known || !document.querySelector('input[data-question="' + CSS.escape(q) + '"]'))) answers[q] = v;
       });
+      state.answers = answers;
     }
   } catch (e) {}
   function save() { try { localStorage.setItem(key, JSON.stringify(state)); } catch (e) {} }
@@ -122,14 +125,18 @@ def citation_keys(library: Library, course: str, week: int | None) -> dict[tuple
     return keys
 
 
-def _source_href(library: Library | None, keys: dict, c) -> str | None:
-    """PDFs open at the page. Markdown and notebooks open the source view at the section or cell."""
+def _source_href(library: Library | None, keys: dict, pages: set[str], c) -> str | None:
+    """PDFs open at the page. Markdown and notebooks open the source view at the section or cell,
+    when that view was rendered; otherwise there is no link."""
     if library is None or library.source_dir is None:
         return None
     if c.kind == "pdf":
         return f"{(Path(library.source_dir).resolve() / c.relpath).as_uri()}#page={c.location['page']}"
+    page = f"sources/{c.doc_id}.html"
     key = keys.get((c.relpath, _loc(c.location)))
-    return f"sources/{c.doc_id}.html#{anchor_for(key)}" if key else f"sources/{c.doc_id}.html"
+    if page not in pages or key is None:
+        return None
+    return f"{page}#{anchor_for(key)}"
 
 
 def render_source_pages(room: dict, library: Library | None) -> dict[str, str]:
@@ -145,8 +152,13 @@ def render_source_pages(room: dict, library: Library | None) -> dict[str, str]:
         relpath, kind = chapter["source"]["relpath"], chapter["source"]["kind"]
         if kind == "pdf":
             continue
+        indexed = library.read_chunk(chapter["sections"][0]["cites"][0])
+        path = Path(library.source_dir) / relpath
         try:
-            parsed = sources.parse_file(Path(library.source_dir) / relpath)
+            # Only a file that still matches the index: otherwise anchors could land on the wrong passage.
+            if indexed is None or sources.sha256_file(path) != indexed.citation.source_sha256:
+                continue
+            parsed = sources.parse_file(path)
         except (OSError, ValueError):
             continue
         doc_id = sources.doc_id_for(relpath)
@@ -172,7 +184,7 @@ def render_source_pages(room: dict, library: Library | None) -> dict[str, str]:
     return pages
 
 
-def _cites_html(library: Library | None, keys: dict, chunk_ids: list[str]) -> str:
+def _cites_html(library: Library | None, keys: dict, pages: set[str], chunk_ids: list[str]) -> str:
     items = []
     for chunk_id in chunk_ids:
         found = library.read_chunk(chunk_id) if library is not None else None
@@ -180,7 +192,7 @@ def _cites_html(library: Library | None, keys: dict, chunk_ids: list[str]) -> st
             items.append(f"<li><code>{escape(chunk_id)}</code></li>")
             continue
         label = escape(found.citation.label())
-        href = _source_href(library, keys, found.citation)
+        href = _source_href(library, keys, pages, found.citation)
         link = f'<a href="{escape(href)}">{label}</a>' if href else label
         items.append(f'<li>{link} <span class="meta">({escape(chunk_id)})</span></li>')
     return '<div class="cites">Sources:<ul>' + "".join(items) + "</ul></div>"
@@ -214,8 +226,15 @@ def _quiz_html(question: dict) -> str:
     )
 
 
-def render_room(room: dict, state: RoomState | None = None, library: Library | None = None) -> str:
-    """HTML for a room that has already been validated and had its edits applied."""
+def render_room(
+    room: dict, state: RoomState | None = None, library: Library | None = None, source_pages: set[str] | None = None
+) -> str:
+    """HTML for a room that has already been validated and had its edits applied.
+
+    source_pages: the source-view pages written next to it (render_source_pages);
+    citations link only to those.
+    """
+    source_pages = source_pages or set()
     state = state or RoomState()
     week = f"Week {room['week']}" if room["week"] is not None else "Other material"
     title = f"{room['course']}: {week}"
@@ -243,7 +262,7 @@ def render_room(room: dict, state: RoomState | None = None, library: Library | N
             articles.append(
                 f'<article id="{sid}" aria-labelledby="{sid}-h"><h3 id="{sid}-h">{escape(s["title"])}</h3>'
                 f'<div class="meta">{badges}{escape(KIND_LABEL[s["kind"]])}</div>{content}'
-                f"{_cites_html(library, keys, s['cites'])}"
+                f"{_cites_html(library, keys, source_pages, s['cites'])}"
                 f'<label class="done"><input type="checkbox" data-read="{sid}"> I have read this</label></article>'
             )
         body.append(

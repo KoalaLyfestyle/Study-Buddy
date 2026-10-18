@@ -6,7 +6,7 @@ Checks, on a phone-sized and a desktop-sized window:
 - no horizontal scrolling;
 - the first Tab reaches the "Skip to content" link, and Enter moves to the content;
 - every table-of-contents link points at a section on the page;
-- ticking "I have read this" and choosing a quiz answer survive a reload;
+- ticking "I have read this", unticking it, and choosing a quiz answer survive a reload;
 - "Export progress" downloads that progress as JSON;
 - each source-view citation opens a page with the cited section;
 - no script errors.
@@ -65,6 +65,11 @@ def check(page_url: str, shots: Path | None) -> list[str]:
                 failures.append(f"{name}: reading progress is lost on reload")
             if not page.locator("input[data-question]").last.is_checked():
                 failures.append(f"{name}: the quiz answer is lost on reload")
+            page.locator("input[data-read]").nth(1).check()
+            page.locator("input[data-read]").nth(1).uncheck()
+            page.reload()
+            if page.locator("input[data-read]").nth(1).is_checked():
+                failures.append(f"{name}: unticking a section does not stick")
             with page.expect_download() as download:
                 page.click("#export")
             exported = json.loads(Path(download.value.path()).read_text())
