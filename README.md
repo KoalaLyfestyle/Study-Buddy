@@ -226,16 +226,22 @@ The hashing stand-in is not semantic, so recheck dense with the real model.
 
 | Held-out MRR@10, notebook queries | Before | After |
 |---|---|---|
-| BM25 | 0.17 | 0.27 |
-| Dense (hashing stand-in) | 0.06 | 0.25 |
-| TF-IDF | 0.07 | 0.16 |
-| Hybrid | 0.14 | 0.32 |
+| BM25 | 0.17 | 0.29 |
+| Dense (hashing stand-in) | 0.06 | 0.17 |
+| TF-IDF | 0.07 | 0.15 |
+| Hybrid | 0.14 | 0.24 |
 
-No other held-out query type dropped for BM25, dense, or TF-IDF. Hybrid's
-held-out paraphrase score fell from 0.75 to 0.65 (q10 lost one rank to a
-code cell), and on the tune split paraphrase fell slightly for BM25 (0.61
-to 0.58) and dense (0.43 to 0.38). Held-out has only two notebook
-queries, so treat the gain as a direction, not a size.
+No other held-out query type dropped for BM25, dense, or TF-IDF, and
+their overall held-out MRR@10 rose slightly. Hybrid got worse overall on
+held-out (0.835 to 0.818): its paraphrase score fell from 0.75 to 0.65
+(q10 lost one rank to a code cell). On the tune split, paraphrase fell
+for BM25 (0.61 to 0.58), dense (0.43 to 0.38), and hybrid (0.59 to 0.55),
+and dense's equation score fell from 1.00 to 0.83. Held-out has only two
+notebook queries, so treat the gain as a direction, not a size.
+
+The parser version change makes the next import re-read and re-embed
+every file once, not only notebooks. With the real model that takes
+longer than a normal refresh.
 
 ## Settings
 

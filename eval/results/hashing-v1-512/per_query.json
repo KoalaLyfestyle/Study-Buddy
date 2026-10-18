@@ -144,7 +144,7 @@
      "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules",
      "week-05/adam-lab.ipynb#adam-step",
      "week-03/momentum-lab.ipynb#cosine-schedule",
-     "week-01/gradient-descent-lab.ipynb#descent-loop"
+     "week-02/lagrange-notes.md#Equality constraints"
     ],
     "n_results": 10,
     "recall@1": 1.0,
@@ -1191,7 +1191,7 @@
      "week-03/momentum-lab.ipynb#lab3-takeaway",
      "week-03/momentum-lab.ipynb#intro",
      "week-03/momentum-lab.ipynb#cosine-schedule",
-     "week-03/momentum-lab.ipynb#momentum-loop"
+     "week-03/momentum-lab.ipynb#rosenbrock-grad"
     ],
     "n_results": 10,
     "recall@1": 1.0,
@@ -1389,8 +1389,8 @@
     "top": [
      "week-03/momentum-notes.md#Heavy-ball momentum",
      "week-03/momentum-lab.ipynb#momentum-loop",
-     "week-03/momentum-notes.md#Nesterov momentum",
      "week-05/adam-lab.ipynb#adam-step",
+     "week-03/momentum-notes.md#Nesterov momentum",
      "week-05/adaptive-methods.md#Adam"
     ],
     "n_results": 10,
@@ -1446,8 +1446,8 @@
     "top": [
      "week-05/adaptive-methods.md#Adam",
      "week-05/adam-lab.ipynb#adam-step",
-     "week-03/momentum-notes.md#Heavy-ball momentum",
      "week-03/momentum-lab.ipynb#momentum-loop",
+     "week-03/momentum-notes.md#Heavy-ball momentum",
      "week-03/momentum-notes.md#Nesterov momentum"
     ],
     "n_results": 5,
@@ -1479,8 +1479,8 @@
      "week-05/adaptive-methods.md#Adam",
      "week-05/adam-lab.ipynb#adam-step",
      "week-03/momentum-notes.md#Nesterov momentum",
-     "week-03/momentum-notes.md#Heavy-ball momentum",
-     "week-03/momentum-lab.ipynb#momentum-loop"
+     "week-03/momentum-lab.ipynb#momentum-loop",
+     "week-03/momentum-notes.md#Heavy-ball momentum"
     ],
     "n_results": 10,
     "recall@1": 0.5,
@@ -1535,9 +1535,9 @@
     "top": [
      "week-02/convexity-lecture.pdf#p1",
      "week-03/momentum-lab.ipynb#intro",
+     "week-03/momentum-lab.ipynb#rosenbrock-grad",
      "week-02/lagrange-notes.md#Worked example",
-     "week-04/second-order-methods.pdf#p3",
-     "week-03/momentum-lab.ipynb#rosenbrock-grad"
+     "week-04/second-order-methods.pdf#p3"
     ],
     "n_results": 10,
     "recall@1": 1.0,
@@ -1574,19 +1574,19 @@
   "methods": {
    "dense": {
     "top": [
-     "week-04/second-order-methods.pdf#p1",
      "week-01/gradient-descent-lab.ipynb#descent-loop",
+     "week-04/second-order-methods.pdf#p1",
      "week-02/lagrange-notes.md#Equality constraints",
      "week-01/gradient-descent-lab.ipynb#intro",
-     "week-04/second-order-methods.pdf#p3"
+     "week-03/momentum-lab.ipynb#rosenbrock-grad"
     ],
     "n_results": 10,
-    "recall@1": 1.0,
+    "recall@1": 0.0,
     "recall@3": 1.0,
     "recall@5": 1.0,
     "recall@10": 1.0,
-    "mrr@10": 1.0,
-    "ndcg@10": 1.0
+    "mrr@10": 0.5,
+    "ndcg@10": 0.6309297535714575
    },
    "bm25": {
     "top": [
@@ -1610,7 +1610,7 @@
      "week-04/second-order-methods.pdf#p3",
      "week-01/gradient-descent-lab.ipynb#descent-loop",
      "week-01/gradient-descent-lab.ipynb#intro",
-     "week-02/lagrange-notes.md#Equality constraints"
+     "week-03/momentum-lab.ipynb#rosenbrock-grad"
     ],
     "n_results": 10,
     "recall@1": 1.0,
@@ -1626,7 +1626,7 @@
      "week-01/gradient-descent-lab.ipynb#descent-loop",
      "week-04/second-order-methods.pdf#p3",
      "week-02/lagrange-notes.md#Equality constraints",
-     "week-02/lagrange-notes.md#Inequality constraints and KKT"
+     "week-03/momentum-lab.ipynb#rosenbrock-grad"
     ],
     "n_results": 10,
     "recall@1": 1.0,
@@ -1667,7 +1667,7 @@
      "week-04/second-order-methods.pdf#p1",
      "week-01/gradient-descent-lab.ipynb#descent-loop",
      "week-02/lagrange-notes.md#Worked example",
-     "week-02/lagrange-notes.md#Equality constraints"
+     "week-03/momentum-lab.ipynb#cosine-schedule"
     ],
     "n_results": 10,
     "recall@1": 1.0,
@@ -1730,9 +1730,9 @@
     "recall@1": 0.0,
     "recall@3": 0.0,
     "recall@5": 0.0,
-    "recall@10": 1.0,
-    "mrr@10": 0.125,
-    "ndcg@10": 0.31546487678572877
+    "recall@10": 0.0,
+    "mrr@10": 0.0,
+    "ndcg@10": 0.0
    },
    "bm25": {
     "top": [
@@ -1768,19 +1768,19 @@
    },
    "hybrid": {
     "top": [
-     "week-03/momentum-lab.ipynb#rosenbrock-grad",
      "week-03/momentum-lab.ipynb#intro",
-     "week-03/momentum-lab.ipynb#cosine-schedule",
+     "week-03/momentum-lab.ipynb#rosenbrock-grad",
      "week-01/notes.md#The update rule",
-     "week-02/lagrange-notes.md#Geometric picture"
+     "week-02/lagrange-notes.md#Geometric picture",
+     "week-03/momentum-lab.ipynb#cosine-schedule"
     ],
     "n_results": 10,
-    "recall@1": 1.0,
+    "recall@1": 0.0,
     "recall@3": 1.0,
     "recall@5": 1.0,
     "recall@10": 1.0,
-    "mrr@10": 1.0,
-    "ndcg@10": 1.0
+    "mrr@10": 0.5,
+    "ndcg@10": 0.6309297535714575
    }
   }
  },
@@ -1867,8 +1867,8 @@
    "dense": {
     "top": [
      "week-01/gradient-descent-lab.ipynb#intro",
-     "week-01/gradient-descent-lab.ipynb#descent-loop",
      "week-05/adam-lab.ipynb#intro",
+     "week-01/gradient-descent-lab.ipynb#descent-loop",
      "week-02/convexity-lecture.pdf#p2",
      "week-03/momentum-notes.md#Why plain gradient descent zig-zags"
     ],
@@ -1878,15 +1878,15 @@
     "recall@5": 1.0,
     "recall@10": 1.0,
     "mrr@10": 1.0,
-    "ndcg@10": 1.0
+    "ndcg@10": 0.9197207891481876
    },
    "bm25": {
     "top": [
      "week-01/gradient-descent-lab.ipynb#intro",
      "week-01/gradient-descent-lab.ipynb#descent-loop",
      "week-03/momentum-lab.ipynb#intro",
-     "week-03/momentum-lab.ipynb#momentum-loop",
-     "week-03/momentum-notes.md#Why plain gradient descent zig-zags"
+     "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-03/momentum-lab.ipynb#momentum-loop"
     ],
     "n_results": 10,
     "recall@1": 0.5,
@@ -1916,8 +1916,8 @@
     "top": [
      "week-01/gradient-descent-lab.ipynb#intro",
      "week-01/gradient-descent-lab.ipynb#descent-loop",
-     "week-03/momentum-lab.ipynb#intro",
      "week-03/momentum-notes.md#Why plain gradient descent zig-zags",
+     "week-03/momentum-lab.ipynb#intro",
      "week-02/convexity-lecture.pdf#p2"
     ],
     "n_results": 10,
@@ -1940,66 +1940,66 @@
    "dense": {
     "top": [
      "week-05/adaptive-methods.md#Adam",
-     "week-05/adam-lab.ipynb#adam-step",
-     "week-05/adam-lab.ipynb#scaled-quadratic",
      "week-05/adam-lab.ipynb#intro",
-     "week-02/convexity-lecture.pdf#p2"
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-05/adam-lab.ipynb#scaled-quadratic"
     ],
     "n_results": 10,
     "recall@1": 0.0,
     "recall@3": 1.0,
     "recall@5": 1.0,
     "recall@10": 1.0,
-    "mrr@10": 0.5,
-    "ndcg@10": 0.6309297535714575
+    "mrr@10": 0.3333333333333333,
+    "ndcg@10": 0.5
    },
    "bm25": {
     "top": [
      "week-05/adaptive-methods.md#Adam",
      "week-03/momentum-notes.md#Nesterov momentum",
      "week-05/adam-lab.ipynb#intro",
-     "week-05/adam-lab.ipynb#scaled-quadratic",
-     "week-05/adam-lab.ipynb#adam-step"
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-05/adam-lab.ipynb#scaled-quadratic"
     ],
     "n_results": 10,
     "recall@1": 0.0,
     "recall@3": 0.0,
     "recall@5": 1.0,
     "recall@10": 1.0,
-    "mrr@10": 0.2,
-    "ndcg@10": 0.38685280723454163
+    "mrr@10": 0.25,
+    "ndcg@10": 0.43067655807339306
    },
    "tfidf": {
     "top": [
      "week-05/adaptive-methods.md#Adam",
      "week-05/adam-lab.ipynb#intro",
-     "week-05/adam-lab.ipynb#scaled-quadratic",
      "week-02/convexity-lecture.pdf#p2",
-     "week-05/adam-lab.ipynb#adam-step"
+     "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-05/adaptive-methods.md#AdamW"
     ],
     "n_results": 10,
     "recall@1": 0.0,
     "recall@3": 0.0,
-    "recall@5": 1.0,
+    "recall@5": 0.0,
     "recall@10": 1.0,
-    "mrr@10": 0.2,
-    "ndcg@10": 0.38685280723454163
+    "mrr@10": 0.16666666666666666,
+    "ndcg@10": 0.3562071871080222
    },
    "hybrid": {
     "top": [
      "week-05/adaptive-methods.md#Adam",
-     "week-05/adam-lab.ipynb#adam-step",
      "week-05/adam-lab.ipynb#intro",
-     "week-05/adam-lab.ipynb#scaled-quadratic",
-     "week-02/convexity-lecture.pdf#p2"
+     "week-05/adam-lab.ipynb#adam-step",
+     "week-02/convexity-lecture.pdf#p2",
+     "week-05/adam-lab.ipynb#scaled-quadratic"
     ],
     "n_results": 10,
     "recall@1": 0.0,
     "recall@3": 1.0,
     "recall@5": 1.0,
     "recall@10": 1.0,
-    "mrr@10": 0.5,
-    "ndcg@10": 0.6309297535714575
+    "mrr@10": 0.3333333333333333,
+    "ndcg@10": 0.5
    }
   }
  },
@@ -2012,19 +2012,19 @@
   "methods": {
    "dense": {
     "top": [
-     "week-05/adam-lab.ipynb#intro",
      "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-05/adam-lab.ipynb#intro",
      "week-05/adam-lab.ipynb#adam-step",
      "week-03/momentum-lab.ipynb#intro",
      "week-01/gradient-descent-lab.ipynb#takeaway"
     ],
     "n_results": 10,
-    "recall@1": 0.0,
+    "recall@1": 1.0,
     "recall@3": 1.0,
     "recall@5": 1.0,
     "recall@10": 1.0,
-    "mrr@10": 0.5,
-    "ndcg@10": 0.6309297535714575
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
    },
    "bm25": {
     "top": [
@@ -2060,19 +2060,19 @@
    },
    "hybrid": {
     "top": [
-     "week-05/adam-lab.ipynb#intro",
      "week-05/adam-lab.ipynb#scaled-quadratic",
+     "week-05/adam-lab.ipynb#intro",
      "week-05/adam-lab.ipynb#adam-step",
      "week-03/momentum-lab.ipynb#intro",
      "week-05/adaptive-methods.md#AdamW"
     ],
     "n_results": 10,
-    "recall@1": 0.0,
+    "recall@1": 1.0,
     "recall@3": 1.0,
     "recall@5": 1.0,
     "recall@10": 1.0,
-    "mrr@10": 0.5,
-    "ndcg@10": 0.6309297535714575
+    "mrr@10": 1.0,
+    "ndcg@10": 1.0
    }
   }
  },
@@ -2134,8 +2134,8 @@
    "hybrid": {
     "top": [
      "week-03/momentum-notes.md#Learning-rate schedules",
-     "week-01/notes.md#The update rule",
      "week-03/momentum-notes.md#Nesterov momentum",
+     "week-01/notes.md#The update rule",
      "week-01/notes.md#Choosing the learning rate",
      "week-03/momentum-lab.ipynb#lab3-takeaway"
     ],
@@ -2161,8 +2161,8 @@
      "week-03/momentum-notes.md#Heavy-ball momentum",
      "week-03/momentum-notes.md#Week 3: Momentum and learning-rate schedules",
      "week-05/adaptive-methods.md#Adam",
-     "week-05/adam-lab.ipynb#scaled-quadratic",
-     "week-05/adam-lab.ipynb#intro"
+     "week-05/adam-lab.ipynb#intro",
+     "week-05/adam-lab.ipynb#scaled-quadratic"
     ],
     "n_results": 10,
     "recall@1": 0.5,
@@ -2233,9 +2233,9 @@
     "top": [
      "week-05/adaptive-methods.md#AdamW",
      "week-05/adam-lab.ipynb#intro",
-     "week-05/adam-lab.ipynb#adam-step",
      "week-03/momentum-notes.md#Heavy-ball momentum",
-     "week-04/second-order-methods.pdf#p2"
+     "week-04/second-order-methods.pdf#p2",
+     "week-05/adaptive-methods.md#Adam"
     ],
     "n_results": 10,
     "recall@1": 0.5,
@@ -2243,7 +2243,7 @@
     "recall@5": 0.5,
     "recall@10": 1.0,
     "mrr@10": 1.0,
-    "ndcg@10": 0.8175295903539445
+    "ndcg@10": 0.8315546295836225
    },
    "bm25": {
     "top": [
@@ -2251,7 +2251,7 @@
      "week-04/sgd-notes.md#Weight decay",
      "week-04/sgd-notes.md#L1 and sparsity",
      "week-05/adam-lab.ipynb#intro",
-     "week-05/adam-lab.ipynb#scaled-quadratic"
+     "week-05/adaptive-methods.md#RMSProp"
     ],
     "n_results": 10,
     "recall@1": 0.5,
@@ -2282,8 +2282,8 @@
      "week-05/adaptive-methods.md#AdamW",
      "week-05/adam-lab.ipynb#intro",
      "week-04/sgd-notes.md#Weight decay",
-     "week-05/adam-lab.ipynb#adam-step",
-     "week-05/adam-lab.ipynb#scaled-quadratic"
+     "week-05/adaptive-methods.md#Adam",
+     "week-05/adam-lab.ipynb#adam-step"
     ],
     "n_results": 10,
     "recall@1": 0.5,
@@ -2647,9 +2647,9 @@
     "top": [
      "week-03/momentum-lab.ipynb#lab3-takeaway",
      "week-03/momentum-lab.ipynb#intro",
-     "week-03/momentum-lab.ipynb#momentum-loop",
      "week-05/adaptive-methods.md#AdamW",
-     "week-03/momentum-lab.ipynb#rosenbrock-grad"
+     "week-03/momentum-lab.ipynb#momentum-loop",
+     "week-02/lagrange-notes.md#Worked example"
     ],
     "n_results": 10
    },
@@ -2665,9 +2665,9 @@
     "top": [
      "week-03/momentum-lab.ipynb#lab3-takeaway",
      "week-03/momentum-lab.ipynb#intro",
-     "week-03/momentum-lab.ipynb#momentum-loop",
      "week-05/adaptive-methods.md#AdamW",
-     "week-03/momentum-lab.ipynb#rosenbrock-grad"
+     "week-03/momentum-lab.ipynb#momentum-loop",
+     "week-02/lagrange-notes.md#Worked example"
     ],
     "n_results": 10
    }

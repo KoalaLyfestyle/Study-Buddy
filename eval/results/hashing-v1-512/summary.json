@@ -16,8 +16,8 @@
     }
   },
   "build_seconds": {
-    "dense": 0.095,
-    "bm25+tfidf": 0.004
+    "dense": 0.082,
+    "bm25+tfidf": 0.003
   },
   "index_bytes": {
     "dense": 86016,
@@ -27,20 +27,20 @@
   },
   "latency": {
     "dense": {
-      "cold_ms": 1.63,
-      "warm_median_ms": 0.275
+      "cold_ms": 1.31,
+      "warm_median_ms": 0.265
     },
     "bm25": {
-      "cold_ms": 3.92,
-      "warm_median_ms": 0.041
+      "cold_ms": 2.64,
+      "warm_median_ms": 0.036
     },
     "tfidf": {
-      "cold_ms": 3.73,
-      "warm_median_ms": 0.025
+      "cold_ms": 2.58,
+      "warm_median_ms": 0.024
     },
     "hybrid": {
-      "cold_ms": 4.58,
-      "warm_median_ms": 0.908
+      "cold_ms": 3.1,
+      "warm_median_ms": 0.58
     }
   },
   "hybrid": {
@@ -52,17 +52,17 @@
       {
         "c": 10,
         "depth": 10,
-        "tune_mrr@10": 0.8208
+        "tune_mrr@10": 0.8292
       },
       {
         "c": 10,
         "depth": 20,
-        "tune_mrr@10": 0.8208
+        "tune_mrr@10": 0.8292
       },
       {
         "c": 10,
         "depth": 40,
-        "tune_mrr@10": 0.828
+        "tune_mrr@10": 0.8363
       },
       {
         "c": 30,
@@ -102,15 +102,15 @@
         "recall@1": 0.5,
         "recall@3": 0.6267,
         "recall@5": 0.6767,
-        "recall@10": 0.8767,
-        "mrr@10": 0.6988,
-        "ndcg@10": 0.707,
+        "recall@10": 0.8267,
+        "mrr@10": 0.6926,
+        "ndcg@10": 0.6879,
         "by_type_mrr@10": {
           "cross-week": 0.7778,
-          "equation": 1.0,
+          "equation": 0.8333,
           "exact": 1.0,
           "filtered": 0.5625,
-          "notebook": 0.5417,
+          "notebook": 0.6667,
           "paraphrase": 0.3786
         },
         "unanswerable_no_result_rate": 0.0
@@ -173,14 +173,14 @@
         "recall@3": 0.6944,
         "recall@5": 0.8056,
         "recall@10": 0.8611,
-        "mrr@10": 0.6708,
-        "ndcg@10": 0.7051,
+        "mrr@10": 0.6616,
+        "ndcg@10": 0.6978,
         "by_type_mrr@10": {
           "cross-week": 0.75,
           "equation": 1.0,
           "exact": 0.875,
           "filtered": 1.0,
-          "notebook": 0.25,
+          "notebook": 0.1667,
           "paraphrase": 0.315
         },
         "unanswerable_no_result_rate": 0.0
@@ -190,14 +190,14 @@
         "recall@3": 0.9167,
         "recall@5": 1.0,
         "recall@10": 1.0,
-        "mrr@10": 0.8815,
-        "ndcg@10": 0.9098,
+        "mrr@10": 0.8843,
+        "ndcg@10": 0.9123,
         "by_type_mrr@10": {
           "cross-week": 1.0,
           "equation": 1.0,
           "exact": 1.0,
           "filtered": 1.0,
-          "notebook": 0.2667,
+          "notebook": 0.2917,
           "paraphrase": 0.8667
         },
         "unanswerable_no_result_rate": 0.6667
@@ -205,16 +205,16 @@
       "tfidf": {
         "recall@1": 0.75,
         "recall@3": 0.8611,
-        "recall@5": 0.9167,
+        "recall@5": 0.8611,
         "recall@10": 1.0,
-        "mrr@10": 0.8792,
-        "ndcg@10": 0.9015,
+        "mrr@10": 0.8773,
+        "ndcg@10": 0.8998,
         "by_type_mrr@10": {
           "cross-week": 1.0,
           "equation": 1.0,
           "exact": 1.0,
           "filtered": 1.0,
-          "notebook": 0.1625,
+          "notebook": 0.1458,
           "paraphrase": 0.9
         },
         "unanswerable_no_result_rate": 1.0
@@ -224,14 +224,14 @@
         "recall@3": 0.8611,
         "recall@5": 0.9167,
         "recall@10": 0.9722,
-        "mrr@10": 0.8274,
-        "ndcg@10": 0.8518,
+        "mrr@10": 0.8181,
+        "ndcg@10": 0.8445,
         "by_type_mrr@10": {
           "cross-week": 1.0,
           "equation": 1.0,
           "exact": 1.0,
           "filtered": 1.0,
-          "notebook": 0.3214,
+          "notebook": 0.2381,
           "paraphrase": 0.65
         },
         "unanswerable_no_result_rate": 0.0
@@ -240,7 +240,7 @@
   },
   "decision": {
     "best_single_method": "bm25",
-    "hybrid_minus_best_mrr@10": -0.0541,
+    "hybrid_minus_best_mrr@10": -0.0662,
     "hybrid_wins_losses_vs_best": [
       2,
       3

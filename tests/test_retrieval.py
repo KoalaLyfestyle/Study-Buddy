@@ -150,3 +150,28 @@ def test_code_cell_context_is_indexed_but_never_cited(corpus):
         assert lib.check_citation(lib.read_chunk(r[0]))
     markdown = by_label["week-03/momentum-lab.ipynb#intro"]
     assert markdown[2] == markdown[1]  # Markdown cells get no extra context
+
+
+def test_code_cell_embeddings_use_the_context(corpus):
+    import numpy as np
+
+    lib, _, labels = corpus
+    for chunk_id, text, index_text, blob in lib.db.execute(
+        "SELECT chunk_id, text, index_text, embedding FROM chunks WHERE relpath LIKE '%.ipynb'"
+    ):
+        expected = np.asarray(lib.embedder.embed_documents([index_text])[0], dtype=np.float32)
+        assert np.allclose(np.frombuffer(blob, dtype=np.float32), expected), labels[chunk_id]
+
+
+def test_a_heading_only_cell_is_not_repeated_in_the_context():
+    from studybuddy.sources import parse_notebook
+
+    nb = {"cells": [
+        {"cell_type": "markdown", "source": "# Lab 3"},
+        {"cell_type": "code", "source": "x = 1"},
+        {"cell_type": "markdown", "source": "## Part two\n\nNow fit the model."},
+        {"cell_type": "code", "source": "y = 2"},
+    ]}
+    first, second = [s.context for s in parse_notebook(json.dumps(nb)) if s.location["cell_type"] == "code"]
+    assert first == "Code cell in Lab 3."
+    assert second == "Code cell in Lab 3. ## Part two Now fit the model."

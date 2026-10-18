@@ -185,8 +185,13 @@ def parse_notebook(text: str) -> list[Section]:
         context = ""
         if cell_type == "code":
             parts = [f"Code cell in {title}." if title else "Code cell."]
-            if above and above != title:
-                parts.append(" ".join(above.split())[:CONTEXT_CHARS])
+            lines = above.splitlines()
+            heading = _HEADING.match(lines[0]) if lines else None
+            if heading and heading.group(2).strip() == title:
+                lines = lines[1:]  # the title is already there
+            words = " ".join(" ".join(lines).split())[:CONTEXT_CHARS]
+            if words:
+                parts.append(words)
             context = " ".join(parts)
         else:
             above = source

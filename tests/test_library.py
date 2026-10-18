@@ -379,3 +379,13 @@ def test_an_index_from_before_parser_version_2_is_upgraded(course, make_library,
     lib.import_folder()
     assert lib.db.execute("SELECT COUNT(*) FROM chunks WHERE index_text IS NULL").fetchone()[0] == 0
     assert lib.search("gradient descent loop", k=1)
+
+
+def test_old_rows_without_index_text_are_rebuilt(course, make_library):
+    lib = make_library(course)
+    lib.import_folder()
+    lib.db.execute("UPDATE chunks SET index_text = NULL")
+    lib.db.execute("UPDATE files SET cache_key = replace(cache_key, 'parser=2', 'parser=1')")
+    report = lib.import_folder()
+    assert len(report.updated) == 3
+    assert lib.db.execute("SELECT COUNT(*) FROM chunks WHERE index_text IS NULL").fetchone()[0] == 0
