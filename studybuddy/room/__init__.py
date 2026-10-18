@@ -16,7 +16,7 @@ from pathlib import Path
 from ..library import Library
 from .build import BUILDER, build_room
 from .model import RoomValidationError, dumps, parse_room, validate_room, write_atomic
-from .render import render_room
+from .render import render_room, render_source_pages
 from .state import RoomState, apply_state, load_state
 
 __all__ = [
@@ -64,7 +64,10 @@ def save_room(library: Library, room: dict, room_dir: Path) -> SavedRoom:
     state = load_state(room_dir)
     merged, state = apply_state(room, state)
     html = render_room(merged, state, library)
+    source_pages = render_source_pages(room, library)
     room_json, page = room_dir / "room.json", room_dir / "index.html"
+    for relname, text in sorted(source_pages.items()):
+        write_atomic(room_dir / relname, text)
     write_atomic(room_json, dumps(room))
     write_atomic(page, html)
     sections = [s for c in room["chapters"] for s in c["sections"]]

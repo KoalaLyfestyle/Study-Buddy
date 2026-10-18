@@ -202,3 +202,25 @@ def test_notebook_code_is_shown_as_inert_text(library, course):
 def test_an_empty_week_says_what_to_do(library):
     with pytest.raises(ValueError, match="python -m studybuddy courses"):
         build_room(library, COURSE, 9)
+
+
+def test_citations_open_the_right_section_or_cell(library, tmp_path):
+    import re
+
+    saved = save_room(library, build_room(library, COURSE, 1), tmp_path / "room")
+    html = saved.html.read_text()
+    links = set(re.findall(r'href="(sources/[^"#]+)#([^"]+)"', html))
+    assert links, "markdown and notebook citations link to the source view"
+    for page, anchor in links:
+        target = (tmp_path / "room" / page).read_text()
+        start = target.index(f'id="{anchor}"')
+        article = target[start : target.index("</article>", start)]
+        # The anchored article holds the cited text, escaped.
+        assert "&lt;" not in anchor and "<pre><code>" in article
+    lab_cell = next(s for s in sections(build_room(library, COURSE, 1)) if s["kind"] == "worked_example")
+    chunk = library.read_chunk(lab_cell["cites"][0])
+    from studybuddy.room.render import anchor_for
+
+    page = (tmp_path / "room" / f"sources/{chunk.citation.doc_id}.html").read_text()
+    start = page.index(f'id="{anchor_for(chunk.citation.location)}"')
+    assert "def grad(x):" in page[start : page.index("</article>", start)]

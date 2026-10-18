@@ -18,7 +18,7 @@ from collections import OrderedDict
 from pathlib import PurePosixPath
 
 from ..library import Library, SearchResult
-from .model import validate_room
+from .model import location_key, validate_room
 
 BUILDER = "extractive-v1"
 
@@ -44,12 +44,7 @@ def _sentences(text: str) -> list[str]:
 
 
 def _stable_key(result: SearchResult) -> str:
-    loc = result.citation.location
-    if "page" in loc:
-        return f"page:{loc['page']}"
-    if "cell_id" in loc:
-        return f"cell:{loc['cell_id']}"
-    return "h:" + " > ".join(loc.get("headings", []))
+    return location_key(result.citation.location)
 
 
 def _blocks(texts: list[str], is_code_cell: bool) -> list[dict]:

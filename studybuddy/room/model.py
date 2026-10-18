@@ -37,6 +37,15 @@ def _validator() -> jsonschema.Draft202012Validator:
     return jsonschema.Draft202012Validator(schema)
 
 
+def location_key(location: dict) -> str:
+    """Where a passage lives, without line numbers: page, cell ID, or heading path."""
+    if "page" in location:
+        return f"page:{location['page']}"
+    if "cell_id" in location:
+        return f"cell:{location['cell_id']}"
+    return "h:" + " > ".join(location.get("headings", []))
+
+
 def _pointer(path: Iterable) -> str:
     return "/" + "/".join(str(p) for p in path)
 

@@ -10,11 +10,14 @@ progress.json.
 
 from __future__ import annotations
 
+import hashlib
 import json
 from html import escape
 from pathlib import Path
 
+from .. import sources
 from ..library import Library
+from .model import location_key
 from .state import RoomState
 
 KIND_LABEL = {
@@ -85,11 +88,59 @@ SCRIPT = """
 """
 
 
-def _source_href(library: Library | None, relpath: str, location: dict) -> str | None:
+def anchor_for(location: dict) -> str:
+    return "loc-" + hashlib.sha256(location_key(location).encode("utf-8")).hexdigest()[:12]
+
+
+def _source_href(library: Library | None, relpath: str, doc_id: str, kind: str, location: dict) -> str | None:
+    """PDFs open at the page. Markdown and notebooks open the source view at the section or cell."""
     if library is None or library.source_dir is None:
         return None
-    href = (Path(library.source_dir).resolve() / relpath).as_uri()
-    return f"{href}#page={location['page']}" if "page" in location else href
+    if kind == "pdf":
+        return f"{(Path(library.source_dir).resolve() / relpath).as_uri()}#page={location['page']}"
+    return f"sources/{doc_id}.html#{anchor_for(location)}"
+
+
+def render_source_pages(room: dict, library: Library | None) -> dict[str, str]:
+    """One read-only page per Markdown or notebook file, with an anchor per section or cell.
+
+    Returns {relative output path: html}. A file that cannot be read now is
+    skipped; its citations still show the label and chunk ID.
+    """
+    if library is None or library.source_dir is None:
+        return {}
+    pages: dict[str, str] = {}
+    for chapter in room["chapters"]:
+        relpath, kind = chapter["source"]["relpath"], chapter["source"]["kind"]
+        if kind == "pdf":
+            continue
+        try:
+            parsed = sources.parse_file(Path(library.source_dir) / relpath)
+        except (OSError, ValueError):
+            continue
+        doc_id = sources.doc_id_for(relpath)
+        parts, seen = [], set()
+        for section in parsed:
+            anchor = anchor_for(section.location)
+            if "cell_id" in section.location:
+                where = f"Cell {section.location['cell_index'] + 1} ({section.location['cell_type']})"
+            else:
+                where = " > ".join(section.location.get("headings", [])) or "Start"
+                where += f", line {section.location.get('line', 1)}"
+            ident = "" if anchor in seen else f' id="{anchor}"'
+            seen.add(anchor)
+            parts.append(
+                f'<article{ident} tabindex="-1"><p class="meta">{escape(where)}</p>'
+                f"<pre><code>{escape(section.text)}</code></pre></article>"
+            )
+        pages[f"sources/{doc_id}.html"] = (
+            "<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\">"
+            '<meta name="viewport" content="width=device-width, initial-scale=1">'
+            f"<title>{escape(relpath)}</title><style>{CSS} article:target {{ outline: 3px solid var(--accent); }}</style></head>"
+            f'<body><main id="main"><p><a href="../index.html">Back to the study room</a></p>'
+            f"<h1>{escape(relpath)}</h1>{''.join(parts)}</main></body></html>\n"
+        )
+    return pages
 
 
 def _cites_html(library: Library | None, chunk_ids: list[str]) -> str:
@@ -100,7 +151,8 @@ def _cites_html(library: Library | None, chunk_ids: list[str]) -> str:
             items.append(f"<li><code>{escape(chunk_id)}</code></li>")
             continue
         label = escape(found.citation.label())
-        href = _source_href(library, found.citation.relpath, found.citation.location)
+        c = found.citation
+        href = _source_href(library, c.relpath, c.doc_id, c.kind, c.location)
         link = f'<a href="{escape(href)}">{label}</a>' if href else label
         items.append(f'<li>{link} <span class="meta">({escape(chunk_id)})</span></li>')
     return '<div class="cites">Sources:<ul>' + "".join(items) + "</ul></div>"
