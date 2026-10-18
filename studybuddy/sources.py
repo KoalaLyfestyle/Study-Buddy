@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -73,16 +74,68 @@ def course_and_week(relpath: str, root_name: str) -> tuple[str, int | None]:
     return course, week
 
 
+@dataclass
+class Scan:
+    """What scan_folder found. Paths in `unreadable` and `outside` are relative to root."""
+
+    paths: list[Path] = field(default_factory=list)
+    unreadable: dict[str, str] = field(default_factory=dict)  # folder -> error; "." is the root
+    outside: list[str] = field(default_factory=list)  # links that lead out of the folder, skipped
+
+
+def scan(root: Path) -> Scan:
+    """Supported files under root, skipping hidden files and folders.
+
+    Folder links are not followed. A file link is kept only if it resolves
+    inside root, so a link cannot pull outside files into the library (and
+    from there into search results and the MCP server). Folders that cannot
+    be read are reported, not silently skipped.
+    """
+    result = Scan()
+    real_root = root.resolve()
+
+    def failed(err: OSError) -> None:
+        where = Path(err.filename) if err.filename else root
+        try:
+            rel = where.relative_to(root).as_posix()
+        except ValueError:
+            rel = "."
+        result.unreadable[rel or "."] = f"{type(err).__name__}: {err.strerror or err}"
+
+    for dirpath, dirnames, filenames in os.walk(root, onerror=failed, followlinks=False):
+        dirnames[:] = [d for d in dirnames if not d.startswith(".")]
+        for name in filenames:
+            if name.startswith("."):
+                continue
+            path = Path(dirpath) / name
+            if not file_kind(path):
+                continue
+            if path.is_symlink():
+                try:
+                    target = path.resolve(strict=True)
+                except (OSError, RuntimeError):
+                    continue  # a broken or looping link
+                if not target.is_relative_to(real_root):
+                    result.outside.append(path.relative_to(root).as_posix())
+                    continue
+            if path.is_file():
+                result.paths.append(path)
+    result.paths.sort()
+    result.outside.sort()
+    return result
+
+
 def scan_folder(root: Path) -> list[Path]:
-    """Supported files under root, skipping hidden files and folders."""
-    found = []
-    for path in sorted(root.rglob("*")):
-        rel = path.relative_to(root)
-        if any(part.startswith(".") for part in rel.parts):
-            continue
-        if path.is_file() and file_kind(path):
-            found.append(path)
-    return found
+    """Supported files under root (see scan)."""
+    return scan(root).paths
+
+
+def inside(root: Path, path: Path) -> bool:
+    """True if path, after following links, is inside root."""
+    try:
+        return path.resolve().is_relative_to(root.resolve())
+    except (OSError, RuntimeError):
+        return False
 
 
 def parse_file(path: Path) -> list[Section]:

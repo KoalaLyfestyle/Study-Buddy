@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import os
 import re
+from pathlib import Path
 from typing import Protocol, Sequence
 
 import numpy as np
@@ -56,21 +57,63 @@ class HashingEmbedder:
         return self.embed_documents([text])[0]
 
 
+DEFAULT_MODEL = "BAAI/bge-small-en"
+# The Hugging Face commit of DEFAULT_MODEL to use. None means "not pinned yet":
+# the revision already in the local cache is used and recorded (see below).
+# Pin it by setting the 40-character commit SHA printed by
+# `python -m studybuddy.embeddings` on a machine that has the model.
+DEFAULT_REVISION: str | None = None
+
+_COMMIT = re.compile(r"[0-9a-f]{40}")
+
+
+def _hub_cache() -> Path:
+    if os.environ.get("HF_HUB_CACHE"):
+        return Path(os.environ["HF_HUB_CACHE"])
+    home = Path(os.environ.get("HF_HOME", Path.home() / ".cache" / "huggingface"))
+    return home / "hub"
+
+
+def cached_commit(model_name: str, revision: str = "main") -> str | None:
+    """The commit SHA that `revision` points to in the local Hugging Face cache, if any.
+
+    Reads the cache's refs file only, so it needs no network and no extra package.
+    """
+    if _COMMIT.fullmatch(revision):
+        return revision
+    ref = _hub_cache() / f"models--{model_name.replace('/', '--')}" / "refs" / revision
+    try:
+        commit = ref.read_text(encoding="utf-8").strip()
+    except OSError:
+        return None
+    return commit if _COMMIT.fullmatch(commit) else None
+
+
 class SentenceTransformerEmbedder:
-    """Local sentence-transformers model, loaded on first use."""
+    """Local sentence-transformers model, loaded on first use.
+
+    The model's commit is part of `id`, and so of every file's cache key: a
+    different revision of the weights re-embeds the library instead of mixing
+    old and new vectors. Pass a commit SHA as `revision` to pin it. Without
+    one, the revision already in the local cache is pinned for this process,
+    and "unpinned" is recorded only before the first download.
+    """
 
     QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
 
-    def __init__(self, model_name: str = "BAAI/bge-small-en"):
+    def __init__(self, model_name: str = DEFAULT_MODEL, revision: str | None = None):
+        if revision is None and model_name == DEFAULT_MODEL:
+            revision = DEFAULT_REVISION
         self.model_name = model_name
-        self.id = f"st:{model_name}"
+        self.revision = cached_commit(model_name, revision or "main") or revision
+        self.id = f"st:{model_name}@{self.revision or 'unpinned'}"
         self._model = None
 
     def _load(self):
         if self._model is None:
             from sentence_transformers import SentenceTransformer
 
-            self._model = SentenceTransformer(self.model_name)
+            self._model = SentenceTransformer(self.model_name, revision=self.revision)
         return self._model
 
     def embed_documents(self, texts: Sequence[str]) -> np.ndarray:
@@ -85,8 +128,18 @@ class SentenceTransformerEmbedder:
 
 
 def default_embedder() -> Embedder:
-    """`STUDYBUDDY_EMBEDDER=hashing` for offline use; otherwise a model name."""
-    choice = os.environ.get("STUDYBUDDY_EMBEDDER", "BAAI/bge-small-en")
+    """`STUDYBUDDY_EMBEDDER=hashing` for offline use; otherwise a model name,
+    optionally with a revision: `BAAI/bge-small-en@<commit sha>`."""
+    choice = os.environ.get("STUDYBUDDY_EMBEDDER", DEFAULT_MODEL)
     if choice == "hashing":
         return HashingEmbedder()
-    return SentenceTransformerEmbedder(choice)
+    name, _, revision = choice.partition("@")
+    return SentenceTransformerEmbedder(name, revision or None)
+
+
+if __name__ == "__main__":
+    # Print the commit of the default model in the local cache, to pin DEFAULT_REVISION.
+    commit = cached_commit(DEFAULT_MODEL)
+    if commit is None:
+        raise SystemExit(f"{DEFAULT_MODEL} is not in the local Hugging Face cache ({_hub_cache()}). Import once first.")
+    print(commit)

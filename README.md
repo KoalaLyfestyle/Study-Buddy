@@ -41,7 +41,7 @@ the model or your notes yet.
    path, location (without line numbers), position, and text, so it stays
    the same across runs and when other sections of the file change.
 3. `studybuddy/embeddings.py` embeds chunks with `BAAI/bge-small-en`
-   through sentence-transformers, run locally.
+   through sentence-transformers, run locally, at a recorded model commit.
 4. `studybuddy/library.py` stores chunks and vectors in SQLite at
    `.studybuddy/library.sqlite`. Each file has a cache key made from its
    SHA-256 and the parser, chunker, and embedder versions. If any of them
@@ -55,6 +55,10 @@ import fails as a whole, for example because the embedding model cannot
 load, nothing is written and the previous index stays. If the folder has
 no supported files at all, the import stops with advice and leaves the
 index as it was, since that is usually a wrong path or an unmounted drive.
+A folder inside the course that cannot be read is reported as a failure,
+and its files keep their last good records instead of being removed.
+Links to folders are not followed, and a link to a file outside the course
+folder is skipped and reported, so it cannot pull other files into search.
 A renamed file is treated as a deleted file plus a new one. The importer
 never writes to your course folder, so your own `notes.md` files are never
 replaced.
@@ -249,7 +253,13 @@ longer than a normal refresh.
 |---|---|---|
 | `STUDYBUDDY_DATA_DIR` | `./data` | Course folder the app imports |
 | `STUDYBUDDY_INDEX_DIR` | `./.studybuddy` | Where the index is stored |
-| `STUDYBUDDY_EMBEDDER` | `BAAI/bge-small-en` | A sentence-transformers model name, or `hashing` |
+| `STUDYBUDDY_EMBEDDER` | `BAAI/bge-small-en` | A sentence-transformers model name, optionally `name@<commit sha>`, or `hashing` |
+
+The model's commit is part of each file's cache key, so new weights
+re-embed the library rather than mixing old and new vectors. The default
+model is pinned by `DEFAULT_REVISION` in `studybuddy/embeddings.py`. Until
+that is set, the commit already in the local Hugging Face cache is used and
+recorded; `python -m studybuddy.embeddings` prints it so you can pin it.
 
 ## Tests
 

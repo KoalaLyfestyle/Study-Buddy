@@ -389,3 +389,68 @@ def test_old_rows_without_index_text_are_rebuilt(course, make_library):
     report = lib.import_folder()
     assert len(report.updated) == 3
     assert lib.db.execute("SELECT COUNT(*) FROM chunks WHERE index_text IS NULL").fetchone()[0] == 0
+
+
+def test_a_link_to_a_file_outside_the_course_is_not_imported(course, make_library, tmp_path):
+    secret = tmp_path / "private.md"
+    secret.write_text("# Private\n\nbank details here\n", encoding="utf-8")
+    week = course / "intro-to-optimisation" / "week-01"
+    (week / "escape.md").symlink_to(secret)
+    (week / "alias.md").symlink_to(week / "notes.md")  # a link that stays inside is fine
+    lib = make_library(course)
+    report = lib.import_folder()
+    assert "intro-to-optimisation/week-01/escape.md" not in report.added
+    assert "intro-to-optimisation/week-01/alias.md" in report.added
+    assert report.skipped_links == ["intro-to-optimisation/week-01/escape.md"]
+    assert "outside the course folder" in report.summary()
+    assert all("bank details" not in r.text for r in lib.search("bank details", k=10))
+
+
+def test_check_citation_refuses_a_path_that_now_leads_outside(course, make_library, tmp_path):
+    lib = make_library(course)
+    lib.import_folder()
+    result = lib.search("learning rate too large", k=1)[0]
+    outside = tmp_path / "copy.md"
+    target = course / result.citation.relpath
+    outside.write_bytes(target.read_bytes())
+    target.unlink()
+    target.symlink_to(outside)  # same bytes, but now outside the folder
+    assert not lib.check_citation(result)
+
+
+def test_an_unreadable_subfolder_is_reported_and_keeps_its_records(course, make_library, monkeypatch):
+    import os
+
+    lib = make_library(course)
+    lib.import_folder()
+    blocked = course / "intro-to-optimisation" / "week-02"
+    real_scandir = os.scandir
+
+    def scandir(path="."):
+        if Path(path) == blocked:
+            raise PermissionError(13, "Permission denied", str(path))
+        return real_scandir(path)
+
+    monkeypatch.setattr(os, "scandir", scandir)
+    report = lib.import_folder()
+    assert report.removed == []
+    assert "intro-to-optimisation/week-02/" in report.failed
+    assert "could not be read" in report.failed[PDF]
+    hits = lib.search("convex function", k=3, kind="pdf")
+    assert hits and hits[0].citation.relpath == PDF and hits[0].citation.stale
+
+
+def test_an_unreadable_course_folder_says_so(course, make_library, monkeypatch):
+    import os
+
+    lib = make_library(course)
+    lib.import_folder()
+    real_scandir = os.scandir
+    monkeypatch.setattr(
+        os, "scandir",
+        lambda path=".": (_ for _ in ()).throw(PermissionError(13, "Permission denied", str(path)))
+        if Path(path) == course else real_scandir(path),
+    )
+    with pytest.raises(EmptyLibraryError, match="Cannot read course folder"):
+        lib.import_folder()
+    assert lib.chunk_count() > 0
