@@ -12,7 +12,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-PARSER_VERSION = "1"
+PARSER_VERSION = "2"  # 2: notebook code cells carry index-only context
 
 SUPPORTED_SUFFIXES = {
     ".pdf": "pdf",
@@ -38,6 +38,10 @@ class Section:
 
     text: str
     location: dict = field(default_factory=dict)
+    # Extra words used only to find this section (search and embeddings), never
+    # shown or cited. Notebook code cells get the notebook title and the
+    # Markdown cell above them, since a code cell rarely says what it does.
+    context: str = ""
 
 
 def file_kind(path: Path) -> str | None:
@@ -147,10 +151,28 @@ def parse_markdown(text: str) -> list[Section]:
     return sections
 
 
+CONTEXT_CHARS = 400
+
+
+def _notebook_title(cells: list[dict]) -> str:
+    for cell in cells:
+        if cell.get("cell_type") != "markdown":
+            continue
+        source = cell.get("source", "")
+        for line in ("".join(source) if isinstance(source, list) else source).splitlines():
+            match = _HEADING.match(line)
+            if match:
+                return match.group(2).strip()
+    return ""
+
+
 def parse_notebook(text: str) -> list[Section]:
     data = json.loads(text)
     sections = []
-    for index, cell in enumerate(data.get("cells", [])):
+    cells = data.get("cells", [])
+    title = _notebook_title(cells)
+    above = ""  # the nearest non-empty Markdown cell so far
+    for index, cell in enumerate(cells):
         cell_type = cell.get("cell_type")
         if cell_type not in ("markdown", "code"):
             continue
@@ -160,6 +182,14 @@ def parse_notebook(text: str) -> list[Section]:
         source = source.strip()
         if not source:
             continue
+        context = ""
+        if cell_type == "code":
+            parts = [f"Code cell in {title}." if title else "Code cell."]
+            if above and above != title:
+                parts.append(" ".join(above.split())[:CONTEXT_CHARS])
+            context = " ".join(parts)
+        else:
+            above = source
         sections.append(
             Section(
                 text=source,
@@ -168,6 +198,7 @@ def parse_notebook(text: str) -> list[Section]:
                     "cell_index": index,
                     "cell_type": cell_type,
                 },
+                context=context,
             )
         )
     return sections

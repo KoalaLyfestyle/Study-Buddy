@@ -53,7 +53,7 @@ class LexicalIndex:
         self.library = library
         with library._lock:
             rows = library.db.execute(
-                "SELECT c.chunk_id, c.text, f.course, f.week, f.kind FROM chunks c "
+                "SELECT c.chunk_id, COALESCE(c.index_text, c.text), f.course, f.week, f.kind FROM chunks c "
                 "JOIN files f ON f.relpath = c.relpath WHERE c.embedder = ?",
                 (library.embedder.id,),
             ).fetchall()

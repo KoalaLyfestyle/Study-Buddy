@@ -32,7 +32,10 @@ the model or your notes yet.
 1. `studybuddy/sources.py` finds supported files and splits them into
    sections: one per PDF page, one per Markdown heading, one per notebook
    cell. The course is the top-level folder; the week comes from a
-   `week-NN` folder name.
+   `week-NN` folder name. A notebook code cell also gets index-only
+   context: the notebook title and the Markdown cell above it. Search and
+   embeddings use it, but citations and chunk IDs use the cell alone, since
+   a code cell rarely says in words what it does.
 2. `studybuddy/chunking.py` cuts sections into chunks of up to 1,200
    characters at paragraph breaks. Each chunk ID is a hash of the file
    path, location (without line numbers), position, and text, so it stays
@@ -214,6 +217,25 @@ python -m studybuddy room intro-to-optimisation 1
   desktop widths, keyboard access, that progress survives a reload and
   exports, and that citations open their section. `--shots DIR` saves
   screenshots; use it on the public sample course only.
+
+### Notebook code cells (parser version 2)
+
+Adding index-only context to code cells (see step 1 of "How retrieval
+works") changed the offline comparison (`--embedder hashing`) as follows.
+The hashing stand-in is not semantic, so recheck dense with the real model.
+
+| Held-out MRR@10, notebook queries | Before | After |
+|---|---|---|
+| BM25 | 0.17 | 0.27 |
+| Dense (hashing stand-in) | 0.06 | 0.25 |
+| TF-IDF | 0.07 | 0.16 |
+| Hybrid | 0.14 | 0.32 |
+
+No other held-out query type dropped for BM25, dense, or TF-IDF. Hybrid's
+held-out paraphrase score fell from 0.75 to 0.65 (q10 lost one rank to a
+code cell), and on the tune split paraphrase fell slightly for BM25 (0.61
+to 0.58) and dense (0.43 to 0.38). Held-out has only two notebook
+queries, so treat the gain as a direction, not a size.
 
 ## Settings
 

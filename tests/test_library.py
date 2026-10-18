@@ -360,3 +360,22 @@ def test_markdown_headings_and_fences():
 def test_sample_notebook_is_valid_json():
     data = json.loads((SAMPLE / LAB).read_text())
     assert data["nbformat"] == 4
+
+
+def test_an_index_from_before_parser_version_2_is_upgraded(course, make_library, tmp_path):
+    import sqlite3
+
+    index = tmp_path / "old-index"
+    index.mkdir()
+    old_schema = library_module.SCHEMA.replace(
+        ",\n    index_text TEXT                -- text plus index-only context; NULL in old indexes means text", ""
+    )
+    assert "index_text" not in old_schema
+    db = sqlite3.connect(index / "library.sqlite")
+    db.executescript(old_schema)
+    db.close()
+    lib = make_library(course, index="old-index")
+    assert "index_text" in {row[1] for row in lib.db.execute("PRAGMA table_info(chunks)")}
+    lib.import_folder()
+    assert lib.db.execute("SELECT COUNT(*) FROM chunks WHERE index_text IS NULL").fetchone()[0] == 0
+    assert lib.search("gradient descent loop", k=1)

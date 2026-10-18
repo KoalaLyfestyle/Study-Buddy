@@ -44,7 +44,8 @@ CREATE TABLE IF NOT EXISTS chunks (
     char_start INTEGER NOT NULL,
     char_end INTEGER NOT NULL,
     embedder TEXT NOT NULL,
-    embedding BLOB NOT NULL
+    embedding BLOB NOT NULL,
+    index_text TEXT                -- text plus index-only context; NULL in old indexes means text
 );
 CREATE INDEX IF NOT EXISTS chunks_relpath ON chunks(relpath);
 """
@@ -134,6 +135,9 @@ class Library:
             str(self.index_dir / "library.sqlite"), isolation_level=None, check_same_thread=False
         )
         self.db.executescript(SCHEMA)
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(chunks)")}
+        if "index_text" not in columns:  # an index made before parser version 2
+            self.db.execute("ALTER TABLE chunks ADD COLUMN index_text TEXT")
         if source_dir is None:
             row = self.db.execute("SELECT value FROM meta WHERE key='root'").fetchone()
             source_dir = row[0] if row else "data"
@@ -219,7 +223,9 @@ class Library:
                 return
             report.files_parsed += 1
             sections = sources.parse_file(path)
-            chunks = _unique_ids([c for s in sections for c in chunk_section(doc_id, s.text, s.location)])
+            chunks = _unique_ids(
+                [c for s in sections for c in chunk_section(doc_id, s.text, s.location, s.context)]
+            )
         except Exception as exc:  # a bad file must not stop the import
             error = f"{type(exc).__name__}: {exc}"
             report.failed[relpath] = error
@@ -236,7 +242,7 @@ class Library:
             return
 
         was_indexed = previous is not None and (previous[1] == "ok" or self._has_chunks(relpath))
-        vectors = self.embedder.embed_documents([c.text for c in chunks])
+        vectors = self.embedder.embed_documents([c.index_text for c in chunks])
         report.chunks_embedded += len(chunks)
         self.db.execute("DELETE FROM chunks WHERE relpath=?", (relpath,))
         self.db.execute(
@@ -244,12 +250,14 @@ class Library:
             (relpath, doc_id, kind, course, week, sha, cache_key, "ok", None, len(chunks), time.time()),
         )
         self.db.executemany(
-            "INSERT INTO chunks VALUES (?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO chunks (chunk_id, relpath, ordinal, text, location, char_start, char_end, "
+            "embedder, embedding, index_text) VALUES (?,?,?,?,?,?,?,?,?,?)",
             [
                 (
                     c.chunk_id, relpath, c.ordinal, c.text, json.dumps(c.location),
                     c.char_start, c.char_end, self.embedder.id,
                     np.asarray(v, dtype=np.float32).tobytes(),
+                    c.index_text,
                 )
                 for c, v in zip(chunks, vectors)
             ],

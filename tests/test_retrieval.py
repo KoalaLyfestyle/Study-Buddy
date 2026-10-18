@@ -121,3 +121,32 @@ def test_bad_label_fails_clearly(tmp_path):
     queries.write_text(json.dumps({"id": "x", "type": "exact", "split": "tune", "query": "q", "relevant": ["week-09/none.md#Nope"]}) + "\n")
     with pytest.raises(SystemExit, match="labels match no chunk"):
         evaluate.main(["--embedder", "hashing", "--queries", str(queries), "--out", str(tmp_path / "o"), "--repeat", "1"])
+
+
+def test_code_cells_are_found_by_the_words_around_them(corpus):
+    """q25 (a tune query): the code cell, not only the Markdown intro, ranks near the top."""
+    lib, lex, labels = corpus
+    top = [labels[h.chunk_id] for h in lex.bm25("code for the gradient of the Rosenbrock function", k=3)]
+    assert "week-03/momentum-lab.ipynb#rosenbrock-grad" in top
+
+
+def test_code_cell_context_is_indexed_but_never_cited(corpus):
+    lib, _, labels = corpus
+    rows = lib.db.execute(
+        "SELECT c.chunk_id, c.text, c.index_text, c.location FROM chunks c WHERE c.relpath LIKE '%momentum-lab.ipynb'"
+    ).fetchall()
+    by_label = {labels[r[0]]: r for r in rows}
+    chunk_id, text, index_text, location = by_label["week-03/momentum-lab.ipynb#rosenbrock-grad"]
+    assert text.startswith("import numpy as np") and "Rosenbrock" not in text
+    assert index_text.startswith("Code cell in Lab 3: momentum on the Rosenbrock valley.")
+    assert index_text.endswith(text)
+    # The ID depends on the cited text only, as before parser version 2.
+    from studybuddy.chunking import make_chunk_id
+    from studybuddy.sources import doc_id_for
+
+    relpath = next(r for r in lib.db.execute("SELECT relpath FROM chunks WHERE chunk_id=?", (chunk_id,)))[0]
+    assert chunk_id == make_chunk_id(doc_id_for(relpath), json.loads(location), 0, text)
+    for r in rows:
+        assert lib.check_citation(lib.read_chunk(r[0]))
+    markdown = by_label["week-03/momentum-lab.ipynb#intro"]
+    assert markdown[2] == markdown[1]  # Markdown cells get no extra context
