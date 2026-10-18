@@ -62,6 +62,10 @@ pip install -r requirements.lock     # exact versions; requirements.txt lists th
 ollama pull mistral
 ```
 
+The lock covers macOS, Linux, and Windows; the CUDA packages install on
+Linux only. After changing `requirements.txt`, regenerate it with
+`uv pip compile requirements.txt --universal --python-version 3.12 -o requirements.lock`.
+
 ## Use
 
 Put your files in `data/`, one folder per course:
