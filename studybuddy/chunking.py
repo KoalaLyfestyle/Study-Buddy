@@ -19,7 +19,7 @@ class Chunk:
     location: dict
     char_start: int  # offsets into the section text
     char_end: int
-    index_text: str = ""  # what search and embeddings see: context plus text
+    index_text: str = ""  # what keyword search sees: context plus text (embeddings use text)
 
     def __post_init__(self):
         if not self.index_text:

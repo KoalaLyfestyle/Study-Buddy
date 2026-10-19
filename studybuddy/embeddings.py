@@ -58,11 +58,10 @@ class HashingEmbedder:
 
 
 DEFAULT_MODEL = "BAAI/bge-small-en"
-# The Hugging Face commit of DEFAULT_MODEL to use. None means "not pinned yet":
-# the revision already in the local cache is used and recorded (see below).
-# Pin it by setting the 40-character commit SHA printed by
-# `python -m studybuddy.embeddings` on a machine that has the model.
-DEFAULT_REVISION: str | None = None
+# The Hugging Face commit of DEFAULT_MODEL to use, checked on Winston's Mac on
+# 19 October 2026 with `python -m studybuddy.embeddings`. Set it to None to use
+# whatever commit is in the local cache (or the Hub's main) instead.
+DEFAULT_REVISION: str | None = "2275a7bdee235e9b4f01fa73aa60d3311983cfea"
 
 _COMMIT = re.compile(r"[0-9a-f]{40}")
 

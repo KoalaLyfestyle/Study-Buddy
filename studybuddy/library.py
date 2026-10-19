@@ -261,7 +261,9 @@ class Library:
             return
 
         was_indexed = previous is not None and (previous[1] == "ok" or self._has_chunks(relpath))
-        vectors = self.embedder.embed_documents([c.index_text for c in chunks])
+        # Dense vectors use the cited text alone. The index-only context helps
+        # keyword search (BM25, TF-IDF) but made the real model's ranking worse.
+        vectors = self.embedder.embed_documents([c.text for c in chunks])
         report.chunks_embedded += len(chunks)
         self.db.execute("DELETE FROM chunks WHERE relpath=?", (relpath,))
         self.db.execute(

@@ -33,9 +33,9 @@ the model or your notes yet.
    sections: one per PDF page, one per Markdown heading, one per notebook
    cell. The course is the top-level folder; the week comes from a
    `week-NN` folder name. A notebook code cell also gets index-only
-   context: the notebook title and the Markdown cell above it. Search and
-   embeddings use it, but citations and chunk IDs use the cell alone, since
-   a code cell rarely says in words what it does.
+   context: the notebook title and the Markdown cell above it. Keyword
+   search (BM25 and TF-IDF) uses it, since a code cell rarely says in words
+   what it does. Embeddings, citations, and chunk IDs use the cell alone.
 2. `studybuddy/chunking.py` cuts sections into chunks of up to 1,200
    characters at paragraph breaks. Each chunk ID is a hash of the file
    path, location (without line numbers), position, and text, so it stays
@@ -233,24 +233,33 @@ python -m studybuddy room intro-to-optimisation 1
 
 ### Notebook code cells (parser version 2)
 
-Adding index-only context to code cells (see step 1 of "How retrieval
-works") changed the offline comparison (`--embedder hashing`) as follows.
-The hashing stand-in is not semantic, so recheck dense with the real model.
+Code cells get index-only context for keyword search (see step 1 of "How
+retrieval works"). Dense vectors use the cell text alone: an earlier
+version of this change also embedded the context, and with the real model
+that lowered held-out dense MRR@10 from 0.782 to 0.708 (notebook queries
+0.67 to 0.50, equation queries 0.50 to 0.22).
 
-| Held-out MRR@10, notebook queries | Before | After |
+With the real model (`BAAI/bge-small-en` at the pinned commit), checked on
+a Mac: dense is unchanged from before (held-out MRR@10 0.782, notebook
+0.67), BM25's held-out notebook MRR@10 rises to 0.29, and hybrid's
+held-out MRR@10 is 0.889.
+
+Offline comparison (`--embedder hashing`), held-out MRR@10 on notebook
+queries:
+
+| Method | Before | After |
 |---|---|---|
 | BM25 | 0.17 | 0.29 |
-| Dense (hashing stand-in) | 0.06 | 0.17 |
+| Dense (hashing stand-in) | 0.06 | 0.06 |
 | TF-IDF | 0.07 | 0.15 |
-| Hybrid | 0.14 | 0.24 |
+| Hybrid | 0.14 | 0.20 |
 
-No other held-out query type dropped for BM25, dense, or TF-IDF, and
-their overall held-out MRR@10 rose slightly. Hybrid got worse overall on
-held-out (0.835 to 0.818): its paraphrase score fell from 0.75 to 0.65
-(q10 lost one rank to a code cell). On the tune split, paraphrase fell
-for BM25 (0.61 to 0.58), dense (0.43 to 0.38), and hybrid (0.59 to 0.55),
-and dense's equation score fell from 1.00 to 0.83. Held-out has only two
-notebook queries, so treat the gain as a direction, not a size.
+Offline, no other held-out query type dropped for BM25 or TF-IDF, and dense
+is unchanged. Hybrid with the hashing stand-in got worse overall on
+held-out (0.835 to 0.786), mostly paraphrase (0.75 to 0.55), so judge
+hybrid by the real-model numbers above. On the tune split, paraphrase fell
+for BM25 (0.61 to 0.58) and hybrid (0.59 to 0.52). Held-out has only two
+notebook queries, so treat the notebook gain as a direction, not a size.
 
 The parser version change makes the next import re-read and re-embed
 every file once, not only notebooks. With the real model that takes
@@ -266,10 +275,11 @@ longer than a normal refresh.
 
 The model's commit is part of each file's cache key, so new weights
 re-embed the library rather than mixing old and new vectors. The default
-model is pinned by `DEFAULT_REVISION` in `studybuddy/embeddings.py`. Until
-that is set, the commit already in the local Hugging Face cache is used and
-recorded (or, before the first download, the one the Hub names);
-`python -m studybuddy.embeddings` prints it so you can pin it. After
+model is pinned to commit `2275a7bd` by `DEFAULT_REVISION` in
+`studybuddy/embeddings.py`. Another model without `@<sha>` uses the commit
+already in the local Hugging Face cache (or, before the first download,
+the one the Hub names); `python -m studybuddy.embeddings` prints the
+cached commit of the default model. After
 upgrading from a version without this, run `import` once: the new model ID
 re-embeds the library.
 

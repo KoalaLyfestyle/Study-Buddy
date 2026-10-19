@@ -39,7 +39,7 @@ class Section:
 
     text: str
     location: dict = field(default_factory=dict)
-    # Extra words used only to find this section (search and embeddings), never
+    # Extra words used only to find this section by keyword search, never
     # shown or cited. Notebook code cells get the notebook title and the
     # Markdown cell above them, since a code cell rarely says what it does.
     context: str = ""

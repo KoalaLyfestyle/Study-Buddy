@@ -152,14 +152,17 @@ def test_code_cell_context_is_indexed_but_never_cited(corpus):
     assert markdown[2] == markdown[1]  # Markdown cells get no extra context
 
 
-def test_code_cell_embeddings_use_the_context(corpus):
+def test_code_cell_embeddings_use_the_cell_text_only(corpus):
+    """The context is for keyword search; with the real model it made dense ranking worse."""
     import numpy as np
 
     lib, _, labels = corpus
-    for chunk_id, text, index_text, blob in lib.db.execute(
+    rows = lib.db.execute(
         "SELECT chunk_id, text, index_text, embedding FROM chunks WHERE relpath LIKE '%.ipynb'"
-    ):
-        expected = np.asarray(lib.embedder.embed_documents([index_text])[0], dtype=np.float32)
+    ).fetchall()
+    assert any(index_text != text for _, text, index_text, _ in rows)
+    for chunk_id, text, index_text, blob in rows:
+        expected = np.asarray(lib.embedder.embed_documents([text])[0], dtype=np.float32)
         assert np.allclose(np.frombuffer(blob, dtype=np.float32), expected), labels[chunk_id]
 
 

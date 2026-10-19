@@ -16,8 +16,8 @@
     }
   },
   "build_seconds": {
-    "dense": 0.082,
-    "bm25+tfidf": 0.003
+    "dense": 0.07,
+    "bm25+tfidf": 0.002
   },
   "index_bytes": {
     "dense": 86016,
@@ -27,72 +27,72 @@
   },
   "latency": {
     "dense": {
-      "cold_ms": 1.31,
-      "warm_median_ms": 0.265
+      "cold_ms": 1.01,
+      "warm_median_ms": 0.269
     },
     "bm25": {
-      "cold_ms": 2.64,
+      "cold_ms": 2.62,
       "warm_median_ms": 0.036
     },
     "tfidf": {
-      "cold_ms": 2.58,
-      "warm_median_ms": 0.024
+      "cold_ms": 2.62,
+      "warm_median_ms": 0.019
     },
     "hybrid": {
-      "cold_ms": 3.1,
-      "warm_median_ms": 0.58
+      "cold_ms": 3.19,
+      "warm_median_ms": 0.362
     }
   },
   "hybrid": {
     "chosen": {
       "c": 30,
-      "depth": 40
+      "depth": 10
     },
     "grid": [
       {
         "c": 10,
         "depth": 10,
-        "tune_mrr@10": 0.8292
+        "tune_mrr@10": 0.8042
       },
       {
         "c": 10,
         "depth": 20,
-        "tune_mrr@10": 0.8292
+        "tune_mrr@10": 0.7875
       },
       {
         "c": 10,
         "depth": 40,
-        "tune_mrr@10": 0.8363
+        "tune_mrr@10": 0.8
       },
       {
         "c": 30,
         "depth": 10,
-        "tune_mrr@10": 0.8542
+        "tune_mrr@10": 0.8292
       },
       {
         "c": 30,
         "depth": 20,
-        "tune_mrr@10": 0.8542
+        "tune_mrr@10": 0.8092
       },
       {
         "c": 30,
         "depth": 40,
-        "tune_mrr@10": 0.8613
+        "tune_mrr@10": 0.8213
       },
       {
         "c": 60,
         "depth": 10,
-        "tune_mrr@10": 0.8542
+        "tune_mrr@10": 0.8292
       },
       {
         "c": 60,
         "depth": 20,
-        "tune_mrr@10": 0.8542
+        "tune_mrr@10": 0.8092
       },
       {
         "c": 60,
         "depth": 40,
-        "tune_mrr@10": 0.8613
+        "tune_mrr@10": 0.8185
       }
     ]
   },
@@ -100,18 +100,18 @@
     "tune": {
       "dense": {
         "recall@1": 0.5,
-        "recall@3": 0.6267,
-        "recall@5": 0.6767,
-        "recall@10": 0.8267,
+        "recall@3": 0.6017,
+        "recall@5": 0.6517,
+        "recall@10": 0.8017,
         "mrr@10": 0.6926,
-        "ndcg@10": 0.6879,
+        "ndcg@10": 0.6726,
         "by_type_mrr@10": {
           "cross-week": 0.7778,
-          "equation": 0.8333,
+          "equation": 1.0,
           "exact": 1.0,
           "filtered": 0.5625,
-          "notebook": 0.6667,
-          "paraphrase": 0.3786
+          "notebook": 0.4167,
+          "paraphrase": 0.4286
         },
         "unanswerable_no_result_rate": 0.0
       },
@@ -150,19 +150,19 @@
         "unanswerable_no_result_rate": 0.3333
       },
       "hybrid": {
-        "recall@1": 0.66,
-        "recall@3": 0.8267,
+        "recall@1": 0.61,
+        "recall@3": 0.8017,
         "recall@5": 0.8767,
-        "recall@10": 0.9533,
-        "mrr@10": 0.8613,
-        "ndcg@10": 0.8561,
+        "recall@10": 0.9033,
+        "mrr@10": 0.8292,
+        "ndcg@10": 0.8153,
         "by_type_mrr@10": {
           "cross-week": 1.0,
           "equation": 1.0,
           "exact": 1.0,
           "filtered": 1.0,
-          "notebook": 0.8333,
-          "paraphrase": 0.5452
+          "notebook": 0.6667,
+          "paraphrase": 0.5167
         },
         "unanswerable_no_result_rate": 0.0
       }
@@ -170,17 +170,17 @@
     "heldout": {
       "dense": {
         "recall@1": 0.5,
-        "recall@3": 0.6944,
-        "recall@5": 0.8056,
+        "recall@3": 0.6389,
+        "recall@5": 0.75,
         "recall@10": 0.8611,
-        "mrr@10": 0.6616,
-        "ndcg@10": 0.6978,
+        "mrr@10": 0.65,
+        "ndcg@10": 0.692,
         "by_type_mrr@10": {
           "cross-week": 0.75,
           "equation": 1.0,
           "exact": 0.875,
           "filtered": 1.0,
-          "notebook": 0.1667,
+          "notebook": 0.0625,
           "paraphrase": 0.315
         },
         "unanswerable_no_result_rate": 0.0
@@ -220,19 +220,19 @@
         "unanswerable_no_result_rate": 1.0
       },
       "hybrid": {
-        "recall@1": 0.6389,
-        "recall@3": 0.8611,
-        "recall@5": 0.9167,
-        "recall@10": 0.9722,
-        "mrr@10": 0.8181,
-        "ndcg@10": 0.8445,
+        "recall@1": 0.5833,
+        "recall@3": 0.8056,
+        "recall@5": 0.9444,
+        "recall@10": 1.0,
+        "mrr@10": 0.7857,
+        "ndcg@10": 0.8348,
         "by_type_mrr@10": {
           "cross-week": 1.0,
           "equation": 1.0,
           "exact": 1.0,
           "filtered": 1.0,
-          "notebook": 0.2381,
-          "paraphrase": 0.65
+          "notebook": 0.1964,
+          "paraphrase": 0.55
         },
         "unanswerable_no_result_rate": 0.0
       }
@@ -240,10 +240,10 @@
   },
   "decision": {
     "best_single_method": "bm25",
-    "hybrid_minus_best_mrr@10": -0.0662,
+    "hybrid_minus_best_mrr@10": -0.0986,
     "hybrid_wins_losses_vs_best": [
-      2,
-      3
+      1,
+      4
     ],
     "adopt_hybrid": false,
     "rule": "adopt hybrid only with a semantic embedder, held-out MRR@10 gain >= 0.05, and no loss in held-out Recall@5"
