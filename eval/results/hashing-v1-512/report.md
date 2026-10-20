@@ -46,12 +46,15 @@ MRR@10 by query type:
 
 ## Cost
 
-| Method | Build (s) | Index size (bytes) | Cold query (ms) | Warm median (ms) |
-|---|---|---|---|---|
-| dense | 0.070 | 86016 | 1.01 | 0.269 |
-| bm25 | 0.002 | 40960 | 2.62 | 0.036 |
-| tfidf | 0.002 | 8016 | 2.62 | 0.019 |
-| hybrid | 0.072 | 126976 | 3.19 | 0.362 |
+Build and query times change on every run, so they are printed to the console and saved
+next to this file in `timings.json`, which git ignores.
+
+| Method | Index size (bytes) |
+|---|---|
+| dense | 86016 |
+| bm25 | 40960 |
+| tfidf | 8016 |
+| hybrid | 126976 |
 
 Notes on the columns:
 

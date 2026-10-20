@@ -38,6 +38,7 @@ RRF_DEPTH = (10, 20, 40)
 # Adopt hybrid only if it beats the best single method on held-out MRR by at
 # least this much and does not lose Recall@5. Fixed before looking at results.
 ADOPT_MARGIN = 0.05
+TIMING_KEYS = ("build_seconds", "latency")  # vary run to run; kept out of tracked files
 
 
 @dataclass
@@ -283,7 +284,12 @@ def run(args) -> dict:
 
     out = Path(args.out) if args.out else ROOT / "eval" / "results" / re.sub(r"[^A-Za-z0-9.-]+", "_", embedder.id)
     out.mkdir(parents=True, exist_ok=True)
-    (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    # Timings change on every run, so they go to an untracked timings.json and the
+    # tracked files keep only what is reproducible (#12).
+    timings = {k: summary[k] for k in TIMING_KEYS}
+    stable = {k: v for k, v in summary.items() if k not in TIMING_KEYS}
+    (out / "summary.json").write_text(json.dumps(stable, indent=2) + "\n")
+    (out / "timings.json").write_text(json.dumps(timings, indent=2) + "\n")
     with open(out / "failures.jsonl", "w") as fh:
         for r in per_query:
             for method, e in r["methods"].items():
@@ -297,8 +303,8 @@ def run(args) -> dict:
                                          "type": r["type"], "query": r["query"], "expected": expected,
                                          "top": e["top"][:3]}) + "\n")
     (out / "per_query.json").write_text(json.dumps(per_query, indent=1) + "\n")
-    (out / "report.md").write_text(render_report(summary))
-    print((out / "report.md").read_text())
+    (out / "report.md").write_text(render_report(summary, timings=False))
+    print(render_report(summary, timings=True))
     print(f"Wrote {out}")
     return summary
 
@@ -316,7 +322,9 @@ def _named(name: str) -> Embedder:
     return SentenceTransformerEmbedder(name)
 
 
-def render_report(s: dict) -> str:
+def render_report(s: dict, timings: bool = True) -> str:
+    """The Markdown report. With timings=False the Cost table keeps only index sizes,
+    so the tracked report.md is the same on every run."""
     lines = [f"# Retrieval comparison: {s['embedder']}", ""]
     if not s["semantic"]:
         lines += [
@@ -348,13 +356,21 @@ def render_report(s: dict) -> str:
         for method, m in s["results"][split].items():
             lines.append(f"| {method} | " + " | ".join(f"{m['by_type_mrr@10'][t]:.2f}" for t in types) + " |")
         lines.append("")
-    lines += ["## Cost", "", "| Method | Build (s) | Index size (bytes) | Cold query (ms) | Warm median (ms) |",
-              "|---|---|---|---|---|"]
-    build = {"dense": s["build_seconds"]["dense"], "bm25": s["build_seconds"]["bm25+tfidf"],
-             "tfidf": s["build_seconds"]["bm25+tfidf"],
-             "hybrid": s["build_seconds"]["dense"] + s["build_seconds"]["bm25+tfidf"]}
-    for method, lat in s["latency"].items():
-        lines.append(f"| {method} | {build[method]:.3f} | {s['index_bytes'][method]} | {lat['cold_ms']} | {lat['warm_median_ms']} |")
+    if timings:
+        lines += ["## Cost", "", "| Method | Build (s) | Index size (bytes) | Cold query (ms) | Warm median (ms) |",
+                  "|---|---|---|---|---|"]
+        build = {"dense": s["build_seconds"]["dense"], "bm25": s["build_seconds"]["bm25+tfidf"],
+                 "tfidf": s["build_seconds"]["bm25+tfidf"],
+                 "hybrid": s["build_seconds"]["dense"] + s["build_seconds"]["bm25+tfidf"]}
+        for method, lat in s["latency"].items():
+            lines.append(f"| {method} | {build[method]:.3f} | {s['index_bytes'][method]} | {lat['cold_ms']} | {lat['warm_median_ms']} |")
+    else:
+        lines += ["## Cost", "",
+                  "Build and query times change on every run, so they are printed to the console and saved",
+                  "next to this file in `timings.json`, which git ignores.", "",
+                  "| Method | Index size (bytes) |", "|---|---|"]
+        for method in s["index_bytes"]:
+            lines.append(f"| {method} | {s['index_bytes'][method]} |")
     d = s["decision"]
     lines += [
         "",

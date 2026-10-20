@@ -109,11 +109,27 @@ def test_evaluate_command_writes_report_and_failures(tmp_path, capsys):
     # The hashing stand-in can never justify adopting hybrid, and the report says it is undecided.
     assert summary["decision"]["adopt_hybrid"] is False
     assert "Not decided" in (out / "report.md").read_text()
-    assert all(v["cold_ms"] > 0 for v in summary["latency"].values())
+    timings = json.loads((out / "timings.json").read_text())
+    assert all(v["cold_ms"] > 0 for v in timings["latency"].values())
+    assert "latency" not in summary and "build_seconds" not in summary
     assert set(summary["results"]["heldout"]) == {"dense", "bm25", "tfidf", "hybrid"}
     assert (out / "report.md").read_text().startswith("# Retrieval comparison")
     for line in (out / "failures.jsonl").read_text().splitlines():
         assert json.loads(line)["kind"] in {"miss@5", "answered-unanswerable"}
+
+
+def test_rerunning_the_evaluation_gives_the_same_tracked_files(tmp_path, capsys):
+    # Regression for #12: timings used to land in summary.json and report.md, so every
+    # run dirtied the committed results. Only timings.json (git-ignored) may change.
+    out = tmp_path / "results"
+    tracked = ["summary.json", "report.md", "per_query.json", "failures.jsonl"]
+    evaluate.main(["--embedder", "hashing", "--out", str(out), "--repeat", "1"])
+    first = {name: (out / name).read_bytes() for name in tracked}
+    evaluate.main(["--embedder", "hashing", "--out", str(out), "--repeat", "1"])
+    assert {name: (out / name).read_bytes() for name in tracked} == first
+    assert "| Index size (bytes) |" in first["report.md"].decode()
+    # The console copy of the report still has the full Cost table.
+    assert "Warm median (ms)" in capsys.readouterr().out
 
 
 def test_bad_label_fails_clearly(tmp_path):
