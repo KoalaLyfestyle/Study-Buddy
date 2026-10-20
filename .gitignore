@@ -12,3 +12,6 @@ data/*
 
 # Local virtual environment
 .venv/
+
+# Evaluation timings change on every run (#12)
+eval/results/*/timings.json
