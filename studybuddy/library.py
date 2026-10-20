@@ -44,7 +44,8 @@ CREATE TABLE IF NOT EXISTS chunks (
     char_start INTEGER NOT NULL,
     char_end INTEGER NOT NULL,
     embedder TEXT NOT NULL,
-    embedding BLOB NOT NULL
+    embedding BLOB NOT NULL,
+    index_text TEXT                -- text plus index-only context; NULL in old indexes means text
 );
 CREATE INDEX IF NOT EXISTS chunks_relpath ON chunks(relpath);
 """
@@ -72,6 +73,7 @@ class ImportReport:
     unchanged: list[str] = field(default_factory=list)
     removed: list[str] = field(default_factory=list)
     failed: dict[str, str] = field(default_factory=dict)
+    skipped_links: list[str] = field(default_factory=list)  # links that lead outside the course folder
     files_parsed: int = 0
     chunks_embedded: int = 0
 
@@ -83,6 +85,8 @@ class ImportReport:
         )
         for relpath, error in sorted(self.failed.items()):
             text += f"\n  failed: {relpath}: {error}"
+        for relpath in self.skipped_links:
+            text += f"\n  skipped: {relpath}: a link to a file outside the course folder or in a hidden folder"
         return text
 
 
@@ -110,7 +114,7 @@ class Citation:
         else:
             where = f"line {loc.get('line', 1)}"
         label = f"{self.relpath}, {where}"
-        return label + " (out of date: the file changed and failed to re-import)" if self.stale else label
+        return label + " (out of date: the last import of this file failed, so this is its last good version)" if self.stale else label
 
 
 @dataclass(frozen=True)
@@ -134,6 +138,9 @@ class Library:
             str(self.index_dir / "library.sqlite"), isolation_level=None, check_same_thread=False
         )
         self.db.executescript(SCHEMA)
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(chunks)")}
+        if "index_text" not in columns:  # an index made before parser version 2
+            self.db.execute("ALTER TABLE chunks ADD COLUMN index_text TEXT")
         if source_dir is None:
             row = self.db.execute("SELECT value FROM meta WHERE key='root'").fetchone()
             source_dir = row[0] if row else "data"
@@ -165,15 +172,22 @@ class Library:
                 f"Course folder {root} does not exist. Create it and add course files. "
                 + empty_folder_message(root)
             )
-        paths = sources.scan_folder(root)
-        if not paths:
+        found = sources.scan(root)
+        if "." in found.unreadable:
+            raise EmptyLibraryError(
+                f"Cannot read course folder {root} ({found.unreadable['.']}). "
+                "Check its permissions, then import again. The index was left as it was."
+            )
+        if not found.paths:
             # Leave the index alone: an empty folder is more often an
             # unmounted drive or a wrong path than a deliberate wipe.
             raise EmptyLibraryError(empty_folder_message(root))
         with self._lock:
-            return self._import_paths(root, paths)
+            report = self._import_paths(root, found.paths, found.unreadable)
+        report.skipped_links = found.outside
+        return report
 
-    def _import_paths(self, root: Path, paths: list[Path]) -> ImportReport:
+    def _import_paths(self, root: Path, paths: list[Path], unreadable: dict[str, str] | None = None) -> ImportReport:
         report = ImportReport()
         db = self.db
         db.execute("BEGIN IMMEDIATE")
@@ -196,7 +210,16 @@ class Library:
                 seen.add(relpath)
                 self._import_file(path, relpath, existing.get(relpath), report)
 
+            for folder, error in sorted((unreadable or {}).items()):
+                report.failed[f"{folder}/"] = f"Folder could not be read: {error}"
             for relpath in sorted(set(existing) - seen):
+                folder = _unreadable_parent(relpath, unreadable or {})
+                if folder is not None:
+                    # Not deleted: we could not look. Keep its last good records, marked out of date.
+                    error = f"Folder {folder} could not be read: {unreadable[folder]}"
+                    db.execute("UPDATE files SET status='error', error=? WHERE relpath=?", (error, relpath))
+                    report.failed[relpath] = error
+                    continue
                 db.execute("DELETE FROM chunks WHERE relpath=?", (relpath,))
                 db.execute("DELETE FROM files WHERE relpath=?", (relpath,))
                 report.removed.append(relpath)
@@ -219,7 +242,9 @@ class Library:
                 return
             report.files_parsed += 1
             sections = sources.parse_file(path)
-            chunks = _unique_ids([c for s in sections for c in chunk_section(doc_id, s.text, s.location)])
+            chunks = _unique_ids(
+                [c for s in sections for c in chunk_section(doc_id, s.text, s.location, s.context)]
+            )
         except Exception as exc:  # a bad file must not stop the import
             error = f"{type(exc).__name__}: {exc}"
             report.failed[relpath] = error
@@ -236,6 +261,8 @@ class Library:
             return
 
         was_indexed = previous is not None and (previous[1] == "ok" or self._has_chunks(relpath))
+        # Dense vectors use the cited text alone. The index-only context helps
+        # keyword search (BM25, TF-IDF) but made the real model's ranking worse.
         vectors = self.embedder.embed_documents([c.text for c in chunks])
         report.chunks_embedded += len(chunks)
         self.db.execute("DELETE FROM chunks WHERE relpath=?", (relpath,))
@@ -244,12 +271,14 @@ class Library:
             (relpath, doc_id, kind, course, week, sha, cache_key, "ok", None, len(chunks), time.time()),
         )
         self.db.executemany(
-            "INSERT INTO chunks VALUES (?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO chunks (chunk_id, relpath, ordinal, text, location, char_start, char_end, "
+            "embedder, embedding, index_text) VALUES (?,?,?,?,?,?,?,?,?,?)",
             [
                 (
                     c.chunk_id, relpath, c.ordinal, c.text, json.dumps(c.location),
                     c.char_start, c.char_end, self.embedder.id,
                     np.asarray(v, dtype=np.float32).tobytes(),
+                    c.index_text,
                 )
                 for c, v in zip(chunks, vectors)
             ],
@@ -386,13 +415,25 @@ class Library:
     def check_citation(self, result: SearchResult) -> bool:
         """True if the citation still points at this text in the source file."""
         path = self.source_dir / result.citation.relpath
-        if not path.is_file() or sources.sha256_file(path) != result.citation.source_sha256:
+        if (
+            not sources.inside(self.source_dir, path)
+            or not path.is_file()
+            or sources.sha256_file(path) != result.citation.source_sha256
+        ):
             return False
         for section in sources.parse_file(path):
             if section.location == result.citation.location:
                 span = section.text[result.citation.char_start : result.citation.char_end]
                 return span.strip() == result.text
         return False
+
+
+def _unreadable_parent(relpath: str, unreadable: dict[str, str]) -> str | None:
+    """The unreadable folder that holds relpath, if any."""
+    for folder in unreadable:
+        if folder != "." and relpath.startswith(folder.rstrip("/") + "/"):
+            return folder
+    return None
 
 
 def _unique_ids(chunks):

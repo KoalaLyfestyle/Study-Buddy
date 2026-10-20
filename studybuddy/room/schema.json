@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/KoalaLyfestyle/Study-Buddy/studybuddy/room/schema.json",
+  "title": "Study room",
+  "description": "One course week as chapters of sections. Builders write this; the renderer reads it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "course", "week", "builder", "chapters", "coverage"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "course": {"type": "string", "minLength": 1},
+    "week": {"type": ["integer", "null"], "minimum": 0},
+    "builder": {"type": "string", "minLength": 1, "description": "Who made the content, for example extractive-v1 or ollama:<model>."},
+    "chapters": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/chapter"}},
+    "coverage": {
+      "description": "Every chunk of the week, mapped to the sections that cite it. An empty list means the chunk is not covered.",
+      "type": "object",
+      "additionalProperties": {"type": "array", "items": {"$ref": "#/$defs/id"}}
+    }
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,80}$"},
+    "chapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "source", "sections"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "title": {"type": "string", "minLength": 1},
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["relpath", "kind"],
+          "properties": {
+            "relpath": {"type": "string", "minLength": 1},
+            "kind": {"enum": ["pdf", "markdown", "notebook"]}
+          }
+        },
+        "sections": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/section"}}
+      }
+    },
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "title", "provenance", "cites", "blocks"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "kind": {"enum": ["setup", "symbols", "explanation", "worked_example", "common_mistakes", "quiz", "summary"]},
+        "title": {"type": "string", "minLength": 1},
+        "provenance": {
+          "description": "source: the text is quoted from the cited chunks. generated: written by a model or a template, and only supported by the cites.",
+          "enum": ["source", "generated"]
+        },
+        "cites": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "blocks": {"type": "array", "items": {"$ref": "#/$defs/block"}},
+        "quiz": {"type": "array", "items": {"$ref": "#/$defs/question"}}
+      }
+    },
+    "block": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "text"],
+          "properties": {"type": {"const": "paragraph"}, "text": {"type": "string", "minLength": 1}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "text"],
+          "properties": {
+            "type": {"const": "code"},
+            "text": {"type": "string", "minLength": 1},
+            "language": {"type": "string"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "items"],
+          "properties": {
+            "type": {"const": "list"},
+            "items": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "term", "meaning"],
+          "properties": {
+            "type": {"const": "definition"},
+            "term": {"type": "string", "minLength": 1},
+            "meaning": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "prompt", "choices", "answer_index", "explanation", "cites"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "prompt": {"type": "string", "minLength": 1},
+        "choices": {"type": "array", "minItems": 2, "maxItems": 6, "items": {"type": "string", "minLength": 1}},
+        "answer_index": {"type": "integer", "minimum": 0},
+        "explanation": {"type": "string", "minLength": 1},
+        "cites": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  }
+}

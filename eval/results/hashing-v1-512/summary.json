@@ -16,83 +16,83 @@
     }
   },
   "build_seconds": {
-    "dense": 0.09,
-    "bm25+tfidf": 0.004
+    "dense": 0.07,
+    "bm25+tfidf": 0.002
   },
   "index_bytes": {
     "dense": 86016,
-    "bm25": 36864,
-    "tfidf": 7280,
-    "hybrid": 122880
+    "bm25": 40960,
+    "tfidf": 8016,
+    "hybrid": 126976
   },
   "latency": {
     "dense": {
-      "cold_ms": 1.49,
-      "warm_median_ms": 0.325
+      "cold_ms": 1.01,
+      "warm_median_ms": 0.269
     },
     "bm25": {
-      "cold_ms": 3.56,
-      "warm_median_ms": 0.043
+      "cold_ms": 2.62,
+      "warm_median_ms": 0.036
     },
     "tfidf": {
-      "cold_ms": 3.92,
-      "warm_median_ms": 0.023
+      "cold_ms": 2.62,
+      "warm_median_ms": 0.019
     },
     "hybrid": {
-      "cold_ms": 4.46,
-      "warm_median_ms": 0.655
+      "cold_ms": 3.19,
+      "warm_median_ms": 0.362
     }
   },
   "hybrid": {
     "chosen": {
       "c": 30,
-      "depth": 40
+      "depth": 10
     },
     "grid": [
       {
         "c": 10,
         "depth": 10,
-        "tune_mrr@10": 0.7854
+        "tune_mrr@10": 0.8042
       },
       {
         "c": 10,
         "depth": 20,
-        "tune_mrr@10": 0.7854
+        "tune_mrr@10": 0.7875
       },
       {
         "c": 10,
         "depth": 40,
-        "tune_mrr@10": 0.7892
+        "tune_mrr@10": 0.8
       },
       {
         "c": 30,
         "depth": 10,
-        "tune_mrr@10": 0.8187
+        "tune_mrr@10": 0.8292
       },
       {
         "c": 30,
         "depth": 20,
-        "tune_mrr@10": 0.8187
+        "tune_mrr@10": 0.8092
       },
       {
         "c": 30,
         "depth": 40,
-        "tune_mrr@10": 0.8225
+        "tune_mrr@10": 0.8213
       },
       {
         "c": 60,
         "depth": 10,
-        "tune_mrr@10": 0.8187
+        "tune_mrr@10": 0.8292
       },
       {
         "c": 60,
         "depth": 20,
-        "tune_mrr@10": 0.8187
+        "tune_mrr@10": 0.8092
       },
       {
         "c": 60,
         "depth": 40,
-        "tune_mrr@10": 0.8225
+        "tune_mrr@10": 0.8185
       }
     ]
   },
@@ -116,53 +116,53 @@
         "unanswerable_no_result_rate": 0.0
       },
       "bm25": {
-        "recall@1": 0.65,
-        "recall@3": 0.7917,
-        "recall@5": 0.8683,
-        "recall@10": 0.895,
-        "mrr@10": 0.8142,
-        "ndcg@10": 0.8224,
+        "recall@1": 0.7,
+        "recall@3": 0.85,
+        "recall@5": 0.9033,
+        "recall@10": 0.97,
+        "mrr@10": 0.8583,
+        "ndcg@10": 0.8898,
         "by_type_mrr@10": {
           "cross-week": 0.75,
           "equation": 1.0,
           "exact": 1.0,
           "filtered": 1.0,
-          "notebook": 0.6667,
-          "paraphrase": 0.6067
+          "notebook": 1.0,
+          "paraphrase": 0.5833
         },
         "unanswerable_no_result_rate": 0.0
       },
       "tfidf": {
         "recall@1": 0.6,
-        "recall@3": 0.7917,
-        "recall@5": 0.7917,
-        "recall@10": 0.8117,
-        "mrr@10": 0.7738,
-        "ndcg@10": 0.7628,
+        "recall@3": 0.8667,
+        "recall@5": 0.8667,
+        "recall@10": 0.8867,
+        "mrr@10": 0.7988,
+        "ndcg@10": 0.8137,
         "by_type_mrr@10": {
           "cross-week": 0.7143,
           "equation": 1.0,
           "exact": 1.0,
           "filtered": 1.0,
-          "notebook": 0.6667,
+          "notebook": 0.8333,
           "paraphrase": 0.4667
         },
         "unanswerable_no_result_rate": 0.3333
       },
       "hybrid": {
         "recall@1": 0.61,
-        "recall@3": 0.7517,
-        "recall@5": 0.8517,
-        "recall@10": 0.8683,
-        "mrr@10": 0.8225,
-        "ndcg@10": 0.7876,
+        "recall@3": 0.8017,
+        "recall@5": 0.8767,
+        "recall@10": 0.9033,
+        "mrr@10": 0.8292,
+        "ndcg@10": 0.8153,
         "by_type_mrr@10": {
           "cross-week": 1.0,
           "equation": 1.0,
           "exact": 1.0,
           "filtered": 1.0,
-          "notebook": 0.5,
-          "paraphrase": 0.59
+          "notebook": 0.6667,
+          "paraphrase": 0.5167
         },
         "unanswerable_no_result_rate": 0.0
       }
@@ -187,17 +187,17 @@
       },
       "bm25": {
         "recall@1": 0.75,
-        "recall@3": 0.8611,
-        "recall@5": 0.9444,
+        "recall@3": 0.9167,
+        "recall@5": 1.0,
         "recall@10": 1.0,
-        "mrr@10": 0.8713,
-        "ndcg@10": 0.9006,
+        "mrr@10": 0.8843,
+        "ndcg@10": 0.9123,
         "by_type_mrr@10": {
           "cross-week": 1.0,
           "equation": 1.0,
           "exact": 1.0,
           "filtered": 1.0,
-          "notebook": 0.175,
+          "notebook": 0.2917,
           "paraphrase": 0.8667
         },
         "unanswerable_no_result_rate": 0.6667
@@ -206,33 +206,33 @@
         "recall@1": 0.75,
         "recall@3": 0.8611,
         "recall@5": 0.8611,
-        "recall@10": 0.9444,
-        "mrr@10": 0.869,
-        "ndcg@10": 0.881,
+        "recall@10": 1.0,
+        "mrr@10": 0.8773,
+        "ndcg@10": 0.8998,
         "by_type_mrr@10": {
           "cross-week": 1.0,
           "equation": 1.0,
           "exact": 1.0,
           "filtered": 1.0,
-          "notebook": 0.0714,
+          "notebook": 0.1458,
           "paraphrase": 0.9
         },
         "unanswerable_no_result_rate": 1.0
       },
       "hybrid": {
-        "recall@1": 0.6667,
+        "recall@1": 0.5833,
         "recall@3": 0.8056,
-        "recall@5": 0.8611,
-        "recall@10": 0.9722,
-        "mrr@10": 0.8349,
-        "ndcg@10": 0.8518,
+        "recall@5": 0.9444,
+        "recall@10": 1.0,
+        "mrr@10": 0.7857,
+        "ndcg@10": 0.8348,
         "by_type_mrr@10": {
           "cross-week": 1.0,
           "equation": 1.0,
           "exact": 1.0,
           "filtered": 1.0,
-          "notebook": 0.1389,
-          "paraphrase": 0.75
+          "notebook": 0.1964,
+          "paraphrase": 0.55
         },
         "unanswerable_no_result_rate": 0.0
       }
@@ -240,10 +240,10 @@
   },
   "decision": {
     "best_single_method": "bm25",
-    "hybrid_minus_best_mrr@10": -0.0364,
+    "hybrid_minus_best_mrr@10": -0.0986,
     "hybrid_wins_losses_vs_best": [
-      2,
-      3
+      1,
+      4
     ],
     "adopt_hybrid": false,
     "rule": "adopt hybrid only with a semantic embedder, held-out MRR@10 gain >= 0.05, and no loss in held-out Recall@5"

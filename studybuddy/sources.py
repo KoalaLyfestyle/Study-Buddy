@@ -8,11 +8,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-PARSER_VERSION = "1"
+PARSER_VERSION = "2"  # 2: notebook code cells carry index-only context
 
 SUPPORTED_SUFFIXES = {
     ".pdf": "pdf",
@@ -38,6 +39,10 @@ class Section:
 
     text: str
     location: dict = field(default_factory=dict)
+    # Extra words used only to find this section by keyword search, never
+    # shown or cited. Notebook code cells get the notebook title and the
+    # Markdown cell above them, since a code cell rarely says what it does.
+    context: str = ""
 
 
 def file_kind(path: Path) -> str | None:
@@ -69,16 +74,71 @@ def course_and_week(relpath: str, root_name: str) -> tuple[str, int | None]:
     return course, week
 
 
+@dataclass
+class Scan:
+    """What scan_folder found. Paths in `unreadable` and `outside` are relative to root."""
+
+    paths: list[Path] = field(default_factory=list)
+    unreadable: dict[str, str] = field(default_factory=dict)  # folder -> error; "." is the root
+    outside: list[str] = field(default_factory=list)  # links that lead out of the folder, skipped
+
+
+def scan(root: Path) -> Scan:
+    """Supported files under root, skipping hidden files and folders.
+
+    Folder links are not followed. A file link is kept only if it resolves
+    inside root, so a link cannot pull outside files into the library (and
+    from there into search results and the MCP server). Folders that cannot
+    be read are reported, not silently skipped.
+    """
+    result = Scan()
+    real_root = root.resolve()
+
+    def failed(err: OSError) -> None:
+        where = Path(err.filename) if err.filename else root
+        try:
+            rel = where.relative_to(root).as_posix()
+        except ValueError:
+            rel = "."
+        result.unreadable[rel or "."] = f"{type(err).__name__}: {err.strerror or err}"
+
+    for dirpath, dirnames, filenames in os.walk(root, onerror=failed, followlinks=False):
+        dirnames[:] = [d for d in dirnames if not d.startswith(".")]
+        for name in filenames:
+            if name.startswith("."):
+                continue
+            path = Path(dirpath) / name
+            if not file_kind(path):
+                continue
+            if path.is_symlink():
+                try:
+                    target = path.resolve(strict=True)
+                except (OSError, RuntimeError):
+                    continue  # a broken or looping link
+                if not target.is_relative_to(real_root) or any(
+                    part.startswith(".") for part in target.relative_to(real_root).parts
+                ):
+                    # Outside the folder, or into a hidden part of it that the scan skips.
+                    result.outside.append(path.relative_to(root).as_posix())
+                    continue
+            if path.is_file():
+                result.paths.append(path)
+    result.paths.sort()
+    result.outside.sort()
+    return result
+
+
 def scan_folder(root: Path) -> list[Path]:
-    """Supported files under root, skipping hidden files and folders."""
-    found = []
-    for path in sorted(root.rglob("*")):
-        rel = path.relative_to(root)
-        if any(part.startswith(".") for part in rel.parts):
-            continue
-        if path.is_file() and file_kind(path):
-            found.append(path)
-    return found
+    """Supported files under root (see scan)."""
+    return scan(root).paths
+
+
+def inside(root: Path, path: Path) -> bool:
+    """True if path, after following links, is inside root."""
+    try:
+        return path.resolve().is_relative_to(root.resolve())
+    except (OSError, RuntimeError):
+        return False
 
 
 def parse_file(path: Path) -> list[Section]:
@@ -147,10 +207,28 @@ def parse_markdown(text: str) -> list[Section]:
     return sections
 
 
+CONTEXT_CHARS = 400
+
+
+def _notebook_title(cells: list[dict]) -> str:
+    for cell in cells:
+        if cell.get("cell_type") != "markdown":
+            continue
+        source = cell.get("source", "")
+        for line in ("".join(source) if isinstance(source, list) else source).splitlines():
+            match = _HEADING.match(line)
+            if match:
+                return match.group(2).strip()
+    return ""
+
+
 def parse_notebook(text: str) -> list[Section]:
     data = json.loads(text)
     sections = []
-    for index, cell in enumerate(data.get("cells", [])):
+    cells = data.get("cells", [])
+    title = _notebook_title(cells)
+    above = ""  # the nearest non-empty Markdown cell so far
+    for index, cell in enumerate(cells):
         cell_type = cell.get("cell_type")
         if cell_type not in ("markdown", "code"):
             continue
@@ -160,6 +238,19 @@ def parse_notebook(text: str) -> list[Section]:
         source = source.strip()
         if not source:
             continue
+        context = ""
+        if cell_type == "code":
+            parts = [f"Code cell in {title}." if title else "Code cell."]
+            lines = above.splitlines()
+            heading = _HEADING.match(lines[0]) if lines else None
+            if heading and heading.group(2).strip() == title:
+                lines = lines[1:]  # the title is already there
+            words = " ".join(" ".join(lines).split())[:CONTEXT_CHARS]
+            if words:
+                parts.append(words)
+            context = " ".join(parts)
+        else:
+            above = source
         sections.append(
             Section(
                 text=source,
@@ -168,6 +259,7 @@ def parse_notebook(text: str) -> list[Section]:
                     "cell_index": index,
                     "cell_type": cell_type,
                 },
+                context=context,
             )
         )
     return sections
