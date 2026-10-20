@@ -1,5 +1,9 @@
 # How retrieval works
 
+Notebooks are read as JSON: their cells are never run and their outputs are ignored. Importing again skips unchanged files, re-reads and re-embeds a changed file on its own, and drops a deleted file from search.
+
+Every search result carries the file path, course, week, location (page, heading path, or cell ID), the character offsets of the chunk inside that page, section, or cell, and the hash of the file it came from.
+
 1. `studybuddy/sources.py` finds supported files and splits them into
    sections: one per PDF page, one per Markdown heading, one per notebook
    cell. The course is the top-level folder; the week comes from a

@@ -16,7 +16,8 @@ python -m studybuddy.evaluate --embedder hashing    # offline; dense is then not
 - Output: `eval/results/<embedder>/report.md`, `summary.json`, `per_query.json`, and
   `failures.jsonl` (each miss in the top 5, and each unanswerable query that got results).
   Build and query timings go to `timings.json` in the same folder, which git ignores, so
-  rerunning the comparison leaves the committed results unchanged.
+  rerunning the comparison leaves the committed results unchanged. With `--out` outside
+  `eval/results/`, `timings.json` is written there too and is not ignored.
 - Hybrid's settings are tuned on `tune` only. It is adopted only if, with a semantic
   embedder, it beats the best single method on held-out MRR@10 by at least 0.05 without
   losing Recall@5. "BM25 is enough" is a valid outcome.

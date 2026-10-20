@@ -1,5 +1,9 @@
 # Study rooms
 
+Each section quotes its source and lists the passages it cites:
+
+![The "Choosing the learning rate" section of a study room, marked "From the source", with its citation to notes.md](media/study-room-section.png)
+
 ```bash
 python -m studybuddy import sample_course
 python -m studybuddy room intro-to-optimisation 1

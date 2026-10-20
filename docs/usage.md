@@ -1,5 +1,7 @@
 # Setup and use
 
+The chat UI (Streamlit) runs a LangChain ReAct agent on a local Ollama model. The agent calls the search tool and is told to cite sources. Its `Quiz_Generator` and `Summarizer` tools are placeholders: they return a fixed template and the first 200 characters of the input, and do not use the model or your notes yet.
+
 ## Install with the real model and the chat
 
 Requires Python 3.12 (the lock file targets it) and [Ollama](https://ollama.com) for the chat.

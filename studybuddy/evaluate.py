@@ -6,8 +6,10 @@
 The corpus is `sample_course/` plus the extra weeks in `eval/extra/`,
 copied to a temp folder. Queries and relevance labels are in
 `eval/queries.jsonl`. Results go to `eval/results/<embedder>/`:
-`report.md`, `summary.json`, and `failures.jsonl` (one line per query
-and method where no relevant chunk is in the top 5).
+`report.md`, `summary.json`, `per_query.json`, and `failures.jsonl` (one
+line per query and method where no relevant chunk is in the top 5).
+Build and query timings go to `timings.json`, which git ignores under
+`eval/results/`, so reruns leave the tracked files unchanged.
 
 Hybrid settings (RRF constant and candidate depth) are tuned on the
 `tune` split only. Decisions use the `heldout` split.
